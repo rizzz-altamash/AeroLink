@@ -80,7 +80,7 @@ const DroneSchema = new mongoose.Schema({
 DroneSchema.index({ 'currentLocation': '2dsphere' });
 DroneSchema.index({ status: 1 });
 DroneSchema.index({ homeBase: 1 });
-DroneSchema.index({ registrationId: 1 });
+// DroneSchema.index({ registrationId: 1 });
 
 // Virtual for maintenance due
 DroneSchema.virtual('maintenanceDue').get(function() {

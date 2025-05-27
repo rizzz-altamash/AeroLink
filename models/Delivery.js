@@ -148,7 +148,7 @@ const DeliverySchema = new mongoose.Schema({
 DeliverySchema.index({ 'sender.location': '2dsphere' });
 DeliverySchema.index({ 'recipient.location': '2dsphere' });
 DeliverySchema.index({ 'tracking.realTimeLocation': '2dsphere' });
-DeliverySchema.index({ orderId: 1 });
+// DeliverySchema.index({ orderId: 1 });
 DeliverySchema.index({ status: 1 });
 DeliverySchema.index({ createdAt: -1 });
 DeliverySchema.index({ 'sender.userId': 1 });

@@ -434,7 +434,7 @@ export default function DashboardLayout({ children }) {
       { href: '/dashboard', label: 'Dashboard', icon: ChartIcon },
       { href: '/dashboard/new-delivery', label: 'New Delivery', icon: PlusIcon },
       { href: '/dashboard/active', label: 'Active Deliveries', icon: ActiveIcon },
-      { href: '/dashboard/history', label: 'Delivery History', icon: HistoryIcon },
+      { href: '/dashboard/delivery-history', label: 'Delivery History', icon: HistoryIcon },
       { href: '/dashboard/emergency', label: 'Emergency Delivery', icon: EmergencyIcon }
     ],
     customer: [
