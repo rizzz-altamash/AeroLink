@@ -340,6 +340,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
+import NotificationBell from '@/components/NotificationBell';
 
 export default function AdminDashboard() {
   const { data: session } = useSession();
@@ -398,7 +399,7 @@ export default function AdminDashboard() {
     <div className="p-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">System Overview</h1>
+        <h1 className="text-3xl font-bold text-white mb-2 flex justify-between">System Overview <NotificationBell /></h1>
         <p className="text-gray-400">Welcome back, {session?.user?.name}</p>
       </div>
 

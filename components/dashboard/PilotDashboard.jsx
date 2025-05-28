@@ -388,6 +388,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
+import NotificationBell from '@/components/NotificationBell';
 
 export default function PilotDashboard() {
   const { data: session } = useSession();
@@ -452,7 +453,7 @@ export default function PilotDashboard() {
     <div className="p-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">Pilot Dashboard</h1>
+        <h1 className="text-3xl font-bold text-white mb-2 flex justify-between">Pilot Dashboard <NotificationBell /></h1>
         <p className="text-gray-400">Monitor flights and manage drone operations</p>
       </div>
 

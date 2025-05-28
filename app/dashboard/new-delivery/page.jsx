@@ -909,6 +909,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import RoleGuard from '@/components/auth/RoleGuard';
+import toast from 'react-hot-toast';
 
 // Icon Components (same as before)
 const BackIcon = ({ className }) => (
@@ -948,7 +949,7 @@ function NewDeliveryContent() {
   const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
   const [myHospital, setMyHospital] = useState(null);
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0);
   const [deliveryType, setDeliveryType] = useState('incoming'); // 'incoming' or 'outgoing'
   
   const urgencyFromQuery = searchParams.get('urgency') || 'routine';
@@ -986,6 +987,13 @@ function NewDeliveryContent() {
   });
 
   const [errors, setErrors] = useState({});
+
+  // If urgency is provided in query, skip to step 1
+  useEffect(() => {
+    if (searchParams.get('urgency')) {
+      setStep(1);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     fetchMyHospital();
@@ -1104,6 +1112,32 @@ function NewDeliveryContent() {
         deliveryData = {
           deliveryType: 'outgoing',
           // ... include all fields including recipient details
+          // Package info
+        packageType: formData.packageType,
+        packageDescription: formData.packageDescription,
+        packageWeight: parseInt(formData.packageWeight),
+        packageDimensions: formData.packageDimensions,
+        temperatureControlled: formData.temperatureControlled,
+        temperatureRange: formData.temperatureControlled ? formData.temperatureRange : undefined,
+        fragile: formData.fragile,
+        urgency: formData.urgency,
+        
+        // Recipient details
+        recipientType: formData.recipientType,
+        recipientHospitalId: formData.recipientHospitalId,
+        recipientUserId: formData.recipientUserId,
+        recipientName: formData.recipientName,
+        recipientPhone: formData.recipientPhone,
+        recipientEmail: formData.recipientEmail,
+        recipientAddress: formData.recipientAddress,
+        recipientCoordinates: formData.recipientCoordinates || [0, 0],
+        
+        // Sender info
+        senderCoordinates: myHospital?.address?.coordinates?.coordinates || [0, 0],
+        
+        // Delivery info
+        scheduledTime: formData.scheduledTime || undefined,
+        specialInstructions: formData.specialInstructions
         };
       }
       
@@ -1135,6 +1169,20 @@ function NewDeliveryContent() {
       
       // Redirect to tracking page
       router.push(`/dashboard/track/${result.delivery._id}`);
+
+
+      // // Show success message with toast instead of alert
+      // toast.success(
+      //   `Order ${result.delivery.orderId} placed successfully! ` +
+      //   `${deliveryType === 'incoming' ? 'Admin will process your order and assign a drone.' : 'Relevant staff have been notified.'}`
+      // );
+      
+      // // Redirect to tracking page after a short delay
+      // setTimeout(() => {
+      //   router.push(`/dashboard/track/${result.delivery._id}`);
+      // }, 1500);
+
+
     } catch (error) {
       alert(error.message || 'Failed to create delivery');
     } finally {

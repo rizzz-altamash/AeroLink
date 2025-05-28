@@ -402,6 +402,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
+import NotificationBell from '@/components/NotificationBell';
 
 export default function HospitalAdminDashboard() {
   const { data: session } = useSession();
@@ -459,7 +460,7 @@ export default function HospitalAdminDashboard() {
     <div className="p-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">Hospital Dashboard</h1>
+        <h1 className="text-3xl font-bold text-white mb-2 flex justify-between">Hospital Dashboard <NotificationBell /></h1>
         <p className="text-gray-400">Manage deliveries and staff for your hospital</p>
       </div>
 

@@ -339,12 +339,13 @@ import { useState } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
+import NotificationBell from '@/components/NotificationBell';
 
 export default function DashboardLayout({ children }) {
   const { data: session } = useSession();
   const router = useRouter();
   const pathname = usePathname();
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const roleThemes = {
     admin: {
@@ -435,7 +436,7 @@ export default function DashboardLayout({ children }) {
       { href: '/dashboard/new-delivery', label: 'New Delivery', icon: PlusIcon },
       { href: '/dashboard/active', label: 'Active Deliveries', icon: ActiveIcon },
       { href: '/dashboard/delivery-history', label: 'Delivery History', icon: HistoryIcon },
-      { href: '/dashboard/emergency', label: 'Emergency Delivery', icon: EmergencyIcon }
+      { href: '/dashboard/new-delivery?urgency=emergency', label: 'Emergency Delivery', icon: EmergencyIcon }
     ],
     customer: [
       { href: '/dashboard', label: 'Overview', icon: ChartIcon },
@@ -540,7 +541,7 @@ export default function DashboardLayout({ children }) {
                   </div>
                   {sidebarOpen && (
                     <div>
-                      <h1 className="text-white font-bold">SkyMed</h1>
+                      <h1 className="text-white font-bold">Vaayu</h1>
                       <p className={`text-xs ${theme.text} opacity-60`}>{session?.user?.role?.replace('_', ' ')}</p>
                     </div>
                   )}

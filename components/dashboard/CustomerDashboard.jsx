@@ -374,6 +374,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import NotificationBell from '@/components/NotificationBell';
 
 export default function CustomerDashboard() {
   const { data: session } = useSession();
@@ -420,7 +421,7 @@ export default function CustomerDashboard() {
     <div className="p-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">Welcome back, {session?.user?.name}!</h1>
+        <h1 className="text-3xl font-bold text-white mb-2 flex justify-between">Welcome back, {session?.user?.name}! <NotificationBell /></h1>
         <p className="text-gray-400">Manage your drone deliveries and track packages in real-time</p>
       </div>
 

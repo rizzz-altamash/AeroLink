@@ -136,9 +136,23 @@ const DeliverySchema = new mongoose.Schema({
     currency: { type: String, default: 'USD' }
   },
   metadata: {
+    deliveryType: {
+      type: String,
+      enum: ['incoming', 'outgoing'],
+      default: 'outgoing'
+    },
+    orderedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    },
+    orderingHospital: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Hospital'
+    },
     weatherConditions: String,
     failureReason: String,
-    specialInstructions: String
+    specialInstructions: String,
+    additionalInfo: mongoose.Schema.Types.Mixed
   }
 }, {
   timestamps: true
@@ -154,6 +168,8 @@ DeliverySchema.index({ createdAt: -1 });
 DeliverySchema.index({ 'sender.userId': 1 });
 DeliverySchema.index({ 'recipient.userId': 1 });
 DeliverySchema.index({ droneId: 1 });
+DeliverySchema.index({ 'metadata.orderedBy': 1 });
+DeliverySchema.index({ 'metadata.deliveryType': 1 });
 
 // Pre-save middleware to generate orderId
 DeliverySchema.pre('save', async function(next) {

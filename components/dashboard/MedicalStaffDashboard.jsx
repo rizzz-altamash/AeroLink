@@ -388,6 +388,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import NotificationBell from '@/components/NotificationBell';
 import toast from 'react-hot-toast';
 
 // Icon Components - Define at the top
@@ -563,10 +564,10 @@ export default function MedicalStaffDashboard() {
 
       if (!res.ok) throw new Error('Failed to cancel');
 
-      toast.success('Delivery cancelled successfully');
+      alert('Delivery cancelled successfully');
       fetchDashboardData();
     } catch (error) {
-      toast.error('Failed to cancel delivery');
+      alert('Failed to cancel delivery');
     }
   };
 
@@ -584,7 +585,7 @@ export default function MedicalStaffDashboard() {
 
       {/* Header */}
       <div className="mb-8 relative">
-        <h1 className="text-3xl font-bold text-white mb-2">Medical Staff Dashboard</h1>
+        <h1 className="text-3xl font-bold text-white mb-2 flex justify-between">Medical Staff Dashboard <NotificationBell /></h1>
         <p className="text-gray-400">Welcome back, {session?.user?.name}</p>
       </div>
 
