@@ -53,7 +53,7 @@
 
 
 
-
+// BEST -----------------------------
 // app/api/deliveries/active/route.js
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
@@ -117,3 +117,124 @@ export async function GET(req) {
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// app/api/deliveries/active/route.js
+// import { NextResponse } from 'next/server';
+// import { getServerSession } from 'next-auth';
+// import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+// import { connectDB } from '@/lib/mongodb';
+// import Delivery from '@/models/Delivery';
+// import User from '@/models/User';
+// import Hospital from '@/models/Hospital';
+// import Drone from '@/models/Drone';
+
+// export async function GET(req) {
+//   try {
+//     const session = await getServerSession(authOptions);
+//     if (!session || session.user.role !== 'medical_staff') {
+//       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+//     }
+
+//     const { searchParams } = new URL(req.url);
+//     const extended = searchParams.get('extended') === 'true';
+
+//     await connectDB();
+
+//     // Get active deliveries where user is either sender, recipient, or orderer
+//     const query = {
+//       $and: [
+//         {
+//           $or: [
+//             { 'sender.userId': session.user.id },
+//             { 'recipient.userId': session.user.id },
+//             { 'metadata.orderedBy': session.user.id }
+//           ]
+//         },
+//         {
+//           status: { $in: ['pending', 'approved', 'assigned', 'pickup', 'in_transit'] }
+//         }
+//       ]
+//     };
+
+//     let activeDeliveries;
+    
+//     if (extended) {
+//       // Extended query for track all page with more details
+//       activeDeliveries = await Delivery.find(query)
+//         .populate('recipient.userId', 'name email phoneNumber')
+//         .populate('recipient.hospitalId', 'name address')
+//         .populate('sender.userId', 'name email')
+//         .populate('sender.hospitalId', 'name')
+//         .populate('droneId', 'registrationId model specifications currentLocation health')
+//         .populate('pilotId', 'name email')
+//         .sort({ 'package.urgency': -1, createdAt: -1 }) // Sort by urgency first
+//         .lean(); // Use lean for better performance
+//     } else {
+//       // Standard query for dashboard
+//       activeDeliveries = await Delivery.find(query)
+//         .populate('recipient.userId', 'name email phoneNumber')
+//         .populate('recipient.hospitalId', 'name')
+//         .populate('sender.userId', 'name email')
+//         .populate('droneId', 'registrationId model')
+//         .sort({ createdAt: -1 })
+//         .limit(20);
+//     }
+
+//     // Transform the data to include delivery type info
+//     const transformedDeliveries = activeDeliveries.map(delivery => {
+//       const isIncoming = delivery.metadata?.deliveryType === 'incoming';
+      
+//       // Add tracking simulation for demo purposes
+//       // In production, this would come from real drone telemetry
+//       const simulatedTracking = delivery.status === 'in_transit' ? {
+//         battery: Math.floor(Math.random() * 40) + 40, // 40-80%
+//         speed: Math.floor(Math.random() * 30) + 20, // 20-50 km/h
+//         altitude: Math.floor(Math.random() * 50) + 50, // 50-100m
+//         realTimeLocation: delivery.tracking?.realTimeLocation || {
+//           type: 'Point',
+//           coordinates: [0, 0]
+//         }
+//       } : delivery.tracking;
+
+//       return {
+//         ...delivery,
+//         displayType: isIncoming ? 'Incoming Order' : 'Outgoing Delivery',
+//         displayLocation: isIncoming 
+//           ? delivery.recipient.hospitalId?.name || delivery.recipient.name
+//           : delivery.recipient.name || delivery.recipient.hospitalId?.name || 'Unknown Recipient',
+//         tracking: simulatedTracking || delivery.tracking
+//       };
+//     });
+
+//     return NextResponse.json(transformedDeliveries);
+//   } catch (error) {
+//     console.error('Error fetching active deliveries:', error);
+//     return NextResponse.json(
+//       { error: 'Failed to fetch active deliveries' },
+//       { status: 500 }
+//     );
+//   }
+// }
