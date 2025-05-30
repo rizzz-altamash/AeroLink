@@ -374,6 +374,7 @@ import { useSession } from 'next-auth/react';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import dynamic from 'next/dynamic';
 import RoleGuard from '@/components/auth/RoleGuard';
+import toast from 'react-hot-toast';
 
 // Dynamically import map component to avoid SSR issues
 // const MapComponent = dynamic(() => import('@/components/MapComponent'), { ssr: false });
@@ -465,10 +466,10 @@ export default function TrackDeliveryPage({ params }) {
 
       if (!res.ok) throw new Error('Failed to cancel');
       
-      alert('Delivery cancelled successfully');
+      toast.success('Delivery cancelled successfully');
       router.push('/dashboard');
     } catch (error) {
-      alert('Failed to cancel delivery');
+      toast.error('Failed to cancel delivery');
     }
   };
 
@@ -556,10 +557,14 @@ export default function TrackDeliveryPage({ params }) {
                 <div className={`px-4 py-2 rounded-full ${currentStatusColor} text-white font-medium animate-pulse`}>
                   {delivery.status.replace('_', ' ').toUpperCase()}
                 </div>
-                {['pending', 'approved'].includes(delivery.status) && (
+
+                {!['delivered', 'failed', 'cancelled'].includes(delivery.status) && 
+                (session?.user?.role === 'admin' || 
+                  delivery.sender.userId === session?.user?.id || 
+                  delivery.metadata?.orderedBy === session?.user?.id) && (
                   <button
                     onClick={handleCancelDelivery}
-                    className="px-4 py-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 rounded-lg transition-all"
+                    className="px-4 py-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 rounded-lg transition-all font-medium"
                   >
                     Cancel Delivery
                   </button>

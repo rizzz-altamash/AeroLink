@@ -25,7 +25,8 @@ export async function GET(req) {
     const recentDeliveries = await Delivery.find({
       $or: [
         { 'sender.hospitalId': hospitalId },
-        { 'recipient.hospitalId': hospitalId }
+        { 'recipient.hospitalId': hospitalId },
+        { 'metadata.orderingHospital': hospitalId }
       ]
     })
     .populate('sender.userId', 'name')
@@ -34,9 +35,15 @@ export async function GET(req) {
     .sort({ createdAt: -1 })
     .limit(20);
 
+    // // Transform deliveries for display
+    // const transformedDeliveries = recentDeliveries.map(delivery => {
+    //   const isIncoming = delivery.recipient.hospitalId?.toString() === hospitalId;
+
     // Transform deliveries for display
     const transformedDeliveries = recentDeliveries.map(delivery => {
-      const isIncoming = delivery.recipient.hospitalId?.toString() === hospitalId;
+      const isIncoming = delivery.metadata?.deliveryType === 'incoming' || 
+                        delivery.recipient.hospitalId?.toString() === hospitalId.toString();
+
       
       return {
         _id: delivery._id,
@@ -45,7 +52,10 @@ export async function GET(req) {
         recipient: isIncoming ? 'Your Hospital' : (delivery.recipient.userId?.name || delivery.recipient.name || 'Unknown'),
         status: delivery.status,
         eta: delivery.delivery?.scheduledTime ? new Date(delivery.delivery.scheduledTime).toLocaleTimeString() : 'N/A',
-        createdAt: delivery.createdAt
+        createdAt: delivery.createdAt,
+        metadata: {
+          deliveryType: delivery.metadata?.deliveryType || (isIncoming ? 'incoming' : 'outgoing')
+        }
       };
     });
 

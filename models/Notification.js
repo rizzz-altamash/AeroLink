@@ -97,7 +97,7 @@ NotificationSchema.statics.createDeliveryNotification = async function(userId, d
     },
     priority: priority[delivery.package.urgency] || 'medium',
     actionRequired: type === 'new_delivery' && ['admin', 'pilot'].includes(delivery.package.urgency),
-    actionUrl: `/dashboard/delivery/${delivery._id}`
+    actionUrl: `/dashboard`
   });
 };
 

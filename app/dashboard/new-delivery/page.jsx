@@ -980,6 +980,10 @@ function NewDeliveryContent() {
     recipientPhone: '',
     recipientEmail: '',
     recipientAddress: '',
+    // Add hospital specific fields
+    hospitalName: '',
+    hospitalPhone: '',
+    hospitalAddress: '',
     
     // Delivery details
     scheduledTime: '',
@@ -1043,6 +1047,33 @@ function NewDeliveryContent() {
       if (formData.temperatureControlled) {
         if (!formData.temperatureRange.min || !formData.temperatureRange.max) {
           newErrors.temperatureRange = 'Temperature range is required';
+        }
+      }
+    }
+
+    // Add Step 2 validation
+    if (stepNumber === 2 && deliveryType === 'outgoing') {
+      if (formData.recipientType === 'hospital') {
+        // Hospital validation
+        if (!formData.hospitalName?.trim()) {
+          newErrors.hospitalName = 'Hospital name is required';
+        }
+        if (!formData.hospitalPhone?.trim()) {
+          newErrors.hospitalPhone = 'Hospital contact number is required';
+        }
+        if (!formData.hospitalAddress?.trim()) {
+          newErrors.hospitalAddress = 'Hospital address is required';
+        }
+      } else if (formData.recipientType === 'individual') {
+        // Individual validation
+        if (!formData.recipientName?.trim()) {
+          newErrors.recipientName = 'Recipient name is required';
+        }
+        if (!formData.recipientPhone?.trim()) {
+          newErrors.recipientPhone = 'Phone number is required';
+        }
+        if (!formData.recipientAddress?.trim()) {
+          newErrors.recipientAddress = 'Delivery address is required';
         }
       }
     }
@@ -1113,31 +1144,34 @@ function NewDeliveryContent() {
           deliveryType: 'outgoing',
           // ... include all fields including recipient details
           // Package info
-        packageType: formData.packageType,
-        packageDescription: formData.packageDescription,
-        packageWeight: parseInt(formData.packageWeight),
-        packageDimensions: formData.packageDimensions,
-        temperatureControlled: formData.temperatureControlled,
-        temperatureRange: formData.temperatureControlled ? formData.temperatureRange : undefined,
-        fragile: formData.fragile,
-        urgency: formData.urgency,
-        
-        // Recipient details
-        recipientType: formData.recipientType,
-        recipientHospitalId: formData.recipientHospitalId,
-        recipientUserId: formData.recipientUserId,
-        recipientName: formData.recipientName,
-        recipientPhone: formData.recipientPhone,
-        recipientEmail: formData.recipientEmail,
-        recipientAddress: formData.recipientAddress,
-        recipientCoordinates: formData.recipientCoordinates || [0, 0],
-        
-        // Sender info
-        senderCoordinates: myHospital?.address?.coordinates?.coordinates || [0, 0],
-        
-        // Delivery info
-        scheduledTime: formData.scheduledTime || undefined,
-        specialInstructions: formData.specialInstructions
+          packageType: formData.packageType,
+          packageDescription: formData.packageDescription,
+          packageWeight: parseInt(formData.packageWeight),
+          packageDimensions: formData.packageDimensions,
+          temperatureControlled: formData.temperatureControlled,
+          temperatureRange: formData.temperatureControlled ? formData.temperatureRange : undefined,
+          fragile: formData.fragile,
+          urgency: formData.urgency,
+          
+          // Recipient details
+          recipientType: formData.recipientType,
+          recipientHospitalId: formData.recipientHospitalId,
+          recipientUserId: formData.recipientUserId,
+          // recipientName: formData.recipientName,
+          // recipientPhone: formData.recipientPhone,
+          recipientName: formData.recipientType === 'hospital' ? formData.hospitalName : formData.recipientName,
+          recipientPhone: formData.recipientType === 'hospital' ? formData.hospitalPhone : formData.recipientPhone,
+          recipientEmail: formData.recipientEmail,
+          // recipientAddress: formData.recipientAddress,
+          recipientAddress: formData.recipientType === 'hospital' ? formData.hospitalAddress : formData.recipientAddress,
+          recipientCoordinates: formData.recipientCoordinates || [0, 0],
+          
+          // Sender info
+          senderCoordinates: myHospital?.address?.coordinates?.coordinates || [0, 0],
+          
+          // Delivery info
+          scheduledTime: formData.scheduledTime || undefined,
+          specialInstructions: formData.specialInstructions
         };
       }
       
@@ -1165,7 +1199,7 @@ function NewDeliveryContent() {
       });
       
       // Show success message
-      alert('Order placed successfully! Admin and pilots have been notified.');
+      toast.success('Order placed successfully! Admin and pilots have been notified.');
       
       // Redirect to tracking page
       router.push(`/dashboard/track/${result.delivery._id}`);
@@ -1184,7 +1218,7 @@ function NewDeliveryContent() {
 
 
     } catch (error) {
-      alert(error.message || 'Failed to create delivery');
+      toast.error(error.message || 'Failed to create delivery');
     } finally {
       setLoading(false);
     }
@@ -1578,8 +1612,6 @@ function NewDeliveryContent() {
                   <LocationIcon className="w-8 h-8 text-red-400" />
                   Recipient Details
                 </h2>
-                {/* Recipient form for outgoing deliveries */}
-                {/* ... */}
 
                <div className="space-y-6">
                  {/* Recipient Type */}
@@ -1632,7 +1664,8 @@ function NewDeliveryContent() {
                           value={formData.hospitalName}
                           onChange={handleInputChange}
                           placeholder="City Hospital"
-                          className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                          // className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                          className={`w-full px-4 py-3 bg-gray-800/50 border ${errors.hospitalName ? 'border-red-500' : 'border-gray-700'} rounded-xl text-white focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all`}
                         />
                         {errors.hospitalName && (
                           <p className="mt-1 text-sm text-red-400">{errors.hospitalName}</p>
@@ -1651,7 +1684,8 @@ function NewDeliveryContent() {
                             onChange={handleInputChange}
                             // onBlur={searchHospitalByPhone}
                             placeholder="+1234567890"
-                            className="flex-1 px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                            // className="flex-1 px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                            className={`w-full px-4 py-3 bg-gray-800/50 border ${errors.hospitalPhone ? 'border-red-500' : 'border-gray-700'} rounded-xl text-white focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all`}
                           />
                           {/* {searchingHospital && (
                             <div className="flex items-center justify-center px-4">
@@ -1678,7 +1712,8 @@ function NewDeliveryContent() {
                         onChange={handleInputChange}
                         rows={3}
                         placeholder="123 Main St, City, State 12345"
-                        className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                        // className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                        className={`w-full px-4 py-3 bg-gray-800/50 border ${errors.hospitalAddress ? 'border-red-500' : 'border-gray-700'} rounded-xl text-white focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all`}
                       />
                       {errors.hospitalAddress && (
                         <p className="mt-1 text-sm text-red-400">{errors.hospitalAddress}</p>
@@ -1698,7 +1733,8 @@ function NewDeliveryContent() {
                           value={formData.recipientName}
                           onChange={handleInputChange}
                           placeholder="John Doe"
-                          className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                          // className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                          className={`w-full px-4 py-3 bg-gray-800/50 border ${errors.recipientName ? 'border-red-500' : 'border-gray-700'} rounded-xl text-white focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all`}
                         />
                         {errors.recipientName && (
                           <p className="mt-1 text-sm text-red-400">{errors.recipientName}</p>
@@ -1717,7 +1753,8 @@ function NewDeliveryContent() {
                             onChange={handleInputChange}
                             // onBlur={searchRecipientByPhone}
                             placeholder="+91"
-                            className="flex-1 px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                            // className="flex-1 px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                            className={`w-full px-4 py-3 bg-gray-800/50 border ${errors.recipientPhone ? 'border-red-500' : 'border-gray-700'} rounded-xl text-white focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all`}
                           />
                           {/* {searchingRecipient && (
                             <div className="flex items-center justify-center px-4">
@@ -1744,7 +1781,8 @@ function NewDeliveryContent() {
                         onChange={handleInputChange}
                         rows={3}
                         placeholder="123 Main St, City, State 12345"
-                        className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                        // className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                        className={`w-full px-4 py-3 bg-gray-800/50 border ${errors.recipientAddress ? 'border-red-500' : 'border-gray-700'} rounded-xl text-white focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all`}
                       />
                       {errors.recipientAddress && (
                         <p className="mt-1 text-sm text-red-400">{errors.recipientAddress}</p>

@@ -10,239 +10,6 @@
 // import { checkRole } from '@/lib/auth-helpers';
 
 // export async function POST(req) {
-
-//   // Check role authorization
-//   const { authorized, response, session } = await checkRole(req, ['medical_staff']);
-//   if (!authorized) return response;
-  
-  
-//   try {
-//     const session = await getServerSession(authOptions);
-//     if (!session || session.user.role !== 'medical_staff') {
-//       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-//     }
-
-//     const data = await req.json();
-//     await connectDB();
-
-//     // Get sender details
-//     const sender = await User.findById(session.user.id);
-//     if (!sender) {
-//       return NextResponse.json({ error: 'Sender not found' }, { status: 404 });
-//     }
-
-
-
-//     let deliveryData;
-
-//     if (data.deliveryType === 'incoming') {
-//       // For incoming deliveries (hospital ordering supplies)
-//       const hospital = await Hospital.findById(session.user.hospitalId);
-      
-//       deliveryData = {
-//         // For incoming orders, sender is warehouse/supplier (to be assigned by admin)
-//         sender: {
-//           userId: null, // Will be assigned by admin
-//           hospitalId: null, // Warehouse/supplier ID
-//           location: {
-//             type: 'Point',
-//             coordinates: [0, 0] // Will be updated when admin assigns
-//           }
-//         },
-        
-//         // Recipient is the ordering hospital
-//         recipient: {
-//           userId: sender._id,
-//           hospitalId: hospital._id,
-//           name: hospital.name,
-//           phone: hospital.contactInfo.primaryPhone,
-//           location: {
-//             type: 'Point',
-//             coordinates: hospital.address.coordinates.coordinates
-//           }
-//         },
-        
-//         // Package details
-//         package: {
-//           type: data.packageType,
-//           description: data.packageDescription,
-//           weight: data.packageWeight,
-//           dimensions: data.packageDimensions,
-//           temperatureControlled: data.temperatureControlled || false,
-//           temperatureRange: data.temperatureRange,
-//           fragile: data.fragile || false,
-//           urgency: data.urgency || 'routine'
-//         },
-        
-//         // Mark as incoming order
-//         metadata: {
-//           deliveryType: 'incoming',
-//           orderedBy: sender._id,
-//           orderingHospital: hospital._id,
-//           specialInstructions: data.specialInstructions
-//         },
-        
-//         status: 'pending',
-//         timeline: [{
-//           status: 'pending',
-//           timestamp: new Date(),
-//           notes: `Order placed by ${sender.name} from ${hospital.name}`
-//         }],
-        
-//         delivery: {
-//           scheduledTime: data.scheduledTime || new Date(Date.now() + 2 * 60 * 60 * 1000)
-//         }
-//       };
-//     } else {
-//       // For outgoing deliveries (existing logic)
-//       // ... existing outgoing delivery logic
-
-//       deliveryData = {
-//       sender: {
-//         userId: sender._id,
-//         hospitalId: sender.hospitalId,
-//         location: {
-//           type: 'Point',
-//           coordinates: data.senderCoordinates || [0, 0]
-//         }
-//       },
-//       recipient: {
-//         userId: data.recipientUserId,
-//         hospitalId: data.recipientHospitalId,
-//         name: data.recipientName,
-//         phone: data.recipientPhone,
-//         location: {
-//           type: 'Point',
-//           coordinates: data.recipientCoordinates || [0, 0]
-//         }
-//       },
-//       package: {
-//         type: data.packageType,
-//         description: data.packageDescription,
-//         weight: data.packageWeight,
-//         dimensions: data.packageDimensions,
-//         temperatureControlled: data.temperatureControlled || false,
-//         temperatureRange: data.temperatureRange,
-//         fragile: data.fragile || false,
-//         urgency: data.urgency || 'routine'
-//       },
-//       status: 'pending',
-//       timeline: [{
-//         status: 'pending',
-//         timestamp: new Date(),
-//         notes: 'Delivery request created'
-//       }],
-//       delivery: {
-//         scheduledTime: data.scheduledTime || new Date(Date.now() + 2 * 60 * 60 * 1000) // Default 2 hours
-//       }
-//     };
-//     }
-
-    
-
-//     // Calculate estimated distance and price
-//     if (data.senderCoordinates && data.recipientCoordinates) {
-//       const distance = calculateDistance(
-//         data.senderCoordinates,
-//         data.recipientCoordinates
-//       );
-//       deliveryData.flightPath = {
-//         estimatedDistance: distance,
-//         estimatedDuration: Math.ceil(distance / 500) // Assume 500m/min
-//       };
-//     }
-
-//     const delivery = new Delivery(deliveryData);
-    
-//     // Calculate price (will be updated when admin assigns source)
-//     delivery.calculatePrice();
-
-//     await delivery.save();
-
-//     // Auto-assign drone for emergency deliveries
-//     if (data.urgency === 'emergency') {
-//       const availableDrone = await Drone.findOne({
-//         status: 'available',
-//         'specifications.maxPayload': { $gte: data.packageWeight }
-//       }).sort({ 'health.batteryLevel': -1 });
-
-//       if (availableDrone) {
-//         delivery.droneId = availableDrone._id;
-//         delivery.status = 'assigned';
-//         await delivery.save();
-        
-//         await availableDrone.startDelivery(delivery._id);
-//       }
-//     }
-
-//     return NextResponse.json({ success: true, delivery });
-//   } catch (error) {
-//     console.error('Error creating delivery:', error);
-//     return NextResponse.json(
-//       { error: 'Failed to create delivery' },
-//       { status: 500 }
-//     );
-//   }
-// }
-
-// // Helper function to calculate distance between coordinates
-// function calculateDistance(coord1, coord2) {
-//   const R = 6371e3; // Earth radius in meters
-//   const φ1 = coord1[1] * Math.PI/180;
-//   const φ2 = coord2[1] * Math.PI/180;
-//   const Δφ = (coord2[1] - coord1[1]) * Math.PI/180;
-//   const Δλ = (coord2[0] - coord1[0]) * Math.PI/180;
-
-//   const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-//             Math.cos(φ1) * Math.cos(φ2) *
-//             Math.sin(Δλ/2) * Math.sin(Δλ/2);
-//   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-
-//   return Math.round(R * c); // Distance in meters
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// app/api/deliveries/create/route.js
-// import { NextResponse } from 'next/server';
-// import { getServerSession } from 'next-auth';
-// import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-// import { connectDB } from '@/lib/mongodb';
-// import Delivery from '@/models/Delivery';
-// import User from '@/models/User';
-// import Hospital from '@/models/Hospital';
-// import Drone from '@/models/Drone';
-// import { checkRole } from '@/lib/auth-helpers';
-
-// export async function POST(req) {
 //   try {
 //     const session = await getServerSession(authOptions);
 //     if (!session || session.user.role !== 'medical_staff') {
@@ -509,56 +276,68 @@
 //   }
 // }
 
+// // Import Notification model at the top of the file
+// import Notification from '@/models/Notification';
+
 // // Helper function to send notifications
 // async function sendNotifications(delivery, sender, urgency) {
 //   try {
 //     // Get all relevant users to notify
-//     const usersToNotify = await User.find({
-//       $or: [
-//         { role: 'admin' },
-//         { role: 'hospital_admin', hospitalId: sender.hospitalId },
-//         { role: 'pilot', isActive: true }
-//       ]
-//     });
+//     const query = {
+//       isActive: true,
+//       $or: []
+//     };
 
-//     // Group users by role
+//     // Always notify admins
+//     query.$or.push({ role: 'admin' });
+
+//     // Notify hospital admin of the sender's hospital
+//     if (sender.hospitalId) {
+//       query.$or.push({ 
+//         role: 'hospital_admin', 
+//         hospitalId: sender.hospitalId 
+//       });
+//     }
+
+//     // For urgent/emergency deliveries, notify all active pilots
+//     if (['urgent', 'emergency'].includes(urgency)) {
+//       query.$or.push({ role: 'pilot' });
+//     }
+
+//     const usersToNotify = await User.find(query);
+
+//     // Create notifications for each user
+//     const notifications = await Promise.all(
+//       usersToNotify.map(user => 
+//         Notification.createDeliveryNotification(
+//           user._id,
+//           delivery,
+//           'new_delivery'
+//         )
+//       )
+//     );
+
+//     // Group users by role for logging
 //     const admins = usersToNotify.filter(u => u.role === 'admin');
 //     const hospitalAdmins = usersToNotify.filter(u => u.role === 'hospital_admin');
 //     const pilots = usersToNotify.filter(u => u.role === 'pilot');
 
-//     // Create notification data
-//     const notificationData = {
-//       type: 'new_delivery',
-//       deliveryId: delivery._id,
-//       orderId: delivery.orderId,
-//       urgency: urgency,
-//       packageType: delivery.package.type,
-//       sender: {
-//         name: sender.name,
-//         hospital: sender.hospitalId
-//       },
-//       timestamp: new Date()
-//     };
-
-//     // In a real implementation, you would:
-//     // 1. Save notifications to a Notification collection
-//     // 2. Send emails using SendGrid/AWS SES
-//     // 3. Send SMS using Twilio
-//     // 4. Send push notifications
-//     // 5. Emit socket events for real-time updates
-
-//     console.log(`Notifications sent:
+//     console.log(`Notifications created:
 //       - ${admins.length} admins notified
 //       - ${hospitalAdmins.length} hospital admins notified
 //       - ${pilots.length} pilots notified (${urgency} priority)`);
 
-//     // For now, we'll just log the notifications
-//     // In production, implement actual notification service
+//     // In production, also implement:
+//     // - Email notifications using SendGrid/AWS SES
+//     // - SMS for urgent/emergency using Twilio
+//     // - Push notifications
+//     // - WebSocket events for real-time updates
     
 //     return {
 //       notifiedAdmins: admins.length,
 //       notifiedHospitalAdmins: hospitalAdmins.length,
-//       notifiedPilots: pilots.length
+//       notifiedPilots: pilots.length,
+//       totalNotifications: notifications.length
 //     };
 //   } catch (error) {
 //     console.error('Error sending notifications:', error);
@@ -617,6 +396,7 @@
 
 
 
+
 // app/api/deliveries/create/route.js
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
@@ -626,6 +406,7 @@ import Delivery from '@/models/Delivery';
 import User from '@/models/User';
 import Hospital from '@/models/Hospital';
 import Drone from '@/models/Drone';
+import Notification from '@/models/Notification';
 import { checkRole } from '@/lib/auth-helpers';
 
 export async function POST(req) {
@@ -734,14 +515,19 @@ export async function POST(req) {
           deliveryType: 'incoming',
           orderedBy: sender._id,
           orderingHospital: hospital._id,
-          specialInstructions: data.specialInstructions || ''
+          specialInstructions: data.specialInstructions || '',
+          requiresApproval: data.urgency !== 'emergency', // Emergency bypasses approval
+          // approvalDeadline: data.urgency === 'urgent' ? new Date(Date.now() + 2 * 60 * 60 * 1000) : null // 2 hours for urgent
         },
         
-        status: 'pending',
+        // Set initial status based on urgency
+        status: data.urgency === 'emergency' ? 'approved' : 'pending_approval',
         timeline: [{
-          status: 'pending',
+          status: data.urgency === 'emergency' ? 'approved' : 'pending_approval',
           timestamp: new Date(),
-          notes: `Order placed by ${sender.name} from ${hospital.name}`
+          notes: data.urgency === 'emergency' 
+            ? `Emergency order auto-approved - placed by ${sender.name} from ${hospital.name}`
+            : `Order placed by ${sender.name} from ${hospital.name} - awaiting hospital admin approval`
         }],
         
         delivery: {
@@ -769,6 +555,7 @@ export async function POST(req) {
           hospitalId: data.recipientHospitalId || null,
           name: data.recipientName,
           phone: data.recipientPhone,
+          address: data.recipientAddress,
           location: {
             type: 'Point',
             coordinates: data.recipientCoordinates || [0, 0]
@@ -803,14 +590,19 @@ export async function POST(req) {
         
         metadata: {
           deliveryType: 'outgoing',
-          specialInstructions: data.specialInstructions || ''
+          specialInstructions: data.specialInstructions || '',
+          requiresApproval: data.urgency !== 'emergency',
+          // approvalDeadline: data.urgency === 'urgent' ? new Date(Date.now() + 2 * 60 * 60 * 1000) : null
         },
         
-        status: 'pending',
+        // Set initial status based on urgency
+        status: data.urgency === 'emergency' ? 'approved' : 'pending_approval',
         timeline: [{
-          status: 'pending',
+          status: data.urgency === 'emergency' ? 'approved' : 'pending_approval',
           timestamp: new Date(),
-          notes: 'Delivery request created'
+          notes: data.urgency === 'emergency' 
+            ? 'Emergency delivery auto-approved'
+            : 'Delivery request created - awaiting hospital admin approval'
         }],
         
         delivery: {
@@ -856,26 +648,26 @@ export async function POST(req) {
     const delivery = new Delivery(deliveryData);
     await delivery.save();
 
-    // Send notifications
-    await sendNotifications(delivery, sender, data.urgency);
+    // // Send notifications based on urgency
+    // if (data.urgency === 'emergency') {
+    //   // For emergency: Skip hospital admin, notify system admin directly
+    //   await notifySystemAdmins(delivery, 'emergency_delivery');
 
-    // Auto-assign drone for emergency deliveries
-    if (data.urgency === 'emergency' && data.deliveryType !== 'incoming') {
-      try {
-        const availableDrone = await Drone.findOne({
-          status: 'available',
-          'specifications.maxPayload': { $gte: parseInt(data.packageWeight) }
-        }).sort({ 'health.batteryLevel': -1 });
-
-        if (availableDrone) {
-          delivery.droneId = availableDrone._id;
-          delivery.status = 'assigned';
-          await delivery.save();
-          await availableDrone.startDelivery(delivery._id);
-        }
-      } catch (error) {
-        console.log('Auto-assign drone failed:', error);
+    // Send notifications based on urgency
+    if (data.urgency === 'emergency') {
+      // For emergency: Notify both hospital admin (for awareness) and system admin (for pilot assignment)
+      
+      // Notify hospital admins for awareness
+      if (sender.hospitalId) {
+        await notifyHospitalAdminsForEmergency(delivery, sender.hospitalId);
       }
+      
+      // Notify system admins for immediate pilot assignment
+      await notifySystemAdminsForAssignment(delivery, 'emergency_delivery');
+    
+    } else {
+      // For routine/urgent: Notify hospital admin first
+      await notifyHospitalAdmins(delivery, sender.hospitalId);
     }
 
     return NextResponse.json({ 
@@ -883,7 +675,8 @@ export async function POST(req) {
       delivery: {
         _id: delivery._id,
         orderId: delivery.orderId,
-        status: delivery.status
+        status: delivery.status,
+        requiresApproval: delivery.metadata.requiresApproval
       }
     });
   } catch (error) {
@@ -895,74 +688,152 @@ export async function POST(req) {
   }
 }
 
-// Import Notification model at the top of the file
-import Notification from '@/models/Notification';
-
-// Helper function to send notifications
-async function sendNotifications(delivery, sender, urgency) {
+// Helper function to notify hospital admins
+async function notifyHospitalAdmins(delivery, hospitalId) {
   try {
-    // Get all relevant users to notify
-    const query = {
-      isActive: true,
-      $or: []
-    };
+    const hospitalAdmins = await User.find({
+      role: 'hospital_admin',
+      hospitalId: hospitalId,
+      isActive: true
+    });
 
-    // Always notify admins
-    query.$or.push({ role: 'admin' });
-
-    // Notify hospital admin of the sender's hospital
-    if (sender.hospitalId) {
-      query.$or.push({ 
-        role: 'hospital_admin', 
-        hospitalId: sender.hospitalId 
-      });
-    }
-
-    // For urgent/emergency deliveries, notify all active pilots
-    if (['urgent', 'emergency'].includes(urgency)) {
-      query.$or.push({ role: 'pilot' });
-    }
-
-    const usersToNotify = await User.find(query);
-
-    // Create notifications for each user
     const notifications = await Promise.all(
-      usersToNotify.map(user => 
-        Notification.createDeliveryNotification(
-          user._id,
-          delivery,
-          'new_delivery'
-        )
+      hospitalAdmins.map(admin => 
+        Notification.create({
+          userId: admin._id,
+          type: 'new_delivery',
+          title: 'New Delivery Requires Approval',
+          message: `${delivery.package.urgency} delivery order ${delivery.orderId} requires your approval`,
+          data: {
+            deliveryId: delivery._id,
+            orderId: delivery.orderId,
+            urgency: delivery.package.urgency,
+            packageType: delivery.package.type,
+            status: delivery.status
+          },
+          priority: delivery.package.urgency === 'urgent' ? 'high' : 'medium',
+          actionRequired: true,
+          actionUrl: `/dashboard/hospital-admin/approve-delivery/${delivery._id}`
+        })
       )
     );
 
-    // Group users by role for logging
-    const admins = usersToNotify.filter(u => u.role === 'admin');
-    const hospitalAdmins = usersToNotify.filter(u => u.role === 'hospital_admin');
-    const pilots = usersToNotify.filter(u => u.role === 'pilot');
-
-    console.log(`Notifications created:
-      - ${admins.length} admins notified
-      - ${hospitalAdmins.length} hospital admins notified
-      - ${pilots.length} pilots notified (${urgency} priority)`);
-
-    // In production, also implement:
-    // - Email notifications using SendGrid/AWS SES
-    // - SMS for urgent/emergency using Twilio
-    // - Push notifications
-    // - WebSocket events for real-time updates
-    
-    return {
-      notifiedAdmins: admins.length,
-      notifiedHospitalAdmins: hospitalAdmins.length,
-      notifiedPilots: pilots.length,
-      totalNotifications: notifications.length
-    };
+    console.log(`Notified ${hospitalAdmins.length} hospital admins for approval`);
+    return notifications;
   } catch (error) {
-    console.error('Error sending notifications:', error);
-    // Don't fail the delivery creation if notifications fail
+    console.error('Error notifying hospital admins:', error);
   }
 }
+
+// Helper function to notify system admins
+// async function notifySystemAdmins(delivery, notificationType) {
+//   try {
+//     const systemAdmins = await User.find({
+//       role: 'admin',
+//       isActive: true
+//     });
+
+//     const notifications = await Promise.all(
+//       systemAdmins.map(admin => 
+//         Notification.createDeliveryNotification(
+//           admin._id,
+//           delivery,
+//           notificationType
+//         )
+//       )
+//     );
+
+//     console.log(`Notified ${systemAdmins.length} system admins`);
+//     return notifications;
+//   } catch (error) {
+//     console.error('Error notifying system admins:', error);
+//   }
+// }
+
+
+// Add this new helper function for emergency notifications to hospital admins
+async function notifyHospitalAdminsForEmergency(delivery, hospitalId) {
+  try {
+    const hospitalAdmins = await User.find({
+      role: 'hospital_admin',
+      hospitalId: hospitalId,
+      isActive: true
+    });
+
+    const notifications = await Promise.all(
+      hospitalAdmins.map(admin => 
+        Notification.create({
+          userId: admin._id,
+          type: 'urgent_alert',
+          title: 'Emergency Delivery Auto-Approved',
+          message: `Emergency delivery ${delivery.orderId} has been created and auto-approved. Admin will assign a pilot immediately.`,
+          data: {
+            deliveryId: delivery._id,
+            orderId: delivery.orderId,
+            urgency: 'emergency',
+            packageType: delivery.package.type,
+            status: delivery.status,
+            autoApproved: true
+          },
+          priority: 'urgent',
+          actionRequired: false,
+          actionUrl: `/dashboard/delivery/${delivery._id}`
+        })
+      )
+    );
+
+    console.log(`Notified ${hospitalAdmins.length} hospital admins about emergency delivery`);
+    return notifications;
+  } catch (error) {
+    console.error('Error notifying hospital admins about emergency:', error);
+  }
+}
+
+// Update the existing notifySystemAdminsForAssignment function to handle emergency type
+async function notifySystemAdminsForAssignment(delivery, notificationType = 'delivery_status') {
+  try {
+    const systemAdmins = await User.find({
+      role: 'admin',
+      isActive: true
+    });
+
+    const isEmergency = notificationType === 'emergency_delivery';
+    
+    const notifications = await Promise.all(
+      systemAdmins.map(admin => 
+        Notification.create({
+          userId: admin._id,
+          type: isEmergency ? 'urgent_alert' : 'delivery_status',
+          title: isEmergency ? 'Emergency Delivery - Immediate Assignment Required' : 'Delivery Ready for Pilot Assignment',
+          message: isEmergency 
+            ? `URGENT: Emergency delivery ${delivery.orderId} requires immediate pilot assignment!`
+            : `${delivery.package.urgency} delivery ${delivery.orderId} has been approved and requires pilot assignment`,
+          data: {
+            deliveryId: delivery._id,
+            orderId: delivery.orderId,
+            urgency: delivery.package.urgency,
+            packageType: delivery.package.type,
+            status: delivery.status,
+            autoApproved: isEmergency
+          },
+          priority: isEmergency ? 'urgent' : (delivery.package.urgency === 'urgent' ? 'high' : 'medium'),
+          actionRequired: true,
+          actionUrl: `/dashboard/admin/assign-pilot/${delivery._id}`,
+          // For emergency, set expiration time
+          expiresAt: isEmergency ? new Date(Date.now() + 2 * 60 * 60 * 1000) : undefined // 2 hours
+        })
+      )
+    );
+
+    console.log(`Notified ${systemAdmins.length} system admins for ${isEmergency ? 'emergency' : 'regular'} pilot assignment`);
+    return notifications;
+  } catch (error) {
+    console.error('Error notifying system admins:', error);
+  }
+}
+
+
+
 
 // Helper function to calculate distance between coordinates
 function calculateDistance(coord1, coord2) {

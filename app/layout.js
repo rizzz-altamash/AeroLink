@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Toaster } from 'react-hot-toast';
 
 // app/layout.js - Wrap your app with SessionProvider
 import AuthSessionProvider from '@/components/auth/SessionProvider';
@@ -27,6 +28,29 @@ export default function RootLayout({ children }) {
       >
         <AuthSessionProvider>
           {children}
+          <Toaster 
+          position="top-center"
+          toastOptions={{
+            duration: 4000,
+            style: {
+              background: '#1f2937',
+              color: '#fff',
+              border: '1px solid #374151'
+            },
+            success: {
+              iconTheme: {
+                primary: '#10b981',
+                secondary: '#fff'
+              }
+            },
+            error: {
+              iconTheme: {
+                primary: '#ef4444',
+                secondary: '#fff'
+              }
+            }
+          }}
+        />
         </AuthSessionProvider>
       </body>
     </html>
