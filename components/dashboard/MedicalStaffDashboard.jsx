@@ -81,7 +81,6 @@ const BatteryIcon = ({ className }) => (
   </svg>
 );
 
-// Add this new icon component for assigned status
 const AssignedIcon = ({ className }) => (
   <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -91,6 +90,33 @@ const AssignedIcon = ({ className }) => (
 const CheckIcon = ({ className }) => (
   <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+  </svg>
+);
+
+const FailedIcon = ({ className }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+  </svg>
+);
+
+// Confirmation Icon - for pending confirmation status
+const ConfirmationIcon = ({ className }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+  </svg>
+);
+
+// Flight Icon - for in-transit status
+const FlightIcon = ({ className }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" />
+  </svg>
+);
+
+// Warning Icon - for alerts and warnings
+const WarningIcon = ({ className }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
   </svg>
 );
 
@@ -182,23 +208,6 @@ export default function MedicalStaffDashboard() {
     setSelectedDelivery(delivery);
     setShowTrackingModal(true);
   };
-
-  // const handleCancelDelivery = async (deliveryId) => {
-  //   if (!confirm('Are you sure you want to cancel this delivery?')) return;
-
-  //   try {
-  //     const res = await fetch(`/api/deliveries/${deliveryId}/cancel`, {
-  //       method: 'POST'
-  //     });
-
-  //     if (!res.ok) throw new Error('Failed to cancel');
-
-  //     toast.success('Delivery cancelled successfully');
-  //     fetchDashboardData();
-  //   } catch (error) {
-  //     toast.error('Failed to cancel delivery');
-  //   }
-  // };
 
   const handleCancelDelivery = async (deliveryId) => {
     if (!confirm('Are you sure you want to cancel this delivery?')) return;
@@ -478,112 +487,11 @@ function StatCard({ title, value, icon: Icon, color, bgColor, trend, delay }) {
 }
 
 // Enhanced Active Delivery Card with actions
-// function ActiveDeliveryCard({ delivery, onTrack, onCancel, delay }) {
-//   const urgencyColors = {
-//     routine: 'from-blue-600 to-cyan-600',
-//     urgent: 'from-orange-600 to-amber-600',
-//     emergency: 'from-red-600 to-rose-600'
-//   };
-
-//   const statusIcons = {
-//     pending: PendingIcon,
-//     pickup: PickupIcon,
-//     in_transit: TransitIcon,
-//     delivered: DeliveredIcon
-//   };
-
-//   const StatusIcon = statusIcons[delivery.status] || PendingIcon;
-//   const urgencyGradient = urgencyColors[delivery.package?.urgency] || urgencyColors.routine;
-
-//   return (
-//     <div 
-//       className="bg-gray-800/50 rounded-xl p-5 hover:bg-gray-800/70 transition-all group animate-scale-in"
-//       style={{ animationDelay: `${delay}ms` }}
-//     >
-//       <div className="flex items-start justify-between mb-4">
-//         <div>
-//           <h3 className="text-white font-semibold group-hover:text-red-300 transition-colors">{delivery.orderId}</h3>
-//           <p className="text-gray-400 text-sm">{delivery.package?.type || 'Package'}</p>
-//         </div>
-//         <span className={`px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r ${urgencyGradient} text-white animate-pulse`}>
-//           {delivery.package?.urgency || 'routine'}
-//         </span>
-//       </div>
-      
-//       <div className="space-y-3">
-//         <div className="flex items-center gap-2">
-//           <LocationIcon className="w-4 h-4 text-gray-400" />
-//           <p className="text-gray-300 text-sm truncate">{delivery.recipient?.name || 'Unknown'}</p>
-//         </div>
-        
-//         <div className="flex items-center gap-2">
-//           <StatusIcon className="w-4 h-4 text-red-400" />
-//           <p className="text-red-400 text-sm capitalize">{delivery.status?.replace('_', ' ')}</p>
-//         </div>
-        
-//         <div className="flex items-center gap-2">
-//           <TimeIcon className="w-4 h-4 text-gray-400" />
-//           <p className="text-gray-300 text-sm">
-//             ETA: {delivery.delivery?.scheduledTime ? 
-//               new Date(delivery.delivery.scheduledTime).toLocaleTimeString() : 
-//               'Calculating...'}
-//           </p>
-//         </div>
-
-//         {/* Battery and Drone Status */}
-//         {delivery.tracking?.battery && (
-//           <div className="flex items-center gap-2">
-//             <BatteryIcon className="w-4 h-4 text-gray-400" />
-//             <div className="flex-1 bg-gray-700 rounded-full h-2">
-//               <div 
-//                 className={`h-2 rounded-full transition-all ${
-//                   delivery.tracking.battery > 50 ? 'bg-green-500' : 
-//                   delivery.tracking.battery > 20 ? 'bg-yellow-500' : 'bg-red-500'
-//                 }`}
-//                 style={{ width: `${delivery.tracking.battery}%` }}
-//               />
-//             </div>
-//             <span className="text-xs text-gray-400">{delivery.tracking.battery}%</span>
-//           </div>
-//         )}
-//       </div>
-      
-//       <div className="mt-4 flex gap-2">
-//         <button 
-//           onClick={onTrack}
-//           className="flex-1 py-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 rounded-lg transition-all text-sm font-medium group"
-//         >
-//           <span className="flex items-center justify-center gap-1">
-//             Track
-//             <svg className="w-3 h-3 transform group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-//               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-//             </svg>
-//           </span>
-//         </button>
-//         {delivery.status === 'pending' && (
-//           <button 
-//             onClick={onCancel}
-//             className="px-3 py-2 bg-gray-700/50 hover:bg-red-600/20 text-gray-400 hover:text-red-400 rounded-lg transition-all text-sm"
-//           >
-//             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-//               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-//             </svg>
-//           </button>
-//         )}
-//       </div>
-//     </div>
-//   );
-// }
-
-
-
-
-
-
-
-// This replaces the existing ActiveDeliveryCard function
 
 function ActiveDeliveryCard({ delivery, onTrack, onCancel, delay }) {
+
+  const router = useRouter();
+
   const urgencyColors = {
     routine: 'from-blue-600 to-cyan-600',
     urgent: 'from-orange-600 to-amber-600',
@@ -596,8 +504,10 @@ function ActiveDeliveryCard({ delivery, onTrack, onCancel, delay }) {
     approved: CheckIcon,
     assigned: AssignedIcon,
     pickup: PickupIcon,
-    in_transit: TransitIcon,
-    delivered: DeliveredIcon
+    in_transit: FlightIcon,
+    pending_confirmation: ConfirmationIcon ,
+    delivered: DeliveredIcon,
+    failed: FailedIcon
   };
 
   const StatusIcon = statusIcons[delivery.status] || PendingIcon;
@@ -670,9 +580,39 @@ function ActiveDeliveryCard({ delivery, onTrack, onCancel, delay }) {
         
         {/* Show if assigned but not picked up */}
         {delivery.status === 'assigned' && delivery.pilotId && (
-          <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-2">
-            <p className="text-xs text-green-400">
+          <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg p-2">
+            <p className="text-xs text-purple-400">
               Pilot assigned - Preparing for pickup
+            </p>
+          </div>
+        )}
+
+        {/* Show if in transit */}
+        {delivery.status === 'in_transit' && (
+          <div className="bg-lime-500/10 border border-lime-500/30 rounded-lg p-2">
+            <p className="text-xs text-lime-400">
+              Package is on the way - In Transit 🚁
+            </p>
+          </div>
+        )}
+
+        {/* Show if pending confirmation */}
+        {delivery.status === 'pending_confirmation' && (
+          <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-2">
+            <p className="text-xs text-emerald-400">
+              📦 Package delivered - Awaiting your confirmation
+            </p>
+          </div>
+        )}
+
+        {/* Show if failed */}
+        {delivery.status === 'failed' && delivery.metadata?.failureReason && (
+          <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-2">
+            <p className="text-xs text-red-400">
+              ❌ Delivery failed
+            </p>
+            <p className="text-xs text-red-300 mt-1">
+              Reason: {delivery.metadata.failureReason}
             </p>
           </div>
         )}
@@ -705,7 +645,7 @@ function ActiveDeliveryCard({ delivery, onTrack, onCancel, delay }) {
       </div>
       
       <div className="mt-4 flex gap-2">
-        <button 
+        {/* <button 
           onClick={onTrack}
           className="flex-1 py-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 rounded-lg transition-all text-sm font-medium group"
         >
@@ -715,7 +655,35 @@ function ActiveDeliveryCard({ delivery, onTrack, onCancel, delay }) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </span>
-        </button>
+        </button> */}
+
+        {/* Show Confirm Receipt button for pending confirmation */}
+        {delivery.status === 'pending_confirmation' && delivery.needsConfirmation ? (
+          <button 
+            onClick={() => router.push(`/dashboard/confirm-delivery/${delivery._id}`)}
+            className="flex-1 py-2 bg-yellow-600/20 hover:bg-yellow-600/30 text-yellow-400 rounded-lg transition-all text-sm font-medium group animate-pulse"
+          >
+            <span className="flex items-center justify-center gap-1">
+              Confirm Receipt
+              <svg className="w-3 h-3 transform group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </span>
+          </button>
+        ) : (
+          <button 
+            onClick={onTrack}
+            className="flex-1 py-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 rounded-lg transition-all text-sm font-medium group"
+          >
+            <span className="flex items-center justify-center gap-1">
+              Track
+              <svg className="w-3 h-3 transform group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </span>
+          </button>
+        )}
+
         {/* {(delivery.status === 'pending' || delivery.status === 'pending_approval') && (
           <button 
             onClick={onCancel}
@@ -742,14 +710,6 @@ function ActiveDeliveryCard({ delivery, onTrack, onCancel, delay }) {
     </div>
   );
 }
-
-
-
-
-
-
-
-
 
 // Enhanced Recent Delivery Row
 function RecentDeliveryRow({ delivery, delay }) {

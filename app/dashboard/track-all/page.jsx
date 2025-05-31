@@ -418,11 +418,15 @@ function DeliveryTrackingCard({ delivery, delay, onTrack }) {
   };
 
   const statusColors = {
-    pending: 'bg-yellow-500',
+    pending_approval: 'bg-yellow-500',
     approved: 'bg-blue-500',
     assigned: 'bg-purple-500',
-    pickup: 'bg-orange-500',
-    in_transit: 'bg-green-500'
+    pickup: 'bg-lime-300',
+    in_transit: 'bg-lime-500',
+    pending_confirmation: 'bg-teal-500',
+    delivered: 'bg-green-500',
+    failed: 'bg-red-500',
+    cancelled: 'bg-rose-500'
   };
 
   const urgencyGradient = urgencyColors[delivery.package?.urgency] || urgencyColors.routine;
@@ -540,11 +544,15 @@ function DeliveryTrackingCard({ delivery, delay, onTrack }) {
 // Delivery List Row Component
 function DeliveryListRow({ delivery, onTrack }) {
   const statusColors = {
-    pending: 'text-yellow-400 bg-yellow-500/20',
+    pending_approval: 'text-yellow-400 bg-yellow-500/20',
     approved: 'text-blue-400 bg-blue-500/20',
     assigned: 'text-purple-400 bg-purple-500/20',
-    pickup: 'text-orange-400 bg-orange-500/20',
-    in_transit: 'text-green-400 bg-green-500/20'
+    pickup: 'text-lime-300 bg-lime-400/20',
+    in_transit: 'text-lime-400 bg-lime-500/20',
+    pending_confirmation: 'text-teal-400 bg-teal-500/20',
+    delivered: 'text-green-400 bg-green-500/20',
+    failed: 'text-red-400 bg-red-500/20',
+    cancelled: 'text-rose-400 bg-rose-500/20'
   };
 
   const urgencyColors = {
@@ -619,12 +627,16 @@ function DeliveryListRow({ delivery, onTrack }) {
 // Helper function to calculate progress
 function getProgressPercentage(status) {
   const statusProgress = {
-    pending: 10,
-    approved: 25,
-    assigned: 40,
-    pickup: 60,
-    in_transit: 80,
-    delivered: 100
+    pending: 0,
+    pending_approval: 10,
+    approved: 20,
+    assigned: 30,
+    pickup: 50,
+    in_transit: 70,
+    pending_confirmation: 90,
+    delivered: 100,
+    failed: 0,
+    cancelled: 0
   };
   return statusProgress[status] || 0;
 }

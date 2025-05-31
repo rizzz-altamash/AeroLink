@@ -1,99 +1,3 @@
-// // BEST -----------------------------
-// // app/api/deliveries/active/route.js
-// import { NextResponse } from 'next/server';
-// import { getServerSession } from 'next-auth';
-// import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-// import { connectDB } from '@/lib/mongodb';
-// import Delivery from '@/models/Delivery';
-// import User from '@/models/User';
-// import Hospital from '@/models/Hospital';
-// import Drone from '@/models/Drone';
-
-// export async function GET(req) {
-//   try {
-//     const session = await getServerSession(authOptions);
-//     if (!session || session.user.role !== 'medical_staff') {
-//       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-//     }
-
-//     await connectDB();
-
-//     // Get active deliveries where user is either sender, recipient, or orderer
-//     const activeDeliveries = await Delivery.find({
-//       $and: [
-//         {
-//           $or: [
-//             { 'sender.userId': session.user.id },
-//             { 'recipient.userId': session.user.id },
-//             { 'metadata.orderedBy': session.user.id }
-//           ]
-//         },
-//         {
-//           status: { $in: ['pending', 'approved', 'assigned', 'pickup', 'in_transit'] }
-//         }
-//       ]
-//     })
-//     .populate('recipient.userId', 'name email phoneNumber')
-//     .populate('recipient.hospitalId', 'name')
-//     .populate('sender.userId', 'name email')
-//     .populate('droneId', 'registrationId model')
-//     .sort({ createdAt: -1 })
-//     .limit(20);
-
-//     // Transform the data to include delivery type info
-//     const transformedDeliveries = activeDeliveries.map(delivery => {
-//       const isIncoming = delivery.metadata?.deliveryType === 'incoming';
-      
-//       return {
-//         ...delivery.toObject(),
-//         displayType: isIncoming ? 'Incoming Order' : 'Outgoing Delivery',
-//         displayLocation: isIncoming 
-//           ? delivery.recipient.hospitalId?.name || delivery.recipient.name
-//           : delivery.recipient.name || 'Unknown Recipient'
-//       };
-//     });
-
-//     return NextResponse.json(transformedDeliveries);
-//   } catch (error) {
-//     console.error('Error fetching active deliveries:', error);
-//     return NextResponse.json(
-//       { error: 'Failed to fetch active deliveries' },
-//       { status: 500 }
-//     );
-//   }
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // app/api/deliveries/active/route.js
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
@@ -124,11 +28,11 @@ export async function GET(req) {
           ]
         },
         {
-          status: { $in: ['pending_approval', 'approved', 'assigned', 'pickup', 'in_transit'] }
+          status: { $in: ['pending_approval', 'approved', 'assigned', 'pickup', 'in_transit', 'pending_confirmation'] }
         }
       ]
     })
-    .populate('recipient.userId', 'name email phoneNumber')
+    .populate('recipient.userId', 'name email phoneNumber role')
     .populate('recipient.hospitalId', 'name')
     .populate('sender.userId', 'name email')
     .populate('droneId', 'registrationId model')
@@ -156,6 +60,29 @@ export async function GET(req) {
           };
         }
       }
+
+      // UPDATED LOGIC: Check if this delivery needs confirmation from current user
+      let needsConfirmation = false;
+      
+      if (delivery.status === 'pending_confirmation') {
+        if (isIncoming) {
+          // For incoming deliveries, the orderer or recipient confirms
+          needsConfirmation = (
+            delivery.metadata?.orderedBy?.toString() === session.user.id ||
+            delivery.recipient.userId?._id?.toString() === session.user.id
+          );
+        } else {
+          // For outgoing deliveries
+          // If recipient is a medical staff, they confirm
+          if (delivery.recipient.userId?.role === 'medical_staff') {
+            needsConfirmation = delivery.recipient.userId._id?.toString() === session.user.id;
+          } else {
+            // If recipient is NOT medical staff (or no userId), sender confirms
+            needsConfirmation = delivery.sender.userId?._id?.toString() === session.user.id ||
+                              delivery.sender.userId?.toString() === session.user.id;
+          }
+        }
+      }
       
       return {
         ...delivery.toObject(),
@@ -171,7 +98,9 @@ export async function GET(req) {
           : delivery.status === 'rejected'
           ? `Rejected: ${delivery.metadata.rejectionReason || 'No reason provided'}`
           : null,
-        autoApprovalInfo
+        autoApprovalInfo,
+        needsConfirmation,
+        confirmationUrl: needsConfirmation ? `/dashboard/confirm-delivery/${delivery._id}` : null
       };
     });
 

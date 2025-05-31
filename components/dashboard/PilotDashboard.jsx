@@ -4,6 +4,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import NotificationBell from '@/components/NotificationBell';
+import toast from 'react-hot-toast';
 
 export default function PilotDashboard() {
   const { data: session } = useSession();
@@ -257,6 +258,78 @@ function WeatherItem({ label, value }) {
 
 // Assigned Delivery Card Component
 function AssignedDeliveryCard({ delivery }) {
+
+  const [loading, setLoading] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [cancelReason, setCancelReason] = useState('');
+  const [flightStatus, setFlightStatus] = useState(delivery.status);
+
+  const handleStartFlight = async () => {
+    if (!confirm('Are you ready to start the flight?')) return;
+    
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/pilot/deliveries/${delivery._id}/start-flight`, {
+        method: 'POST'
+      });
+
+      if (!res.ok) throw new Error('Failed to start flight');
+      
+      toast.success('Flight started successfully!');
+      setFlightStatus('in_transit');
+    } catch (error) {
+      toast.error('Failed to start flight');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCancelFlight = async () => {
+    if (cancelReason.trim().length < 5) {
+      toast.error('Please provide a detailed reason (minimum 5 characters)');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/pilot/deliveries/${delivery._id}/cancel-flight`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reason: cancelReason })
+      });
+
+      if (!res.ok) throw new Error('Failed to cancel flight');
+      
+      toast.success('Flight cancelled');
+      setFlightStatus('failed');
+      setShowCancelModal(false);
+    } catch (error) {
+      toast.error('Failed to cancel flight');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeliveryDone = async () => {
+    if (!confirm('Have you delivered the package?')) return;
+    
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/pilot/deliveries/${delivery._id}/mark-delivered`, {
+        method: 'POST'
+      });
+
+      if (!res.ok) throw new Error('Failed to mark delivery as done');
+      
+      toast.success('Awaiting confirmation from staff');
+      setFlightStatus('pending_confirmation');
+    } catch (error) {
+      toast.error('Failed to mark delivery as done');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const priorityColors = {
     routine: 'border-gray-500',
     urgent: 'border-orange-500',
@@ -266,41 +339,110 @@ function AssignedDeliveryCard({ delivery }) {
   const borderColor = priorityColors[delivery.priority] || 'border-gray-500';
 
   return (
-    <div className={`bg-gray-800/50 backdrop-blur rounded-xl p-5 border-l-4 ${borderColor} hover:bg-gray-800/70 transition-all border-r border-t border-b border-green-500/10`}>
-      <div className="flex items-center justify-between mb-3">
-        <div>
-          <h3 className="text-white font-semibold">{delivery.orderId}</h3>
-          <p className="text-gray-400 text-sm">{delivery.packageType}</p>
+    <>
+      <div className={`bg-gray-800/50 backdrop-blur rounded-xl p-5 border-l-4 ${borderColor} hover:bg-gray-800/70 transition-all border-r border-t border-b border-green-500/10`}>
+        <div className="flex items-center justify-between mb-3">
+          <div>
+            <h3 className="text-white font-semibold">{delivery.orderId}</h3>
+            <p className="text-gray-400 text-sm">{delivery.packageType}</p>
+          </div>
+          <div className="text-right">
+            <p className="text-sm text-gray-400">Priority</p>
+            <p className={`text-sm font-medium ${delivery.priority === 'emergency' ? 'text-red-400' : delivery.priority === 'urgent' ? 'text-orange-400' : 'text-gray-300'}`}>
+              {delivery.priority}
+            </p>
+          </div>
         </div>
-        <div className="text-right">
-          <p className="text-sm text-gray-400">Priority</p>
-          <p className={`text-sm font-medium ${delivery.priority === 'emergency' ? 'text-red-400' : delivery.priority === 'urgent' ? 'text-orange-400' : 'text-gray-300'}`}>
-            {delivery.priority}
-          </p>
+        
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          <div>
+            <p className="text-xs text-gray-400 mb-1">Pickup</p>
+            <p className="text-sm text-gray-300">{delivery.pickup}</p>
+          </div>
+          <div>
+            <p className="text-xs text-gray-400 mb-1">Delivery</p>
+            <p className="text-sm text-gray-300">{delivery.delivery}</p>
+          </div>
+        </div>
+        
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <DistanceIcon className="w-4 h-4 text-gray-400" />
+            <span className="text-sm text-gray-300">{delivery.distance} km</span>
+          </div>
+          
+          {/* Action buttons based on flight status */}
+          {flightStatus === 'assigned' ? (
+            <button 
+              onClick={handleStartFlight}
+              disabled={loading}
+              className="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-600 text-white rounded-lg transition-all text-sm font-medium shadow-lg hover:shadow-green-500/25"
+            >
+              {loading ? 'Starting...' : 'Start Flight'}
+            </button>
+          ) : flightStatus === 'in_transit' ? (
+            <div className="flex gap-2">
+              <button 
+                onClick={handleDeliveryDone}
+                disabled={loading}
+                className="px-3 py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 disabled:bg-gray-600 text-white rounded-lg transition-all text-sm font-medium"
+              >
+                {loading ? '...' : 'Delivery Done'}
+              </button>
+              <button 
+                onClick={() => setShowCancelModal(true)}
+                disabled={loading}
+                className="px-3 py-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 rounded-lg transition-all text-sm font-medium"
+              >
+                Cancel Flight
+              </button>
+            </div>
+          ) : flightStatus === 'pending_confirmation' ? (
+            <div className="text-sm text-yellow-400">
+              Awaiting Confirmation
+            </div>
+          ) : (
+            <div className="text-sm text-gray-500">
+              Status: {flightStatus}
+            </div>
+          )}
         </div>
       </div>
-      
-      <div className="grid grid-cols-2 gap-4 mb-4">
-        <div>
-          <p className="text-xs text-gray-400 mb-1">Pickup</p>
-          <p className="text-sm text-gray-300">{delivery.pickup}</p>
+
+      {/* Cancel Flight Modal */}
+      {showCancelModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-gray-900 rounded-2xl p-6 max-w-md w-full">
+            <h2 className="text-xl font-bold text-white mb-4">Cancel Flight</h2>
+            <p className="text-gray-400 mb-4">Please provide a detailed reason for cancelling this flight:</p>
+            
+            <textarea
+              value={cancelReason}
+              onChange={(e) => setCancelReason(e.target.value)}
+              className="w-full bg-gray-800 text-white rounded-lg px-4 py-3 focus:ring-2 focus:ring-red-500 focus:outline-none h-32 resize-none"
+              placeholder="Enter cancellation reason (minimum 10 characters)..."
+            />
+            
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={handleCancelFlight}
+                disabled={loading || cancelReason.trim().length < 10}
+                className="flex-1 py-3 bg-red-600 hover:bg-red-700 disabled:bg-gray-700 disabled:cursor-not-allowed text-white rounded-lg font-semibold transition-all"
+              >
+                {loading ? 'Cancelling...' : 'Cancel Flight'}
+              </button>
+              <button
+                onClick={() => setShowCancelModal(false)}
+                disabled={loading}
+                className="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-semibold transition-all"
+              >
+                Close
+              </button>
+            </div>
+          </div>
         </div>
-        <div>
-          <p className="text-xs text-gray-400 mb-1">Delivery</p>
-          <p className="text-sm text-gray-300">{delivery.delivery}</p>
-        </div>
-      </div>
-      
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <DistanceIcon className="w-4 h-4 text-gray-400" />
-          <span className="text-sm text-gray-300">{delivery.distance} km</span>
-        </div>
-        <button className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-all text-sm font-medium shadow-lg hover:shadow-green-500/25">
-          Start Flight
-        </button>
-      </div>
-    </div>
+      )}
+    </>
   );
 }
 

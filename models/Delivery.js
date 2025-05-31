@@ -343,7 +343,7 @@ const DeliverySchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['pending', 'pending_approval', 'approved', 'rejected', 'assigned', 'pickup', 'in_transit', 'delivered', 'failed', 'cancelled'],
+    enum: ['pending', 'pending_approval', 'approved', 'rejected', 'assigned', 'pickup', 'in_transit', 'pending_confirmation', 'delivered', 'failed', 'cancelled'],
     default: 'pending'
   },
   timeline: [{

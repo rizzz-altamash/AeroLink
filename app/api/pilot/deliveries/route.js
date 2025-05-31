@@ -20,7 +20,7 @@ export async function GET(req) {
     // Get deliveries assigned to this pilot
     const assignedDeliveries = await Delivery.find({
       pilotId: session.user.id,
-      status: { $in: ['assigned', 'pickup', 'in_transit'] }
+      status: { $in: ['assigned', 'pickup', 'in_transit', 'pending_confirmation'] }
     })
     .populate('sender.hospitalId', 'name')
     .populate('recipient.hospitalId', 'name')
@@ -35,7 +35,8 @@ export async function GET(req) {
       priority: delivery.package.urgency,
       pickup: delivery.sender.hospitalId?.name || 'Warehouse',
       delivery: delivery.recipient.hospitalId?.name || delivery.recipient.name,
-      distance: (delivery.flightPath?.estimatedDistance || 0) / 1000 // Convert to km
+      distance: (delivery.flightPath?.estimatedDistance || 0) / 1000, // Convert to km
+      status: delivery.status
     }));
 
     return NextResponse.json(transformedDeliveries);
