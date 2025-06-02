@@ -880,15 +880,70 @@ function DeliveryRow({ delivery }) {
 }
 
 // Staff Activity Item Component
+// function StaffActivityItem({ activity }) {
+//   return (
+//     <div className="flex items-start gap-3">
+//       <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center flex-shrink-0">
+//         <UserIcon className="w-4 h-4 text-red-400" />
+//       </div>
+//       <div className="flex-1">
+//         <p className="text-white text-sm">{activity.staffName}</p>
+//         <p className="text-gray-400 text-xs">{activity.action}</p>
+//         <p className="text-gray-500 text-xs mt-1">{activity.time}</p>
+//       </div>
+//     </div>
+//   );
+// }
+
 function StaffActivityItem({ activity }) {
+  // Different icons for different activity types
+  const getActivityIcon = () => {
+    if (activity.type === 'login') {
+      return (
+        <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
+          <LoginIcon className="w-4 h-4 text-green-400" />
+        </div>
+      );
+    } else if (activity.type === 'incoming') {
+      return (
+        <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+          <IncomingActivityIcon className="w-4 h-4 text-blue-400" />
+        </div>
+      );
+    } else {
+      return (
+        <div className="w-8 h-8 rounded-full bg-orange-500/20 flex items-center justify-center flex-shrink-0">
+          <OutgoingActivityIcon className="w-4 h-4 text-orange-400" />
+        </div>
+      );
+    }
+  };
+
+  // Different text colors for urgency levels
+  const getUrgencyColor = () => {
+    switch (activity.urgency) {
+      case 'emergency':
+        return 'text-red-400';
+      case 'urgent':
+        return 'text-yellow-400';
+      default:
+        return 'text-gray-400';
+    }
+  };
+
   return (
     <div className="flex items-start gap-3">
-      <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center flex-shrink-0">
-        <UserIcon className="w-4 h-4 text-red-400" />
-      </div>
+      {getActivityIcon()}
       <div className="flex-1">
         <p className="text-white text-sm">{activity.staffName}</p>
-        <p className="text-gray-400 text-xs">{activity.action}</p>
+        <p className={`text-xs ${activity.urgency ? getUrgencyColor() : 'text-gray-400'}`}>
+          {activity.action}
+        </p>
+        {activity.orderId && (
+          <p className="text-xs text-gray-500 mt-0.5">
+            Order ID: {activity.orderId}
+          </p>
+        )}
         <p className="text-gray-500 text-xs mt-1">{activity.time}</p>
       </div>
     </div>
@@ -1201,5 +1256,23 @@ const UrgentIcon = ({ className }) => (
 const EmergencyStatIcon = ({ className }) => (
   <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+  </svg>
+);
+
+const LoginIcon = ({ className }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+  </svg>
+);
+
+const IncomingActivityIcon = ({ className }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16l-4-4m0 0l4-4m-4 4h18" />
+  </svg>
+);
+
+const OutgoingActivityIcon = ({ className }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H3" />
   </svg>
 );
