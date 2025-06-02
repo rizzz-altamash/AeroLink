@@ -133,6 +133,7 @@ const DeliverySchema = new mongoose.Schema({
     basePrice: Number,
     urgencyCharge: Number,
     distanceCharge: Number,
+    weightCharge: Number,     // Package weight ka charge
     totalPrice: Number,
     currency: { type: String, default: 'USD' }
   },
