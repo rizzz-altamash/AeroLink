@@ -33,6 +33,10 @@ export default function HospitalAdminDashboard() {
 
   const [viewMode, setViewMode] = useState('chart'); // 'bars' or 'chart'
 
+  const [orderStats, setOrderStats] = useState(null);
+  const [loadingOrderStats, setLoadingOrderStats] = useState(true);
+  const [showOrderStatus, setShowOrderStatus] = useState(false);
+
   useEffect(() => {
     fetchHospitalStats();
     fetchRecentDeliveries();
@@ -41,9 +45,12 @@ export default function HospitalAdminDashboard() {
 
     fetchDeliveryTypeStats();
 
-    // Set up auto-refresh for delivery types
+    fetchOrderStatistics();
+
+    // Set up auto-refresh for delivery types and order stats
     const interval = setInterval(() => {
       fetchDeliveryTypeStats();
+      fetchOrderStatistics();
     }, 30000); // Refresh every 30 seconds
 
     return () => clearInterval(interval);
@@ -109,6 +116,20 @@ export default function HospitalAdminDashboard() {
       console.error('Failed to fetch delivery type stats:', error);
     } finally {
       setLoadingDeliveryTypes(false);
+    }
+  };
+
+  // Add this function to fetch order statistics:
+  const fetchOrderStatistics = async () => {
+    try {
+      const res = await fetch('/api/hospital/orders-statistics');
+      if (!res.ok) throw new Error('Failed to fetch');
+      const data = await res.json();
+      setOrderStats(data);
+    } catch (error) {
+      console.error('Failed to fetch order statistics:', error);
+    } finally {
+      setLoadingOrderStats(false);
     }
   };
 
@@ -266,7 +287,7 @@ export default function HospitalAdminDashboard() {
             onClick={() => router.push('/dashboard/hospital-admin/deliveries')}
             className="text-red-400 hover:text-red-300 text-sm font-medium">View All</button>
           </div>
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto max-h-130 overflow-y-auto p-2 scrollbar-hide">
             <table className="w-full">
               <thead>
                 <tr className="text-left border-b border-gray-800">
@@ -304,7 +325,7 @@ export default function HospitalAdminDashboard() {
               View All
             </button>
           </div>
-          <div className="space-y-4">
+          <div className="space-y-4 max-h-130 overflow-y-auto p-1 scrollbar-hide">
             {staffActivity.length === 0 ? (
               <p className="text-gray-500">No recent activity</p>
             ) : (
@@ -395,35 +416,179 @@ export default function HospitalAdminDashboard() {
           </div>
         </div>
 
-        {/* Quick Actions */}
+        {/* Orders Report Card - Replaces Quick Actions */}
         <div className="bg-gray-900/50 backdrop-blur-xl rounded-2xl p-6 border border-red-500/20 hover:border-red-500/30 transition-all">
-          <h2 className="text-xl font-semibold text-white mb-4">Quick Actions</h2>
-          <div className="grid grid-cols-2 gap-4">
-            <QuickActionButton
-              title="New Delivery"
-              icon={PlusIcon}
-              gradient="from-red-600 to-rose-600"
-              onClick={() => {}}
-            />
-            <QuickActionButton
-              title="Add Staff"
-              icon={UserPlusIcon}
-              gradient="from-red-600 to-rose-600"
-              onClick={() => {}}
-            />
-            <QuickActionButton
-              title="Inventory"
-              icon={InventoryIcon}
-              gradient="from-red-600 to-rose-600"
-              onClick={() => {}}
-            />
-            <QuickActionButton
-              title="Reports"
-              icon={ReportIcon}
-              gradient="from-red-600 to-rose-600"
-              onClick={() => {}}
-            />
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-white">Orders Report</h2>
+            <div className="flex items-center gap-4">
+              {!loadingOrderStats && (
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                  <span className="text-xs text-gray-400">Live</span>
+                </div>
+              )}
+              <button
+                onClick={() => setShowOrderStatus(!showOrderStatus)}
+                className="text-xs text-red-400 hover:text-red-300 transition-colors"
+              >
+                {showOrderStatus ? 'Hide Status' : 'Show Status'}
+              </button>
+            </div>
           </div>
+          
+          {loadingOrderStats ? (
+            <div className="grid grid-cols-3 gap-4">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="h-4 bg-gray-700 rounded w-24 mb-2"></div>
+                  <div className="h-8 bg-gray-700 rounded w-16"></div>
+                </div>
+              ))}
+            </div>
+          ) : orderStats ? (
+            <div className="space-y-6">
+              {/* Toggle between Direction/Priority and Status views */}
+              {!showOrderStatus ? (
+                <>
+                  {/* Direction Stats */}
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-400 mb-3">Order Direction</h3>
+                    <div className="grid grid-cols-2 gap-3">
+                      <OrderStatCard
+                        label="Outgoing Orders"
+                        value={orderStats.direction.outgoing}
+                        icon={OutgoingIcon}
+                        color="text-orange-400"
+                        bgColor="bg-orange-500/20"
+                        total={orderStats.total}
+                      />
+                      <OrderStatCard
+                        label="Incoming Orders"
+                        value={orderStats.direction.incoming}
+                        icon={IncomingIcon}
+                        color="text-blue-400"
+                        bgColor="bg-blue-500/20"
+                        total={orderStats.total}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Urgency Stats */}
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-400 mb-3">Order Priority</h3>
+                    <div className="grid grid-cols-3 gap-3">
+                      <OrderStatCard
+                        label="Routine"
+                        value={orderStats.urgency.routine}
+                        icon={RoutineIcon}
+                        color="text-gray-400"
+                        bgColor="bg-gray-500/20"
+                        small
+                        total={orderStats.total}
+                      />
+                      <OrderStatCard
+                        label="Urgent"
+                        value={orderStats.urgency.urgent}
+                        icon={UrgentIcon}
+                        color="text-yellow-400"
+                        bgColor="bg-yellow-500/20"
+                        small
+                        total={orderStats.total}
+                      />
+                      <OrderStatCard
+                        label="Emergency"
+                        value={orderStats.urgency.emergency}
+                        icon={EmergencyStatIcon}
+                        color="text-red-400"
+                        bgColor="bg-red-500/20"
+                        small
+                        total={orderStats.total}
+                      />
+                    </div>
+                  </div>
+                </>
+              ) : (
+                /* Order Status - Shows instead of Direction/Priority */
+                <div>
+                  <h3 className="text-sm font-medium text-gray-400 mb-3">Order Status</h3>
+                  <div className="grid grid-cols-3 gap-3">
+                    <OrderStatCard
+                      label="Approved"
+                      value={orderStats.status.approved}
+                      icon={ApprovedIcon}
+                      color="text-green-400"
+                      bgColor="bg-green-500/20"
+                      small
+                      total={orderStats.total}
+                    />
+                    <OrderStatCard
+                      label="Rejected"
+                      value={orderStats.status.rejected}
+                      icon={RejectedIcon}
+                      color="text-red-400"
+                      bgColor="bg-red-500/20"
+                      small
+                      total={orderStats.total}
+                    />
+                    <OrderStatCard
+                      label="Delivered"
+                      value={orderStats.status.delivered}
+                      icon={DeliveredIcon}
+                      color="text-emerald-400"
+                      bgColor="bg-emerald-500/20"
+                      small
+                      total={orderStats.total}
+                    />
+                    <OrderStatCard
+                      label="Failed"
+                      value={orderStats.status.failed}
+                      icon={FailedIcon}
+                      color="text-rose-400"
+                      bgColor="bg-rose-500/20"
+                      small
+                      total={orderStats.total}
+                    />
+                    <OrderStatCard
+                      label="In Transit"
+                      value={orderStats.status.in_transit}
+                      icon={TransitIcon}
+                      color="text-purple-400"
+                      bgColor="bg-purple-500/20"
+                      small
+                      total={orderStats.total}
+                    />
+                    <OrderStatCard
+                      label="Cancelled"
+                      value={orderStats.status.cancelled}
+                      icon={CancelledIcon}
+                      color="text-gray-400"
+                      bgColor="bg-gray-500/20"
+                      small
+                      total={orderStats.total}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Summary Stats */}
+              <div className="pt-4 border-t border-gray-800">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center">
+                    <p className="text-gray-400 text-sm">Total Orders</p>
+                    <p className="text-2xl font-bold text-white">{orderStats.total}</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-gray-400 text-sm">Success Rate</p>
+                    <p className="text-2xl font-bold text-green-400">{orderStats.successRate}%</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <p className="text-gray-500">Failed to load order statistics</p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -879,18 +1044,35 @@ function DeliveryTypeTooltip({ children, stat }) {
   );
 }
 
-// Quick Action Button Component
-function QuickActionButton({ title, icon: Icon, gradient, onClick }) {
+// // Quick Action Button Component
+// function QuickActionButton({ title, icon: Icon, gradient, onClick }) {
+//   return (
+//     <button
+//       onClick={onClick}
+//       className="bg-gray-800/50 backdrop-blur hover:bg-gray-700/50 rounded-xl p-4 transition-all group border border-red-500/10 hover:border-red-500/20"
+//     >
+//       <div className={`w-10 h-10 bg-gradient-to-br ${gradient} rounded-lg flex items-center justify-center mb-2 group-hover:scale-110 transition-transform shadow-lg`}>
+//         <Icon className="w-5 h-5 text-white" />
+//       </div>
+//       <p className="text-white text-sm font-medium">{title}</p>
+//     </button>
+//   );
+// }
+
+
+// Add this new component for Order Stat Cards:
+function OrderStatCard({ label, value, icon: Icon, color, bgColor, small = false, total = 0 }) {
   return (
-    <button
-      onClick={onClick}
-      className="bg-gray-800/50 backdrop-blur hover:bg-gray-700/50 rounded-xl p-4 transition-all group border border-red-500/10 hover:border-red-500/20"
-    >
-      <div className={`w-10 h-10 bg-gradient-to-br ${gradient} rounded-lg flex items-center justify-center mb-2 group-hover:scale-110 transition-transform shadow-lg`}>
-        <Icon className="w-5 h-5 text-white" />
+    <div className={`${bgColor} backdrop-blur rounded-xl ${small ? 'p-3' : 'p-4'} group hover:scale-105 transition-transform`}>
+      <div className="flex items-center justify-between mb-2">
+        <Icon className={`${small ? 'w-4 h-4' : 'w-5 h-5'} ${color}`} />
+        <span className={`${small ? 'text-xs' : 'text-sm'} ${color} font-medium`}>
+          {total > 0 && value > 0 ? `${Math.round((value / total) * 100)}%` : '0%'}
+        </span>
       </div>
-      <p className="text-white text-sm font-medium">{title}</p>
-    </button>
+      <p className={`${small ? 'text-xs' : 'text-sm'} text-gray-400`}>{label}</p>
+      <p className={`${small ? 'text-lg' : 'text-xl'} font-bold text-white`}>{value}</p>
+    </div>
   );
 }
 
@@ -950,6 +1132,73 @@ const ReportIcon = ({ className }) => (
 );
 
 const AlertIcon = ({ className }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+  </svg>
+);
+
+// Add these icon components at the end of the file:
+const OutgoingIcon = ({ className }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4-4m0 0l-4-4m4 4H3" />
+  </svg>
+);
+
+const IncomingIcon = ({ className }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16l-4-4m0 0l4-4m-4 4h18" />
+  </svg>
+);
+
+const ApprovedIcon = ({ className }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+);
+
+const RejectedIcon = ({ className }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+);
+
+const DeliveredIcon = ({ className }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+  </svg>
+);
+
+const FailedIcon = ({ className }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+);
+
+const TransitIcon = ({ className }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
+  </svg>
+);
+
+const CancelledIcon = ({ className }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+  </svg>
+);
+
+const RoutineIcon = ({ className }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+);
+
+const UrgentIcon = ({ className }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+  </svg>
+);
+
+const EmergencyStatIcon = ({ className }) => (
   <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
   </svg>
