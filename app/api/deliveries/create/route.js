@@ -9,6 +9,7 @@ import Hospital from '@/models/Hospital';
 import Drone from '@/models/Drone';
 import Notification from '@/models/Notification';
 import { checkRole } from '@/lib/auth-helpers';
+import { PricingService } from '@/lib/pricing-service';
 
 export async function POST(req) {
   try {
@@ -212,7 +213,40 @@ export async function POST(req) {
       };
     }
 
-    // Calculate distance and update pricing only if we have valid coordinates
+    // // Calculate distance and update pricing only if we have valid coordinates
+    // if (deliveryData.sender.location.coordinates[0] !== 0 && 
+    //     deliveryData.recipient.location.coordinates[0] !== 0) {
+    //   try {
+    //     const distance = calculateDistance(
+    //       deliveryData.sender.location.coordinates,
+    //       deliveryData.recipient.location.coordinates
+    //     );
+        
+    //     deliveryData.flightPath.estimatedDistance = distance;
+    //     deliveryData.flightPath.estimatedDuration = Math.ceil(distance / 500); // 500m/min
+        
+    //     // Calculate pricing with urgency multiplier
+    //     const urgencyMultiplier = {
+    //       routine: 1,
+    //       urgent: 1.5,
+    //       emergency: 2
+    //     };
+        
+    //     const basePrice = 10;
+    //     const distanceRate = 0.002; // $0.002 per meter
+        
+    //     deliveryData.pricing.basePrice = basePrice;
+    //     deliveryData.pricing.urgencyCharge = basePrice * (urgencyMultiplier[data.urgency] - 1);
+    //     deliveryData.pricing.distanceCharge = Math.round(distance * distanceRate * 100) / 100;
+    //     deliveryData.pricing.totalPrice = deliveryData.pricing.basePrice + 
+    //                                     deliveryData.pricing.urgencyCharge + 
+    //                                     deliveryData.pricing.distanceCharge;
+    //   } catch (error) {
+    //     console.log('Distance calculation skipped:', error);
+    //   }
+    // }
+
+    // Calculate distance if we have valid coordinates
     if (deliveryData.sender.location.coordinates[0] !== 0 && 
         deliveryData.recipient.location.coordinates[0] !== 0) {
       try {
@@ -224,24 +258,60 @@ export async function POST(req) {
         deliveryData.flightPath.estimatedDistance = distance;
         deliveryData.flightPath.estimatedDuration = Math.ceil(distance / 500); // 500m/min
         
-        // Calculate pricing with urgency multiplier
-        const urgencyMultiplier = {
-          routine: 1,
-          urgent: 1.5,
-          emergency: 2
+        // Use PricingService for calculation
+        const pricingBreakdown = await PricingService.calculateDeliveryPrice(deliveryData);
+        
+        deliveryData.pricing = {
+          basePrice: pricingBreakdown.basePrice,
+          urgencyCharge: pricingBreakdown.urgencyCharge,
+          distanceCharge: pricingBreakdown.distanceCharge,
+          weightCharge: pricingBreakdown.weightCharge, // Now included!
+          temperatureCharge: pricingBreakdown.temperatureCharge,
+          fragileCharge: pricingBreakdown.fragileCharge,
+          timeBasedCharge: pricingBreakdown.timeBasedCharge,
+          totalPrice: pricingBreakdown.totalPrice,
+          currency: 'USD',
+          breakdown: pricingBreakdown // Store full breakdown for reference
         };
-        
-        const basePrice = 10;
-        const distanceRate = 0.002; // $0.002 per meter
-        
-        deliveryData.pricing.basePrice = basePrice;
-        deliveryData.pricing.urgencyCharge = basePrice * (urgencyMultiplier[data.urgency] - 1);
-        deliveryData.pricing.distanceCharge = Math.round(distance * distanceRate * 100) / 100;
-        deliveryData.pricing.totalPrice = deliveryData.pricing.basePrice + 
-                                        deliveryData.pricing.urgencyCharge + 
-                                        deliveryData.pricing.distanceCharge;
       } catch (error) {
-        console.log('Distance calculation skipped:', error);
+        console.log('Distance/Price calculation error:', error);
+        // Fallback to minimum pricing
+        deliveryData.pricing = {
+          basePrice: 10,
+          urgencyCharge: 0,
+          distanceCharge: 0,
+          weightCharge: 0,
+          totalPrice: 10,
+          currency: 'USD'
+        };
+      }
+    } else {
+      // No valid coordinates, use minimum pricing
+      try {
+        // Still calculate price based on weight and urgency
+        const pricingBreakdown = await PricingService.calculateDeliveryPrice(deliveryData);
+        deliveryData.pricing = {
+          basePrice: pricingBreakdown.basePrice,
+          urgencyCharge: pricingBreakdown.urgencyCharge,
+          distanceCharge: 0, // No distance yet
+          weightCharge: pricingBreakdown.weightCharge,
+          temperatureCharge: pricingBreakdown.temperatureCharge,
+          fragileCharge: pricingBreakdown.fragileCharge,
+          timeBasedCharge: pricingBreakdown.timeBasedCharge,
+          totalPrice: pricingBreakdown.totalPrice,
+          currency: 'USD',
+          breakdown: pricingBreakdown
+        };
+      } catch (error) {
+        console.log('Pricing calculation error:', error);
+        deliveryData.pricing = {
+          basePrice: 10,
+          urgencyCharge: 0,
+          distanceCharge: 0,
+          weightCharge: 0,
+          totalPrice: 10,
+          currency: 'USD'
+        };
       }
     }
 

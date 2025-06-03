@@ -179,15 +179,7 @@ export default function AdminDashboard() {
 
       {/* Pilot Assignment Section */}
       <div id="pilot-assignments" className="bg-gray-900/50 backdrop-blur-xl rounded-2xl p-6 border border-purple-500/20 hover:border-purple-500/30 transition-all mb-8">
-        {/* <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-white">Deliveries Awaiting Pilot Assignment</h2>
-          {needingAssignment.length > 0 && (
-            <span className="bg-purple-500/20 text-purple-400 px-3 py-1 rounded-full text-sm font-medium">
-              {needingAssignment.length} Pending
-            </span>
-          )}
-        </div> */}
-
+        
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold text-white">Deliveries Awaiting Pilot Assignment</h2>
           <div className="flex items-center gap-4">
@@ -260,33 +252,6 @@ export default function AdminDashboard() {
         <RevenueOverview />
 
       </div>
-
-      {/* Recent Activity and Drone Status */}
-      {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6"> */}
-        {/* Recent Activity */}
-        {/* <div className="bg-gray-900/50 backdrop-blur-xl rounded-2xl p-6 border border-purple-500/20 hover:border-purple-500/30 transition-all"> */}
-          {/* <h2 className="text-xl font-semibold text-white mb-4">Recent Activity</h2> */}
-          {/* <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-white">Recent Activity</h2>
-            <button 
-              onClick={() => router.push('/dashboard/admin/recent-activity')}
-              className="text-purple-400 hover:text-purple-300 text-sm font-medium transition-colors"
-            >
-              View All
-            </button>
-          </div>
-          <div className="space-y-4">
-            {recentActivity.length === 0 ? (
-              <p className="text-gray-500">No recent activity</p>
-            ) : (
-              recentActivity.map((activity, index) => (
-                <ActivityItem key={index} activity={activity} />
-              ))
-            )}
-          </div>
-        </div>
-      </div> */}
-
 
       <div className="mb-8">
         <div className="bg-gray-900/50 backdrop-blur-xl rounded-2xl p-6 border border-purple-500/20 hover:border-purple-500/30 transition-all animate-fade-in-up">
@@ -658,39 +623,6 @@ function getRoleColor(role) {
   };
   return colors[role] || 'bg-gray-500';
 }
-
-// // Drone Status Item Component
-// function DroneStatusItem({ drone }) {
-//   const statusColors = {
-//     available: 'text-green-400 bg-green-500/20',
-//     in_flight: 'text-blue-400 bg-blue-500/20',
-//     maintenance: 'text-yellow-400 bg-yellow-500/20',
-//     charging: 'text-orange-400 bg-orange-500/20',
-//     offline: 'text-red-400 bg-red-500/20'
-//   };
-
-//   const statusClass = statusColors[drone.status] || 'text-gray-400 bg-gray-500/20';
-
-//   return (
-//     <div className="flex items-center justify-between">
-//       <div className="flex items-center gap-3">
-//         <div className="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
-//           <DroneIcon className="w-6 h-6 text-purple-400" />
-//         </div>
-//         <div>
-//           <p className="text-white font-medium">{drone.registrationId}</p>
-//           <p className="text-gray-500 text-sm">{drone.model}</p>
-//         </div>
-//       </div>
-//       <div className="flex items-center gap-2">
-//         <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusClass}`}>
-//           {drone.status.replace('_', ' ')}
-//         </span>
-//         <span className="text-gray-400 text-sm">{drone.health.batteryLevel}%</span>
-//       </div>
-//     </div>
-//   );
-// }
 
 // Quick Action Card Component
 function QuickActionCard({ title, description, icon: Icon, href, gradient }) {

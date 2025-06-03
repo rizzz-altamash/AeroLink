@@ -134,8 +134,12 @@ const DeliverySchema = new mongoose.Schema({
     urgencyCharge: Number,
     distanceCharge: Number,
     weightCharge: Number,     // Package weight ka charge
+    temperatureCharge: Number,       // New field
+    fragileCharge: Number,          // New field
+    timeBasedCharge: Number,        // New field
     totalPrice: Number,
-    currency: { type: String, default: 'USD' }
+    currency: { type: String, default: 'USD' },
+    breakdown: mongoose.Schema.Types.Mixed  // Store full breakdown
   },
   metadata: {
     deliveryType: {
@@ -222,22 +226,70 @@ DeliverySchema.methods.updateStatus = async function(newStatus, notes = '') {
   return this.save();
 };
 
-DeliverySchema.methods.calculatePrice = function() {
-  const basePrice = 10; // $10 base
-  const urgencyMultiplier = {
-    routine: 1,
-    urgent: 1.5,
-    emergency: 2
-  };
-  const distanceRate = 0.002; // $0.002 per meter
+// DeliverySchema.methods.calculatePrice = function() {
+//   const basePrice = 10; // $10 base
+//   const urgencyMultiplier = {
+//     routine: 1,
+//     urgent: 1.5,
+//     emergency: 2
+//   };
+//   const distanceRate = 0.002; // $0.002 per meter
   
-  this.pricing.basePrice = basePrice;
-  this.pricing.urgencyCharge = basePrice * (urgencyMultiplier[this.package.urgency] - 1);
-  this.pricing.distanceCharge = this.flightPath.estimatedDistance * distanceRate;
-  this.pricing.totalPrice = this.pricing.basePrice + this.pricing.urgencyCharge + this.pricing.distanceCharge;
+//   this.pricing.basePrice = basePrice;
+//   this.pricing.urgencyCharge = basePrice * (urgencyMultiplier[this.package.urgency] - 1);
+//   this.pricing.distanceCharge = this.flightPath.estimatedDistance * distanceRate;
+//   this.pricing.totalPrice = this.pricing.basePrice + this.pricing.urgencyCharge + this.pricing.distanceCharge;
   
-  return this.pricing.totalPrice;
+//   return this.pricing.totalPrice;
+// };
+
+
+// Update the calculatePrice method to use PricingService:
+DeliverySchema.methods.calculatePrice = async function() {
+  const { PricingService } = require('@/lib/pricing-service');
+  
+  try {
+    const breakdown = await PricingService.calculateDeliveryPrice(this);
+    
+    this.pricing = {
+      basePrice: breakdown.basePrice,
+      urgencyCharge: breakdown.urgencyCharge,
+      distanceCharge: breakdown.distanceCharge,
+      weightCharge: breakdown.weightCharge,
+      temperatureCharge: breakdown.temperatureCharge,
+      fragileCharge: breakdown.fragileCharge,
+      timeBasedCharge: breakdown.timeBasedCharge,
+      totalPrice: breakdown.totalPrice,
+      currency: 'USD',
+      breakdown: breakdown
+    };
+    
+    return this.pricing.totalPrice;
+  } catch (error) {
+    console.error('Error calculating price:', error);
+    // Fallback to simple calculation
+    const basePrice = 10;
+    const urgencyMultiplier = {
+      routine: 1,
+      urgent: 1.5,
+      emergency: 2
+    };
+    const distanceRate = 0.002;
+    const weightRate = 0.001;
+    
+    this.pricing.basePrice = basePrice;
+    this.pricing.urgencyCharge = basePrice * (urgencyMultiplier[this.package.urgency] - 1);
+    this.pricing.distanceCharge = (this.flightPath?.estimatedDistance || 0) * distanceRate;
+    this.pricing.weightCharge = (this.package?.weight || 0) * weightRate;
+    this.pricing.totalPrice = this.pricing.basePrice + 
+                             this.pricing.urgencyCharge + 
+                             this.pricing.distanceCharge +
+                             this.pricing.weightCharge;
+    
+    return this.pricing.totalPrice;
+  }
 };
+
 
 // New method to check if delivery needs approval
 DeliverySchema.methods.needsApproval = function() {
