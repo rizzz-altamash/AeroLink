@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import NotificationBell from '@/components/NotificationBell';
 import toast from 'react-hot-toast';
+import DeliveryAnalytics from '@/components/dashboard/DeliveryAnalytics';
 
 export default function HospitalAdminDashboard() {
   const router = useRouter();
@@ -174,7 +175,7 @@ export default function HospitalAdminDashboard() {
       </div>
 
       {/* Hospital Info Banner */}
-      <div className="bg-gradient-to-r from-red-600/10 to-yellow-600/20 rounded-2xl p-6 mb-8">
+      {/* <div className="bg-gradient-to-r from-red-600/10 to-yellow-600/20 rounded-2xl p-6 mb-8">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-bold text-white mb-1">{session?.user?.hospitalName || 'City General Hospital'}</h2>
@@ -185,7 +186,7 @@ export default function HospitalAdminDashboard() {
             <p className="text-xl font-bold text-white">Premium</p>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Pending Approvals Alert */}
       {pendingApprovals.length > 0 && (
@@ -239,7 +240,7 @@ export default function HospitalAdminDashboard() {
       </div>
 
       {/* Pending Approvals Section */}
-      <div id="pending-approvals" className="bg-gray-900/50 backdrop-blur-xl rounded-2xl p-6 border border-yellow-500/20 hover:border-yellow-500/30 transition-all mb-8">
+      <div id="pending-approvals" className="bg-gray-900/50 backdrop-blur-xl rounded-2xl p-6 border border-red-500/20 hover:border-red-500/30 transition-all mb-8">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold text-white">Pending Approvals</h2>
           <div className="flex items-center gap-3">
@@ -276,6 +277,8 @@ export default function HospitalAdminDashboard() {
           </div>
         )}
       </div>
+
+      
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
@@ -335,6 +338,10 @@ export default function HospitalAdminDashboard() {
             )}
           </div>
         </div>
+      </div>
+
+      <div className="mt-8 mb-8 rounded-2xl border border-red-500/20 hover:border-red-500/30">
+        <DeliveryAnalytics dashboardType="hospital_admin" />
       </div>
 
       {/* Delivery Types Chart and Quick Actions */}

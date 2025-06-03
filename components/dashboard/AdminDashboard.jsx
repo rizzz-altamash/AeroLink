@@ -7,6 +7,7 @@ import NotificationBell from '@/components/NotificationBell';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import RevenueOverview from '@/components/dashboard/RevenueOverview';
+import DeliveryAnalytics from '@/components/dashboard/DeliveryAnalytics';
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -29,6 +30,9 @@ export default function AdminDashboard() {
   const [selectedDelivery, setSelectedDelivery] = useState(null);
   const [availablePilots, setAvailablePilots] = useState([]);
   const [selectedPilot, setSelectedPilot] = useState('');
+
+  const [hospitalDetails, setHospitalDetails] = useState(null);
+  const [filterInfo, setFilterInfo] = useState(null);
 
   useEffect(() => {
     // Fetch dashboard data
@@ -78,11 +82,25 @@ export default function AdminDashboard() {
     }
   };
 
+  // const fetchAvailableResources = async (deliveryId) => {
+  //   try {
+  //     const res = await fetch(`/api/admin/deliveries/${deliveryId}/assign-pilot`);
+  //     const data = await res.json();
+  //     setAvailablePilots(data.pilots || []);
+  //   } catch (error) {
+  //     console.error('Failed to fetch available resources:', error);
+  //   }
+  // };
+
+  // Update the fetchAvailableResources function in AdminDashboard
   const fetchAvailableResources = async (deliveryId) => {
     try {
       const res = await fetch(`/api/admin/deliveries/${deliveryId}/assign-pilot`);
       const data = await res.json();
       setAvailablePilots(data.pilots || []);
+      // Store hospital details and filter info
+      setHospitalDetails(data.hospitalDetails);
+      setFilterInfo(data.filterInfo);
     } catch (error) {
       console.error('Failed to fetch available resources:', error);
     }
@@ -232,22 +250,10 @@ export default function AdminDashboard() {
 
       {/* Charts and Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        {/* Delivery Trends Chart */}
-        <div className="bg-gray-900/50 backdrop-blur-xl rounded-2xl p-6 border border-purple-500/20 hover:border-purple-500/30 transition-all">
-          <h2 className="text-xl font-semibold text-white mb-4">Delivery Trends</h2>
-          <div className="h-64 flex items-center justify-center text-gray-500">
-            {/* Chart placeholder - integrate with a charting library */}
-            <p>Delivery trends chart</p>
-          </div>
-        </div>
 
-        {/* Revenue Chart */}
-        {/* <div className="bg-gray-900/50 backdrop-blur-xl rounded-2xl p-6 border border-purple-500/20 hover:border-purple-500/30 transition-all">
-          <h2 className="text-xl font-semibold text-white mb-4">Revenue Overview</h2>
-          <div className="h-64 flex items-center justify-center text-gray-500">
-            <p>Revenue chart</p>
-          </div>
-        </div> */}
+        <div className="rounded-2xl border border-purple-500/20 hover:border-purple-500/30">
+          <DeliveryAnalytics dashboardType="admin" />
+        </div>
 
         <RevenueOverview />
 
@@ -344,7 +350,11 @@ export default function AdminDashboard() {
             setShowAssignmentModal(false);
             setSelectedDelivery(null);
             setSelectedPilot('');
+            setHospitalDetails(null);
+            setFilterInfo(null);
           }}
+          hospitalDetails={hospitalDetails}
+          filterInfo={filterInfo}
         />
       )}
     </div>
@@ -401,19 +411,133 @@ function AssignmentRow({ delivery, onAssign }) {
 }
 
 // Assignment Modal Component
+// function AssignmentModal({ 
+//   delivery, 
+//   pilots, 
+//   selectedPilot, 
+//   setSelectedPilot,
+//   onAssign, 
+//   onClose 
+// }) {
+//   const canAssign = selectedPilot;
+
+//   return (
+//     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+//       <div className="bg-gray-900 rounded-2xl p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+//         <h2 className="text-2xl font-bold text-white mb-4">Assign Pilot to Delivery</h2>
+        
+//         {/* Delivery Details */}
+//         <div className="bg-gray-800/50 rounded-xl p-4 mb-6">
+//           <h3 className="text-lg font-semibold text-white mb-3">Delivery Details</h3>
+//           <div className="grid grid-cols-2 gap-4">
+//             <div>
+//               <p className="text-gray-400 text-sm">Order ID</p>
+//               <p className="text-white font-semibold">{delivery.orderId}</p>
+//             </div>
+//             <div>
+//               <p className="text-gray-400 text-sm">Urgency</p>
+//               <p className={`font-semibold ${
+//                 delivery.package?.urgency === 'emergency' ? 'text-red-400' :
+//                 delivery.package?.urgency === 'urgent' ? 'text-orange-400' :
+//                 'text-gray-300'
+//               }`}>
+//                 {delivery.package?.urgency?.toUpperCase()}
+//               </p>
+//             </div>
+//             <div>
+//               <p className="text-gray-400 text-sm">Package Type</p>
+//               <p className="text-white">{delivery.package?.type}</p>
+//             </div>
+//             <div>
+//               <p className="text-gray-400 text-sm">Weight</p>
+//               <p className="text-white">{delivery.package?.weight}g</p>
+//             </div>
+//             <div>
+//               <p className="text-gray-400 text-sm">From</p>
+//               <p className="text-white">{delivery.sender?.hospitalId?.name || 'Unknown'}</p>
+//             </div>
+//             <div>
+//               <p className="text-gray-400 text-sm">To</p>
+//               <p className="text-white">{delivery.recipient?.hospitalId?.name || delivery.recipient?.name || 'Unknown'}</p>
+//             </div>
+//           </div>
+//         </div>
+
+//         {/* Pilot Selection */}
+//         <div className="mb-6">
+//           <h3 className="text-lg font-semibold text-white mb-3">Select Pilot</h3>
+//           {pilots.length === 0 ? (
+//             <p className="text-gray-500">No pilots available</p>
+//           ) : (
+//             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+//               {pilots.map((pilot) => (
+//                 <div
+//                   key={pilot._id}
+//                   onClick={() => setSelectedPilot(pilot._id)}
+//                   className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
+//                     selectedPilot === pilot._id
+//                       ? 'border-purple-500 bg-purple-500/10'
+//                       : 'border-gray-700 hover:border-gray-600'
+//                   }`}
+//                 >
+//                   <div className="flex items-center justify-between">
+//                     <div>
+//                       <p className="text-white font-medium">{pilot.name}</p>
+//                       <p className="text-gray-400 text-sm">{pilot.email}</p>
+//                       <p className="text-gray-500 text-xs mt-1">
+//                         Current assignments: {pilot.currentAssignments}
+//                       </p>
+//                     </div>
+//                     {selectedPilot === pilot._id && (
+//                       <CheckIcon className="w-5 h-5 text-purple-400" />
+//                     )}
+//                   </div>
+//                 </div>
+//               ))}
+//             </div>
+//           )}
+//         </div>
+
+//         {/* Actions */}
+//         <div className="flex gap-3">
+//           <button
+//             onClick={onAssign}
+//             disabled={!canAssign}
+//             className={`flex-1 py-3 rounded-lg font-semibold transition-all ${
+//               canAssign
+//                 ? 'bg-purple-600 hover:bg-purple-700 text-white'
+//                 : 'bg-gray-700 text-gray-400 cursor-not-allowed'
+//             }`}
+//           >
+//             Assign Pilot
+//           </button>
+//           <button
+//             onClick={onClose}
+//             className="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-semibold transition-all"
+//           >
+//             Cancel
+//           </button>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
 function AssignmentModal({ 
   delivery, 
   pilots, 
   selectedPilot, 
   setSelectedPilot,
   onAssign, 
-  onClose 
+  onClose,
+  hospitalDetails,
+  filterInfo
 }) {
   const canAssign = selectedPilot;
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-gray-900 rounded-2xl p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-gray-900 rounded-2xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         <h2 className="text-2xl font-bold text-white mb-4">Assign Pilot to Delivery</h2>
         
         {/* Delivery Details */}
@@ -442,44 +566,81 @@ function AssignmentModal({
               <p className="text-gray-400 text-sm">Weight</p>
               <p className="text-white">{delivery.package?.weight}g</p>
             </div>
-            <div>
-              <p className="text-gray-400 text-sm">From</p>
-              <p className="text-white">{delivery.sender?.hospitalId?.name || 'Unknown'}</p>
+            <div className="col-span-2">
+              <p className="text-gray-400 text-sm">From Hospital</p>
+              <p className="text-white font-medium">{hospitalDetails?.name || 'Unknown Hospital'}</p>
+              <p className="text-gray-300 text-sm mt-1">
+                <LocationIcon className="w-4 h-4 inline-block mr-1 text-gray-400" />
+                {hospitalDetails?.address || 'Address not available'}
+              </p>
             </div>
-            <div>
+            <div className="col-span-2">
               <p className="text-gray-400 text-sm">To</p>
               <p className="text-white">{delivery.recipient?.hospitalId?.name || delivery.recipient?.name || 'Unknown'}</p>
             </div>
           </div>
         </div>
 
+        {/* Filter Info */}
+        {filterInfo && (
+          <div className="bg-purple-500/10 border border-purple-500/30 rounded-xl p-4 mb-6">
+            <p className="text-purple-400 text-sm flex items-center gap-2">
+              <InfoIcon className="w-4 h-4" />
+              Showing pilots only from <span className="font-semibold">{filterInfo.state}</span> state
+              ({filterInfo.totalPilotsInState} pilot{filterInfo.totalPilotsInState !== 1 ? 's' : ''} available)
+            </p>
+          </div>
+        )}
+
         {/* Pilot Selection */}
         <div className="mb-6">
           <h3 className="text-lg font-semibold text-white mb-3">Select Pilot</h3>
           {pilots.length === 0 ? (
-            <p className="text-gray-500">No pilots available</p>
+            <div className="text-center py-8 bg-gray-800/30 rounded-xl">
+              <NoDataIcon className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+              <p className="text-gray-500">No pilots available in {filterInfo?.state || 'this'} state</p>
+              <p className="text-gray-600 text-sm mt-1">Pilots must be from the same state as the hospital</p>
+            </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="space-y-3 max-h-96 overflow-y-auto pr-2 grid grid-cols-3 gap-4">
               {pilots.map((pilot) => (
                 <div
                   key={pilot._id}
                   onClick={() => setSelectedPilot(pilot._id)}
-                  className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                  className={`max-h-39 p-4 rounded-xl border-2 cursor-pointer transition-all ${
                     selectedPilot === pilot._id
                       ? 'border-purple-500 bg-purple-500/10'
-                      : 'border-gray-700 hover:border-gray-600'
+                      : 'border-gray-700 hover:border-gray-600 hover:bg-gray-800/50'
                   }`}
                 >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-white font-medium">{pilot.name}</p>
-                      <p className="text-gray-400 text-sm">{pilot.email}</p>
-                      <p className="text-gray-500 text-xs mt-1">
-                        Current assignments: {pilot.currentAssignments}
-                      </p>
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center">
+                          <PilotIcon className="w-6 h-6 text-gray-400" />
+                        </div>
+                        <div>
+                          <p className="text-white font-medium">{pilot.name}</p>
+                          <p className="text-gray-400 text-sm">{pilot.email}</p>
+                        </div>
+                      </div>
+                      <div className="mt-3 space-y-1">
+                        <p className="text-gray-300 text-sm flex items-center gap-2">
+                          <LocationIcon className="w-4 h-4 text-gray-500" />
+                          {pilot.displayAddress}
+                        </p>
+                        <p className="text-gray-400 text-sm flex items-center gap-2">
+                          <PhoneIcon className="w-4 h-4 text-gray-500" />
+                          {pilot.phoneNumber}
+                        </p>
+                        <p className="text-gray-500 text-xs flex items-center gap-2">
+                          <AssignmentIcon className="w-4 h-4" />
+                          Current assignments: {pilot.currentAssignments}
+                        </p>
+                      </div>
                     </div>
                     {selectedPilot === pilot._id && (
-                      <CheckIcon className="w-5 h-5 text-purple-400" />
+                      <CheckIcon className="w-5 h-5 text-purple-400 flex-shrink-0" />
                     )}
                   </div>
                 </div>
@@ -714,8 +875,34 @@ const AdminIcon = ({ className, style }) => (
   </svg>
 );
 
-const PilotIcon = ({ className, style }) => (
-  <svg className={className} fill="currentColor" viewBox="0 0 20 20" style={style}>
-    <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+// BEST, will use it !!!
+const PilotIcon = ({ className }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" />
+  </svg>
+);
+
+const LocationIcon = ({ className }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+  </svg>
+);
+
+const PhoneIcon = ({ className }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+  </svg>
+);
+
+const InfoIcon = ({ className }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+);
+
+const NoDataIcon = ({ className }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
   </svg>
 );

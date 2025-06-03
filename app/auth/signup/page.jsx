@@ -31,6 +31,11 @@
 //         zipCode: '',
 //         country: ''
 //       }
+//     },
+//     pilotData: {
+//       licenseNumber: '',
+//       experience: '',
+//       certifications: []
 //     }
 //   });
 
@@ -52,10 +57,118 @@
 //       border: 'border-red-500/10',
 //       text: 'text-red-400',
 //       shadow: 'shadow-red-500/25'
+//     },
+//     pilot: {
+//       primary: 'green',
+//       gradient: 'from-green-600 to-emerald-600',
+//       hover: 'from-green-700 to-emerald-700',
+//       bg: 'from-green-950/50 via-gray-950 to-emerald-950/50',
+//       border: 'border-green-500/10',
+//       text: 'text-green-400',
+//       shadow: 'shadow-green-500/25'
 //     }
 //   };
 
 //   const theme = themeColors[userType];
+
+// // Option 2A: Using OpenStreetMap Nominatim (Free, no API key required)
+// // Add this function to your signup component
+
+// const geocodeAddress = async (address) => {
+//   const { street, city, state, zipCode, country } = address;
+//   // const query = `${street}, ${city}, ${state}, ${zipCode}, ${country}`;
+
+//   // Try different query formats
+//   const queries = [
+//     `${street}, ${city}, ${state}, ${zipCode}, ${country}`,
+//     `${street}, ${city}, ${state}, ${country}`,
+//     `${city}, ${state}, ${zipCode}, ${country}`,
+//     `${city}, ${state}, ${country}`,
+//   ];
+
+//   console.log('Geocoding address:', queries); // Log the query
+  
+//   for (const query of queries) {
+//     console.log('Trying query:', query);
+
+//   try {
+//     const response = await fetch(
+//       `https://nominatim.openstreetmap.org/search?` + 
+//       `q=${encodeURIComponent(query)}&format=json&limit=1`,
+//       {
+//         headers: {
+//           'Accept': 'application/json',
+//           'Accept-Language': 'en',
+//         }
+//       }
+//     );
+
+//     console.log('API Response status:', response.status);
+//     console.log('API Response OK:', response.ok);
+    
+//     if (!response.ok) {
+//       console.error('API request failed:', response.statusText);
+//       throw new Error(`API request failed: ${response.status}`);
+//     }
+
+
+//     const data = await response.json();
+
+//     console.log('Geocoding response:', data); // Log the full response
+    
+//     if (data && data.length > 0) {
+//       // return {
+//       //   lat: parseFloat(data[0].lat),
+//       //   lng: parseFloat(data[0].lon)
+//       // };
+
+//       const coordinates = {
+//         lat: parseFloat(data[0].lat),
+//         lng: parseFloat(data[0].lon)
+//       };
+      
+//       console.log('✅ Geocoding successful!');
+//       console.log('Extracted coordinates:', coordinates); // Log extracted coordinates
+//       console.log('Google Maps link:', `https://www.google.com/maps?q=${coordinates.lat},${coordinates.lng}`);
+      
+//       return coordinates;
+//     }
+
+//     throw new Error('Address not found');
+//   } catch (error) {
+//     console.error('Geocoding error:', error);
+//   }
+// }
+//     return null;
+  
+// };
+
+// // // Option 2B: Using Google Geocoding API (Requires API key)
+// // const geocodeAddressGoogle = async (address) => {
+// //   const { street, city, state, zipCode, country } = address;
+// //   const fullAddress = `${street}, ${city}, ${state} ${zipCode}, ${country}`;
+// //   const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+  
+// //   try {
+// //     const response = await fetch(
+// //       `https://maps.googleapis.com/maps/api/geocode/json?` +
+// //       `address=${encodeURIComponent(fullAddress)}&key=${API_KEY}`
+// //     );
+// //     const data = await response.json();
+    
+// //     if (data.results && data.results.length > 0) {
+// //       const location = data.results[0].geometry.location;
+// //       return {
+// //         lat: location.lat,
+// //         lng: location.lng
+// //       };
+// //     }
+// //     throw new Error('Address not found');
+// //   } catch (error) {
+// //     console.error('Geocoding error:', error);
+// //     return null;
+// //   }
+// // };
 
 //   const handleChange = (e) => {
 //     const { name, value } = e.target;
@@ -78,6 +191,15 @@
 //             ...prev.hospitalData.address,
 //             [field]: value
 //           }
+//         }
+//       }));
+//     } else if (name.startsWith('pilot.')) {
+//       const field = name.split('.')[1];
+//       setFormData(prev => ({
+//         ...prev,
+//         pilotData: {
+//           ...prev.pilotData,
+//           [field]: value
 //         }
 //       }));
 //     } else {
@@ -106,7 +228,28 @@
 //       };
 
 //       if (userType === 'hospital') {
-//         payload.hospitalData = formData.hospitalData;
+
+//         // Geocode the address
+//         const coordinates = await geocodeAddress(formData.hospitalData.address);
+        
+//         if (!coordinates) {
+//           setError('Unable to verify hospital address. Please check the address details.');
+//           setLoading(false);
+//           return;
+//         }
+//         payload.hospitalData = {
+//           ...formData.hospitalData,
+//           address: {
+//             ...formData.hospitalData.address,
+//             coordinates: {
+//               type: 'Point',
+//               coordinates: [coordinates.lng, coordinates.lat]
+//             }
+//           }
+//         };
+//         // payload.hospitalData = formData.hospitalData;
+//       } else if (userType === 'pilot') {
+//         payload.pilotData = formData.pilotData;
 //       }
 
 //       const res = await fetch('/api/auth/register', {
@@ -134,7 +277,7 @@
 //       {/* Dynamic Background based on user type */}
 //       <div className="absolute inset-0 transition-all duration-700">
 //         {/* Grid Pattern */}
-//         <div className={`absolute inset-0 bg-[linear-gradient(to_right,${userType === 'individual' ? '#3b82f615' : '#dc262615'}_1px,transparent_1px),linear-gradient(to_bottom,${userType === 'individual' ? '#3b82f615' : '#dc262615'}_1px,transparent_1px)] bg-[size:4rem_4rem]`}></div>
+//         <div className={`absolute inset-0 bg-[linear-gradient(to_right,${userType === 'individual' ? '#3b82f615' : userType === 'pilot' ? '#10b98115' : '#dc262615'}_1px,transparent_1px),linear-gradient(to_bottom,${userType === 'individual' ? '#3b82f615' : userType === 'pilot' ? '#10b98115' : '#dc262615'}_1px,transparent_1px)] bg-[size:4rem_4rem]`}></div>
         
 //         {/* Gradient Overlay */}
 //         <div className={`absolute inset-0 bg-gradient-to-br ${theme.bg} transition-all duration-700`}></div>
@@ -143,7 +286,7 @@
 //         <div className="absolute inset-0">
 //           {/* Floating Drone Models */}
 //           <div className="absolute top-10 right-10 animate-float">
-//             <svg className={`w-32 h-32 ${userType === 'individual' ? 'text-blue-500/10' : 'text-red-500/10'} transition-colors duration-700`} viewBox="0 0 100 100" fill="currentColor">
+//             <svg className={`w-32 h-32 ${userType === 'individual' ? 'text-blue-500/10' : userType === 'pilot' ? 'text-green-500/10' : 'text-red-500/10'} transition-colors duration-700`} viewBox="0 0 100 100" fill="currentColor">
 //               <circle cx="50" cy="50" r="45" opacity="0.5"/>
 //               <path d="M50 20 L30 40 L30 60 L50 80 L70 60 L70 40 Z" />
 //               <path d="M20 35 L30 40 M30 60 L20 65 M80 35 L70 40 M70 60 L80 65" stroke="currentColor" strokeWidth="2" fill="none"/>
@@ -151,7 +294,7 @@
 //           </div>
           
 //           <div className="absolute bottom-20 left-10 animate-float-delayed">
-//             <svg className={`w-40 h-40 ${userType === 'individual' ? 'text-cyan-500/10' : 'text-rose-500/10'} transition-colors duration-700`} viewBox="0 0 24 24" fill="currentColor">
+//             <svg className={`w-40 h-40 ${userType === 'individual' ? 'text-cyan-500/10' : userType === 'pilot' ? 'text-emerald-500/10' : 'text-rose-500/10'} transition-colors duration-700`} viewBox="0 0 24 24" fill="currentColor">
 //               <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>
 //             </svg>
 //           </div>
@@ -159,9 +302,9 @@
 //           {/* Animated Circuit Lines */}
 //           <svg className="absolute inset-0 w-full h-full opacity-5">
 //             <pattern id="circuit" x="0" y="0" width="200" height="200" patternUnits="userSpaceOnUse">
-//               <path d="M0 100 L50 100 L50 50 L100 50" stroke={userType === 'individual' ? '#3b82f6' : '#dc2626'} strokeWidth="2" fill="none" />
-//               <circle cx="50" cy="100" r="3" fill={userType === 'individual' ? '#3b82f6' : '#dc2626'} />
-//               <circle cx="100" cy="50" r="3" fill={userType === 'individual' ? '#3b82f6' : '#dc2626'} />
+//               <path d="M0 100 L50 100 L50 50 L100 50" stroke={userType === 'individual' ? '#3b82f6' : userType === 'pilot' ? '#10b981' : '#dc2626'} strokeWidth="2" fill="none" />
+//               <circle cx="50" cy="100" r="3" fill={userType === 'individual' ? '#3b82f6' : userType === 'pilot' ? '#10b981' : '#dc2626'} />
+//               <circle cx="100" cy="50" r="3" fill={userType === 'individual' ? '#3b82f6' : userType === 'pilot' ? '#10b981' : '#dc2626'} />
 //             </pattern>
 //             <rect width="100%" height="100%" fill="url(#circuit)" />
 //           </svg>
@@ -186,12 +329,12 @@
 //               <div className="absolute inset-0 rounded-2xl border-2 border-white/20 animate-spin-slow"></div>
 //             </div>
 //             <h1 className="text-4xl font-bold text-white mb-2">Join the Future</h1>
-//             <p className={`${theme.text} opacity-80 transition-colors duration-700`}>Register</p> {/*Revolutionary drone delivery awaits*/}
+//             <p className={`${theme.text} opacity-80 transition-colors duration-700`}>Register</p>
 //           </div>
 
 //           {/* User Type Selection */}
 //           <div className="mb-6">
-//             <div className="flex gap-4 justify-center">
+//             <div className="flex gap-4 justify-center flex-wrap">
 //               <button
 //                 type="button"
 //                 onClick={() => setUserType('individual')}
@@ -222,6 +365,22 @@
 //                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
 //                   </svg>
 //                   Hospital/Medical
+//                 </div>
+//               </button>
+//               <button
+//                 type="button"
+//                 onClick={() => setUserType('pilot')}
+//                 className={`px-6 py-3 rounded-xl font-medium transition-all duration-500 ${
+//                   userType === 'pilot'
+//                     ? 'bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-lg shadow-green-500/25'
+//                     : 'bg-gray-800/50 backdrop-blur text-gray-400 hover:bg-gray-700/50 border border-gray-700'
+//                 }`}
+//               >
+//                 <div className="flex items-center gap-2">
+//                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+//                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" />
+//                   </svg>
+//                   Drone Pilot
 //                 </div>
 //               </button>
 //             </div>
@@ -481,6 +640,82 @@
 //               </div>
 //             )}
 
+//             {/* Pilot Information (conditional) */}
+//             {userType === 'pilot' && (
+//               <div className="space-y-6 mb-8 pt-8 border-t border-green-500/10">
+//                 <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+//                   <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-600 to-emerald-600 flex items-center justify-center">
+//                     <span className="text-white text-sm font-bold">2</span>
+//                   </div>
+//                   Pilot Information
+//                 </h2>
+                
+//                 <div className="bg-green-500/10 backdrop-blur rounded-xl p-4 mb-4">
+//                   <p className="text-green-400 text-sm flex items-start gap-2">
+//                     <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+//                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+//                     </svg>
+//                     Your pilot application will be reviewed by our team. You'll receive an email once your verification is complete.
+//                   </p>
+//                 </div>
+
+//                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+//                   <div>
+//                     <label className="block text-sm font-medium text-green-400 mb-2">
+//                       Pilot License Number
+//                     </label>
+//                     <input
+//                       type="text"
+//                       name="pilot.licenseNumber"
+//                       value={formData.pilotData.licenseNumber}
+//                       onChange={handleChange}
+//                       required
+//                       placeholder="FAA-123456789"
+//                       className="w-full px-4 py-3 bg-gray-800/50 backdrop-blur border border-green-500/20 rounded-xl text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+//                     />
+//                   </div>
+//                   <div>
+//                     <label className="block text-sm font-medium text-green-400 mb-2">
+//                       Years of Experience
+//                     </label>
+//                     <input
+//                       type="number"
+//                       name="pilot.experience"
+//                       value={formData.pilotData.experience}
+//                       onChange={handleChange}
+//                       required
+//                       min="0"
+//                       placeholder="5"
+//                       className="w-full px-4 py-3 bg-gray-800/50 backdrop-blur border border-green-500/20 rounded-xl text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+//                     />
+//                   </div>
+//                 </div>
+
+//                 <div>
+//                   <label className="block text-sm font-medium text-green-400 mb-2">
+//                     Certifications (Optional)
+//                   </label>
+//                   <textarea
+//                     name="pilot.certifications"
+//                     value={formData.pilotData.certifications.join('\n')}
+//                     onChange={(e) => {
+//                       const certs = e.target.value.split('\n').filter(cert => cert.trim());
+//                       setFormData(prev => ({
+//                         ...prev,
+//                         pilotData: {
+//                           ...prev.pilotData,
+//                           certifications: certs
+//                         }
+//                       }));
+//                     }}
+//                     placeholder="Enter each certification on a new line&#10;e.g., Part 107 Remote Pilot Certificate&#10;Night Operations Authorization"
+//                     rows={4}
+//                     className="w-full px-4 py-3 bg-gray-800/50 backdrop-blur border border-green-500/20 rounded-xl text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+//                   />
+//                 </div>
+//               </div>
+//             )}
+
 //             {/* Submit Button */}
 //             <button
 //               type="submit"
@@ -593,6 +828,14 @@
 
 
 
+
+
+
+
+
+
+
+
 // app/auth/signup/page.jsx
 'use client';
 
@@ -630,7 +873,14 @@ export default function SignUpPage() {
     pilotData: {
       licenseNumber: '',
       experience: '',
-      certifications: []
+      certifications: [],
+      address: {
+        street: '',
+        city: '',
+        state: '',
+        zipCode: '',
+        country: ''
+      }
     }
   });
 
@@ -666,104 +916,65 @@ export default function SignUpPage() {
 
   const theme = themeColors[userType];
 
-// Option 2A: Using OpenStreetMap Nominatim (Free, no API key required)
-// Add this function to your signup component
+  const geocodeAddress = async (address) => {
+    const { street, city, state, zipCode, country } = address;
+    
+    const queries = [
+      `${street}, ${city}, ${state}, ${zipCode}, ${country}`,
+      `${street}, ${city}, ${state}, ${country}`,
+      `${city}, ${state}, ${zipCode}, ${country}`,
+      `${city}, ${state}, ${country}`,
+    ];
 
-const geocodeAddress = async (address) => {
-  const { street, city, state, zipCode, country } = address;
-  // const query = `${street}, ${city}, ${state}, ${zipCode}, ${country}`;
+    console.log('Geocoding address:', queries);
+    
+    for (const query of queries) {
+      console.log('Trying query:', query);
 
-  // Try different query formats
-  const queries = [
-    `${street}, ${city}, ${state}, ${zipCode}, ${country}`,
-    `${street}, ${city}, ${state}, ${country}`,
-    `${city}, ${state}, ${zipCode}, ${country}`,
-    `${city}, ${state}, ${country}`,
-  ];
+      try {
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/search?` + 
+          `q=${encodeURIComponent(query)}&format=json&limit=1`,
+          {
+            headers: {
+              'Accept': 'application/json',
+              'Accept-Language': 'en',
+            }
+          }
+        );
 
-  console.log('Geocoding address:', queries); // Log the query
-  
-  for (const query of queries) {
-    console.log('Trying query:', query);
-
-  try {
-    const response = await fetch(
-      `https://nominatim.openstreetmap.org/search?` + 
-      `q=${encodeURIComponent(query)}&format=json&limit=1`,
-      {
-        headers: {
-          'Accept': 'application/json',
-          'Accept-Language': 'en',
+        console.log('API Response status:', response.status);
+        console.log('API Response OK:', response.ok);
+        
+        if (!response.ok) {
+          console.error('API request failed:', response.statusText);
+          throw new Error(`API request failed: ${response.status}`);
         }
+
+        const data = await response.json();
+
+        console.log('Geocoding response:', data);
+        
+        if (data && data.length > 0) {
+          const coordinates = {
+            lat: parseFloat(data[0].lat),
+            lng: parseFloat(data[0].lon)
+          };
+          
+          console.log('✅ Geocoding successful!');
+          console.log('Extracted coordinates:', coordinates);
+          console.log('Google Maps link:', `https://www.google.com/maps?q=${coordinates.lat},${coordinates.lng}`);
+          
+          return coordinates;
+        }
+
+        throw new Error('Address not found');
+      } catch (error) {
+        console.error('Geocoding error:', error);
       }
-    );
-
-    console.log('API Response status:', response.status);
-    console.log('API Response OK:', response.ok);
-    
-    if (!response.ok) {
-      console.error('API request failed:', response.statusText);
-      throw new Error(`API request failed: ${response.status}`);
     }
-
-
-    const data = await response.json();
-
-    console.log('Geocoding response:', data); // Log the full response
-    
-    if (data && data.length > 0) {
-      // return {
-      //   lat: parseFloat(data[0].lat),
-      //   lng: parseFloat(data[0].lon)
-      // };
-
-      const coordinates = {
-        lat: parseFloat(data[0].lat),
-        lng: parseFloat(data[0].lon)
-      };
-      
-      console.log('✅ Geocoding successful!');
-      console.log('Extracted coordinates:', coordinates); // Log extracted coordinates
-      console.log('Google Maps link:', `https://www.google.com/maps?q=${coordinates.lat},${coordinates.lng}`);
-      
-      return coordinates;
-    }
-
-    throw new Error('Address not found');
-  } catch (error) {
-    console.error('Geocoding error:', error);
-  }
-}
     return null;
-  
-};
-
-// // Option 2B: Using Google Geocoding API (Requires API key)
-// const geocodeAddressGoogle = async (address) => {
-//   const { street, city, state, zipCode, country } = address;
-//   const fullAddress = `${street}, ${city}, ${state} ${zipCode}, ${country}`;
-//   const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-  
-//   try {
-//     const response = await fetch(
-//       `https://maps.googleapis.com/maps/api/geocode/json?` +
-//       `address=${encodeURIComponent(fullAddress)}&key=${API_KEY}`
-//     );
-//     const data = await response.json();
-    
-//     if (data.results && data.results.length > 0) {
-//       const location = data.results[0].geometry.location;
-//       return {
-//         lat: location.lat,
-//         lng: location.lng
-//       };
-//     }
-//     throw new Error('Address not found');
-//   } catch (error) {
-//     console.error('Geocoding error:', error);
-//     return null;
-//   }
-// };
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -797,6 +1008,18 @@ const geocodeAddress = async (address) => {
           [field]: value
         }
       }));
+    } else if (name.startsWith('pilotAddress.')) {
+      const field = name.split('.')[1];
+      setFormData(prev => ({
+        ...prev,
+        pilotData: {
+          ...prev.pilotData,
+          address: {
+            ...prev.pilotData.address,
+            [field]: value
+          }
+        }
+      }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
     }
@@ -823,7 +1046,6 @@ const geocodeAddress = async (address) => {
       };
 
       if (userType === 'hospital') {
-
         // Geocode the address
         const coordinates = await geocodeAddress(formData.hospitalData.address);
         
@@ -842,9 +1064,24 @@ const geocodeAddress = async (address) => {
             }
           }
         };
-        // payload.hospitalData = formData.hospitalData;
       } else if (userType === 'pilot') {
+        // Geocode pilot address
+        const coordinates = await geocodeAddress(formData.pilotData.address);
+        
+        if (!coordinates) {
+          setError('Unable to verify address. Please check the address details.');
+          setLoading(false);
+          return;
+        }
+        
         payload.pilotData = formData.pilotData;
+        payload.address = {
+          ...formData.pilotData.address,
+          coordinates: {
+            type: 'Point',
+            coordinates: [coordinates.lng, coordinates.lat]
+          }
+        };
       }
 
       const res = await fetch('/api/auth/register', {
@@ -1307,6 +1544,64 @@ const geocodeAddress = async (address) => {
                     rows={4}
                     className="w-full px-4 py-3 bg-gray-800/50 backdrop-blur border border-green-500/20 rounded-xl text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   />
+                </div>
+
+                {/* Pilot Address fields */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium text-white flex items-center gap-2">
+                    <svg className="w-5 h-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    Pilot Address
+                  </h3>
+                  <input
+                    type="text"
+                    name="pilotAddress.street"
+                    placeholder="Street Address"
+                    value={formData.pilotData.address.street}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-3 bg-gray-800/50 backdrop-blur border border-green-500/20 rounded-xl text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  />
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <input
+                      type="text"
+                      name="pilotAddress.city"
+                      placeholder="City"
+                      value={formData.pilotData.address.city}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-3 bg-gray-800/50 backdrop-blur border border-green-500/20 rounded-xl text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    />
+                    <input
+                      type="text"
+                      name="pilotAddress.state"
+                      placeholder="State"
+                      value={formData.pilotData.address.state}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-3 bg-gray-800/50 backdrop-blur border border-green-500/20 rounded-xl text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    />
+                    <input
+                      type="text"
+                      name="pilotAddress.zipCode"
+                      placeholder="ZIP Code"
+                      value={formData.pilotData.address.zipCode}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-3 bg-gray-800/50 backdrop-blur border border-green-500/20 rounded-xl text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    />
+                    <input
+                      type="text"
+                      name="pilotAddress.country"
+                      placeholder="Country"
+                      value={formData.pilotData.address.country}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-3 bg-gray-800/50 backdrop-blur border border-green-500/20 rounded-xl text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    />
+                  </div>
                 </div>
               </div>
             )}

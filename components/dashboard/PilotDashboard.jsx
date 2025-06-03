@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import NotificationBell from '@/components/NotificationBell';
 import toast from 'react-hot-toast';
+import { WeatherService } from '@/lib/weather-service';
 
 export default function PilotDashboard() {
   const { data: session } = useSession();
@@ -17,12 +18,18 @@ export default function PilotDashboard() {
     todayFlights: 0
   });
   const [weatherData, setWeatherData] = useState(null);
+  const [weatherLoading, setWeatherLoading] = useState(true);
 
   useEffect(() => {
     fetchAssignedDeliveries();
     fetchDroneStatus();
     fetchFlightStats();
     fetchWeatherData();
+
+    // Refresh weather every 5 minutes
+    const weatherInterval = setInterval(fetchWeatherData, 5 * 60 * 1000);
+    
+    return () => clearInterval(weatherInterval);
   }, []);
 
   const fetchAssignedDeliveries = async () => {
@@ -55,13 +62,26 @@ export default function PilotDashboard() {
     }
   };
 
+  // const fetchWeatherData = async () => {
+  //   try {
+  //     const res = await fetch('/api/weather/current');
+  //     const data = await res.json();
+  //     setWeatherData(data);
+  //   } catch (error) {
+  //     console.error('Failed to fetch weather:', error);
+  //   }
+  // };
+
   const fetchWeatherData = async () => {
     try {
+      setWeatherLoading(true);
       const res = await fetch('/api/weather/current');
       const data = await res.json();
       setWeatherData(data);
     } catch (error) {
       console.error('Failed to fetch weather:', error);
+    } finally {
+      setWeatherLoading(false);
     }
   };
 
@@ -73,45 +93,8 @@ export default function PilotDashboard() {
         <p className="text-gray-400">Monitor flights and manage drone operations</p>
       </div>
 
-      {/* Drone Status Card */}
-      {currentDrone && (
-        <div className="bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl p-6 mb-8 relative overflow-hidden">
-          <div className="absolute inset-0 bg-circuit-pattern opacity-10"></div>
-          <div className="relative z-10">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h2 className="text-2xl font-bold text-white mb-1">Active Drone</h2>
-                <p className="text-green-100">{currentDrone.model} - {currentDrone.registrationId}</p>
-              </div>
-              <div className="text-right">
-                <DroneStatusIndicator status={currentDrone.status} />
-              </div>
-            </div>
-            
-            {/* Drone Metrics */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-              <DroneMetric label="Battery" value={`${currentDrone.battery}%`} icon={BatteryIcon} />
-              <DroneMetric label="Altitude" value={`${currentDrone.altitude}m`} icon={AltitudeIcon} />
-              <DroneMetric label="Speed" value={`${currentDrone.speed}km/h`} icon={SpeedIcon} />
-              <DroneMetric label="Signal" value="Strong" icon={SignalIcon} />
-            </div>
-            
-            <div className="flex gap-4">
-              <button className="px-6 py-3 bg-white text-green-600 rounded-xl font-semibold hover:bg-green-50 transition-all">
-                Pre-flight Check
-              </button>
-              <button className="px-6 py-3 bg-green-700 text-white rounded-xl font-semibold hover:bg-green-800 transition-all">
-                Emergency Protocol
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Stats and Weather */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         {/* Flight Stats */}
-        <div className="lg:col-span-2 grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="lg:col-span-2 grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <StatCard
             title="Total Flights"
             value={flightStats.totalFlights}
@@ -142,8 +125,8 @@ export default function PilotDashboard() {
           />
         </div>
 
-        {/* Weather Widget */}
-        <div className="bg-gray-900/50 backdrop-blur-xl rounded-2xl p-6 border border-green-500/20 hover:border-green-500/30 transition-all">
+      {/* Weather Widget */}
+        {/* <div className="bg-gray-900/50 mb-8 backdrop-blur-xl rounded-2xl p-6 border border-green-500/20 hover:border-green-500/30 transition-all">
           <h3 className="text-lg font-semibold text-white mb-4">Weather Conditions</h3>
           {weatherData ? (
             <div className="space-y-3">
@@ -158,8 +141,7 @@ export default function PilotDashboard() {
           ) : (
             <p className="text-gray-500">Loading weather data...</p>
           )}
-        </div>
-      </div>
+        </div> */}
 
       {/* Assigned Deliveries */}
       <div className="bg-gray-900/50 backdrop-blur-xl rounded-2xl p-6 border border-green-500/20 hover:border-green-500/30 transition-all mb-8">
@@ -181,6 +163,10 @@ export default function PilotDashboard() {
         )}
       </div>
 
+      <div className="mb-8">
+        <EnhancedWeatherWidget weatherData={weatherData} loading={weatherLoading} />
+      </div>
+
       {/* Flight Map */}
       <div className="bg-gray-900/50 backdrop-blur-xl rounded-2xl p-6 border border-green-500/20 hover:border-green-500/30 transition-all">
         <h2 className="text-xl font-semibold text-white mb-4">Flight Routes</h2>
@@ -188,6 +174,185 @@ export default function PilotDashboard() {
           <p className="text-gray-500">Flight map visualization</p>
         </div>
       </div>
+    </div>
+  );
+}
+
+function EnhancedWeatherWidget({ weatherData, loading }) {
+  if (loading) {
+    return (
+      <div className="bg-gray-900/50 backdrop-blur-xl rounded-2xl p-6 border border-green-500/20 hover:border-green-500/30 transition-all">
+        <div className="animate-pulse">
+          <div className="h-6 bg-gray-700 rounded w-40 mb-4"></div>
+          <div className="space-y-3">
+            <div className="h-4 bg-gray-700 rounded w-full"></div>
+            <div className="h-4 bg-gray-700 rounded w-3/4"></div>
+            <div className="h-4 bg-gray-700 rounded w-1/2"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!weatherData) {
+    return (
+      <div className="bg-gray-900/50 backdrop-blur-xl rounded-2xl p-6 border border-green-500/20">
+        <h3 className="text-lg font-semibold text-white mb-4">Weather Conditions</h3>
+        <p className="text-gray-500">Unable to fetch weather data</p>
+      </div>
+    );
+  }
+
+  const flightConditionColors = {
+    excellent: 'from-green-500 to-emerald-500',
+    good: 'from-blue-500 to-cyan-500',
+    fair: 'from-yellow-500 to-amber-500',
+    poor: 'from-red-500 to-rose-500'
+  };
+
+  const conditionBgColors = {
+    excellent: 'bg-green-500/20 border-green-500/30',
+    good: 'bg-blue-500/20 border-blue-500/30',
+    fair: 'bg-yellow-500/20 border-yellow-500/30',
+    poor: 'bg-red-500/20 border-red-500/30'
+  };
+
+  const conditionTextColors = {
+    excellent: 'text-green-400',
+    good: 'text-blue-400',
+    fair: 'text-yellow-400',
+    poor: 'text-red-400'
+  };
+
+  return (
+    <div className="bg-gray-900/50 backdrop-blur-xl rounded-2xl p-6 border border-green-500/20 hover:border-green-500/30 transition-all">
+      {/* Header with Location */}
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h3 className="text-lg font-semibold text-white">Weather Conditions</h3>
+          <p className="text-sm text-gray-400 flex items-center gap-1 mt-1">
+            <LocationPinIcon className="w-4 h-4" />
+            {weatherData.city}, {weatherData.pilotLocation?.state || weatherData.country}
+          </p>
+        </div>
+        <div className="text-4xl">{WeatherService.getWeatherIcon(weatherData.icon)}</div>
+      </div>
+
+      {/* Main Temperature Display */}
+      <div className="flex items-start justify-between mb-6">
+        <div>
+          <div className="flex items-baseline gap-2">
+            <span className="text-5xl font-bold text-white">{weatherData.temp}°</span>
+            <span className="text-2xl text-gray-400">C</span>
+          </div>
+          <p className="text-gray-400 capitalize mt-1">{weatherData.description}</p>
+          <p className="text-sm text-gray-500 mt-1">
+            Feels like {weatherData.feelsLike}°C
+          </p>
+        </div>
+        
+        {/* High/Low */}
+        <div className="text-right">
+          <div className="flex items-center gap-2 text-sm">
+            <ArrowUpIcon className="w-4 h-4 text-red-400" />
+            <span className="text-gray-300">{weatherData.tempMax}°</span>
+          </div>
+          <div className="flex items-center gap-2 text-sm mt-1">
+            <ArrowDownIcon className="w-4 h-4 text-blue-400" />
+            <span className="text-gray-300">{weatherData.tempMin}°</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Weather Details Grid */}
+      <div className="grid grid-cols-2 gap-4 mb-6">
+        <WeatherDetailCard
+          icon={WindIcon}
+          label="Wind"
+          value={`${weatherData.windSpeed} km/h`}
+          subValue={WeatherService.getWindDirectionText(weatherData.windDirection)}
+          iconColor="text-blue-400"
+        />
+        <WeatherDetailCard
+          icon={EyeIcon}
+          label="Visibility"
+          value={`${weatherData.visibility} km`}
+          iconColor="text-purple-400"
+        />
+        <WeatherDetailCard
+          icon={DropletIcon}
+          label="Humidity"
+          value={`${weatherData.humidity}%`}
+          iconColor="text-cyan-400"
+        />
+        <WeatherDetailCard
+          icon={CloudIcon}
+          label="Cloud Cover"
+          value={`${weatherData.clouds}%`}
+          iconColor="text-gray-400"
+        />
+      </div>
+
+      {/* Sun Times */}
+      <div className="flex items-center justify-between mb-6 p-3 bg-gray-800/30 rounded-lg">
+        <div className="flex items-center gap-2">
+          <SunriseIcon className="w-5 h-5 text-yellow-400" />
+          <div>
+            <p className="text-xs text-gray-400">Sunrise</p>
+            <p className="text-sm text-white">{weatherData.sunrise}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <SunsetIcon className="w-5 h-5 text-orange-400" />
+          <div>
+            <p className="text-xs text-gray-400">Sunset</p>
+            <p className="text-sm text-white">{weatherData.sunset}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Flight Condition Status */}
+      <div className={`mt-4 p-4 rounded-xl border ${conditionBgColors[weatherData.flightConditions.rating]}`}>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            {weatherData.flyable ? (
+              <CheckCircleIcon className={`w-6 h-6 ${conditionTextColors[weatherData.flightConditions.rating]}`} />
+            ) : (
+              <XCircleIcon className="w-6 h-6 text-red-400" />
+            )}
+            <div>
+              <p className={`font-semibold ${conditionTextColors[weatherData.flightConditions.rating]}`}>
+                {weatherData.flightConditions.message}
+              </p>
+              <p className="text-sm text-gray-400 mt-0.5">
+                {weatherData.flyable ? 'Safe to fly' : 'Not recommended for flight'}
+              </p>
+            </div>
+          </div>
+          <div className={`px-3 py-1 rounded-full bg-gradient-to-r ${flightConditionColors[weatherData.flightConditions.rating]} text-white text-xs font-medium uppercase`}>
+            {weatherData.flightConditions.rating}
+          </div>
+        </div>
+      </div>
+
+      {/* Last Updated */}
+      <p className="text-xs text-gray-500 text-center mt-4">
+        Updated: {new Date().toLocaleTimeString()}
+      </p>
+    </div>
+  );
+}
+
+// Weather Detail Card Component
+function WeatherDetailCard({ icon: Icon, label, value, subValue, iconColor }) {
+  return (
+    <div className="bg-gray-800/30 rounded-lg p-3">
+      <div className="flex items-center gap-2 mb-1">
+        <Icon className={`w-4 h-4 ${iconColor}`} />
+        <p className="text-xs text-gray-400">{label}</p>
+      </div>
+      <p className="text-lg font-semibold text-white">{value}</p>
+      {subValue && <p className="text-xs text-gray-500">{subValue}</p>}
     </div>
   );
 }
@@ -499,4 +664,73 @@ const DistanceIcon = ({ className }) => (
   <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
   </svg>
-)
+);
+
+// Additional Icon Components
+const LocationPinIcon = ({ className }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+  </svg>
+);
+
+const WindIcon = ({ className }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.59 4.59A2 2 0 1111 8H2m10.59 11.41A2 2 0 1014 16H2m15.73-8.27A2.5 2.5 0 1119.5 12H2" />
+  </svg>
+);
+
+const EyeIcon = ({ className }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+  </svg>
+);
+
+const DropletIcon = ({ className }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4 0 2.21 1.79 4 4 4s4-1.79 4-4c0-2.21-1.79-4-4-4z" />
+  </svg>
+);
+
+const CloudIcon = ({ className }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+  </svg>
+);
+
+const SunriseIcon = ({ className }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+  </svg>
+);
+
+const SunsetIcon = ({ className }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707" />
+  </svg>
+);
+
+const ArrowUpIcon = ({ className }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+  </svg>
+);
+
+const ArrowDownIcon = ({ className }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+  </svg>
+);
+
+const CheckCircleIcon = ({ className }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+);
+
+const XCircleIcon = ({ className }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+);
