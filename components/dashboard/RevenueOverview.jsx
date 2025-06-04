@@ -173,43 +173,90 @@ export default function RevenueOverview() {
 
   // Donut Chart Component
   const DonutChartView = () => (
-    <div className="flex items-center justify-between">
-      <ResponsiveContainer width="50%" height={300}>
+  <div className="flex items-center justify-between gap-6">
+    {/* Pie Chart without labels - Clean look */}
+    <div className="flex-1 max-w-sm">
+      <ResponsiveContainer width="100%" height={300}>
         <PieChart>
           <Pie
             data={revenueData.urgencyBreakdown}
             cx="50%"
             cy="50%"
             labelLine={false}
-            label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-            outerRadius={80}
+            label={false} // Labels removed for clean look
+            outerRadius={90}
             fill="#8884d8"
             dataKey="value"
+            animationBegin={0}
+            animationDuration={800}
           >
             {revenueData.urgencyBreakdown.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={entry.color} />
+              <Cell 
+                key={`cell-${index}`} 
+                fill={entry.color}
+                // style={{ cursor: 'pointer' }}
+              />
             ))}
           </Pie>
-          <Tooltip />
+          <Tooltip 
+            contentStyle={{
+              backgroundColor: 'rgba(255, 255, 255, 0.95)',
+              borderRadius: '8px',
+              padding: '8px 12px'
+            }}
+            formatter={(value) => [`$${value.toFixed(2)}`, 'Revenue']}
+          />
         </PieChart>
       </ResponsiveContainer>
-      <div className="flex-1 space-y-3">
+    </div>
+    
+    {/* Enhanced Stats Panel with Legend */}
+    <div className="flex-1 max-w-xs">
+      <div className="bg-gray-800/30 rounded-xl p-4">
         <div className="text-center mb-4">
           <p className="text-gray-400 text-sm">Total Revenue</p>
-          <p className="text-3xl font-bold text-white">${revenueData.metrics.total.toFixed(2)}</p>
+          <p className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-purple-600 bg-clip-text text-transparent">
+            ${revenueData.metrics.total.toFixed(2)}
+          </p>
         </div>
-        {revenueData.urgencyBreakdown.map((item, index) => (
-          <div key={index} className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }}></div>
-              <span className="text-gray-300">{item.name}</span>
+        
+        {/* Legend Items */}
+        <div className="space-y-2">
+          {revenueData.urgencyBreakdown.map((item, index) => (
+            <div 
+              key={index} 
+              className="flex items-center justify-between p-2 rounded hover:bg-gray-700/30 transition-colors cursor-pointer"
+            >
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+                <div 
+                  className="w-3 h-3 rounded-full flex-shrink-0 shadow-sm" 
+                  style={{ backgroundColor: item.color }}
+                />
+                <span className="text-gray-300 text-sm truncate">{item.name}</span>
+              </div>
+              <div className="text-right ml-2 flex-shrink-0">
+                <span className="text-white font-medium">${item.value.toFixed(2)}</span>
+                <span className="text-gray-400 text-xs ml-1">
+                  ({((item.value / revenueData.metrics.total) * 100).toFixed(1)}%)
+                </span>
+              </div>
             </div>
-            <span className="text-white font-medium">${item.value.toFixed(2)}</span>
+          ))}
+        </div>
+        
+        {/* Additional Metrics */}
+        <div className="mt-4 pt-3 border-t border-gray-700">
+          <div className="flex items-center justify-evenly text-sm">
+            <span className="text-gray-400">Average</span>
+            <span className="text-white font-medium">
+              ${(revenueData.metrics.total / revenueData.urgencyBreakdown.length).toFixed(2)}
+            </span>
           </div>
-        ))}
+        </div>
       </div>
     </div>
-  );
+  </div>
+);
 
   if (loading) {
     return (

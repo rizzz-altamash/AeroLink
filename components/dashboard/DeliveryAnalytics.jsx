@@ -769,15 +769,19 @@ export default function DeliveryAnalytics({ dashboardType = 'hospital_admin' }) 
         </div>
 
         <div className="flex items-center justify-between">
-          <ResponsiveContainer width="50%" height={300}>
+          <ResponsiveContainer width="50%" height={256}>
             <PieChart>
               <Pie
                 data={data}
                 cx="50%"
                 cy="50%"
                 labelLine={false}
-                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                outerRadius={80}
+                label={
+                  isAdmin 
+                    ? renderAdminCustomLabel  // Custom label for Admin
+                    : ({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`  // Original for Hospital Admin
+                }
+                outerRadius={isAdmin ? 90 : 80}
                 fill="#8884d8"
                 dataKey="value"
               >
@@ -785,7 +789,13 @@ export default function DeliveryAnalytics({ dashboardType = 'hospital_admin' }) 
                   <Cell key={`cell-${index}`} fill={getCategoryColor(entry)} />
                 ))}
               </Pie>
-              <Tooltip />
+              <Tooltip 
+                contentStyle={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                  borderRadius: '8px',
+                  padding: '8px 12px'
+                }}
+              />
             </PieChart>
           </ResponsiveContainer>
           
@@ -936,7 +946,7 @@ export default function DeliveryAnalytics({ dashboardType = 'hospital_admin' }) 
       </div>
 
       {/* Additional Analytics Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className={`grid grid-cols-2 ${isAdmin ? 'lg:grid-cols-3' : 'lg:grid-cols-4'} gap-4`}>
         {/* Peak Hours */}
         <div className="bg-gray-800/30 rounded-xl p-4">
           <h3 className="text-sm font-medium text-gray-400 mb-3">Peak Hours</h3>
@@ -958,18 +968,20 @@ export default function DeliveryAnalytics({ dashboardType = 'hospital_admin' }) 
           </div>
         </div>
 
-        {/* Top Package Types */}
-        <div className="bg-gray-800/30 rounded-xl p-4">
-          <h3 className="text-sm font-medium text-gray-400 mb-3">Top Package Types</h3>
-          <div className="space-y-2">
-            {analyticsData.packageTypeBreakdown.slice(0, 5).map((pkg, index) => (
-              <div key={index} className="flex items-center justify-between">
-                <span className="text-xs text-gray-300 truncate">{pkg.name}</span>
-                <span className="text-xs text-white font-medium">{pkg.value}</span>
-              </div>
-            ))}
+        {/* Top Package Types - Only for Hospital Admin */}
+        {!isAdmin && (
+          <div className="bg-gray-800/30 rounded-xl p-4">
+            <h3 className="text-sm font-medium text-gray-400 mb-3">Top Package Types</h3>
+            <div className="space-y-2">
+              {analyticsData.packageTypeBreakdown.slice(0, 5).map((pkg, index) => (
+                <div key={index} className="flex items-center justify-between">
+                  <span className="text-xs text-gray-300 truncate">{pkg.name}</span>
+                  <span className="text-xs text-white font-medium">{pkg.value}</span>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Urgency Distribution */}
         <div className="bg-gray-800/30 rounded-xl p-4">
@@ -1029,3 +1041,30 @@ function MetricCard({ title, value, subtitle, themeColor = 'gray' }) {
     </div>
   );
 }
+
+// Add this custom label function inside your DeliveryAnalytics component
+const renderAdminCustomLabel = ({
+  cx, cy, midAngle, innerRadius, outerRadius, percent, index
+}) => {
+  const RADIAN = Math.PI / 180;
+  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+  // Only show label if percentage is more than 5%
+  if (percent < 0.05) return null;
+
+  return (
+    <text 
+      x={x} 
+      y={y} 
+      fill="white" 
+      textAnchor={x > cx ? 'start' : 'end'} 
+      dominantBaseline="central"
+      className="text-xs font-semibold"
+      style={{ textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}
+    >
+      {`${(percent * 100).toFixed(0)}%`}
+    </text>
+  );
+};

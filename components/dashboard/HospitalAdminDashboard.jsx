@@ -886,22 +886,6 @@ function DeliveryRow({ delivery }) {
   );
 }
 
-// Staff Activity Item Component
-// function StaffActivityItem({ activity }) {
-//   return (
-//     <div className="flex items-start gap-3">
-//       <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center flex-shrink-0">
-//         <UserIcon className="w-4 h-4 text-red-400" />
-//       </div>
-//       <div className="flex-1">
-//         <p className="text-white text-sm">{activity.staffName}</p>
-//         <p className="text-gray-400 text-xs">{activity.action}</p>
-//         <p className="text-gray-500 text-xs mt-1">{activity.time}</p>
-//       </div>
-//     </div>
-//   );
-// }
-
 function StaffActivityItem({ activity }) {
   // Different icons for different activity types
   const getActivityIcon = () => {
@@ -1051,7 +1035,7 @@ function DeliveryTypeChart({ stats }) {
                 <div className="flex-1 bg-gray-700 rounded-full h-1.5 overflow-hidden">
                   <div 
                     className={`${stat.color} h-1.5 rounded-full transition-all duration-700`}
-                    style={{ width: `${(stat.count / maxCount) * 22.22}%` }}
+                    style={{ width: `${(stat.count / maxCount) * 50}%` }} // 22.22
                   />
                 </div>
                 <span className="text-xs text-gray-400">{stat.percentage}%</span>
@@ -1088,12 +1072,12 @@ function DeliveryTypeTooltip({ children, stat }) {
                 <span className="text-gray-400">Percentage:</span>
                 <span className="font-medium">{stat.percentage}%</span>
               </p>
-              {stat.count > 0 && (
+              {/* {stat.count > 0 && (
                 <p className="flex justify-between gap-4">
                   <span className="text-gray-400">Status:</span>
                   <span className="text-green-400 font-medium">Active</span>
                 </p>
-              )}
+              )} */}
             </div>
             <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1">
               <div className="w-0 h-0 border-l-4 border-l-transparent border-r-4 border-r-transparent border-t-4 border-t-gray-800"></div>
