@@ -542,8 +542,8 @@ export default function DashboardLayout({ children }) {
     ],
     pilot: [
       { href: '/dashboard', label: 'Flight Dashboard', icon: ChartIcon },
-      { href: '/dashboard/assignments', label: 'Assignments', icon: AssignmentIcon },
-      { href: '/dashboard/routes', label: 'Flight Routes', icon: RouteIcon },
+      { href: '/dashboard/pilot/assigned-deliveries', label: 'Assignments', icon: AssignmentIcon },
+      { href: '', label: 'Flight Routes', icon: RouteIcon },
     ]
   };
 

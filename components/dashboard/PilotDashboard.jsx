@@ -760,6 +760,7 @@ import { useSession } from 'next-auth/react';
 import NotificationBell from '@/components/NotificationBell';
 import toast from 'react-hot-toast';
 import { WeatherService } from '@/lib/weather-service';
+import Link from 'next/link';
 
 export default function PilotDashboard() {
   const { data: session } = useSession();
@@ -776,7 +777,6 @@ export default function PilotDashboard() {
 
   useEffect(() => {
     fetchAssignedDeliveries();
-    fetchDroneStatus();
     fetchFlightStats();
     fetchWeatherData();
 
@@ -793,16 +793,6 @@ export default function PilotDashboard() {
       setAssignedDeliveries(data);
     } catch (error) {
       console.error('Failed to fetch deliveries:', error);
-    }
-  };
-
-  const fetchDroneStatus = async () => {
-    try {
-      const res = await fetch('/api/pilot/drone-status');
-      const data = await res.json();
-      setCurrentDrone(data);
-    } catch (error) {
-      console.error('Failed to fetch drone status:', error);
     }
   };
 
@@ -872,11 +862,23 @@ export default function PilotDashboard() {
         />
       </div>
 
+      <div className="mb-6 sm:mb-8">
+        <EnhancedWeatherWidget weatherData={weatherData} loading={weatherLoading} />
+      </div>
+
       {/* Assigned Deliveries */}
       <div className="bg-gray-900/50 backdrop-blur-xl rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-green-500/20 hover:border-green-500/30 transition-all mb-6 sm:mb-8">
         <div className="flex items-center justify-between mb-4 sm:mb-6">
           <h2 className="text-lg sm:text-xl font-semibold text-white">Assigned Deliveries</h2>
-          <span className="text-xs sm:text-sm text-gray-400">{assignedDeliveries.length} active</span>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <span className="text-xs sm:text-sm text-gray-400">{assignedDeliveries.length} active</span>
+            <Link 
+              href='/dashboard/pilot/assigned-deliveries'
+              className="text-green-400 hover:text-green-300 text-xs sm:text-sm font-medium transition-colors"
+            >
+              View All
+            </Link>
+          </div>
         </div>
         
         {assignedDeliveries.length === 0 ? (
@@ -884,7 +886,7 @@ export default function PilotDashboard() {
             <p className="text-gray-500 text-sm sm:text-base">No deliveries assigned</p>
           </div>
         ) : (
-          <div className="space-y-3 sm:space-y-4">
+          <div className="space-y-3 sm:space-y-4 h-110 lg:h-150 overflow-y-auto scrollbar-hide">
             {assignedDeliveries.map((delivery) => (
               <AssignedDeliveryCard key={delivery._id} delivery={delivery} />
             ))}
@@ -892,12 +894,8 @@ export default function PilotDashboard() {
         )}
       </div>
 
-      <div className="mb-6 sm:mb-8">
-        <EnhancedWeatherWidget weatherData={weatherData} loading={weatherLoading} />
-      </div>
-
       {/* Flight Map */}
-      <div className="bg-gray-900/50 backdrop-blur-xl rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-green-500/20 hover:border-green-500/30 transition-all">
+      <div className="hidden bg-gray-900/50 backdrop-blur-xl rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-green-500/20 hover:border-green-500/30 transition-all">
         <h2 className="text-lg sm:text-xl font-semibold text-white mb-3 sm:mb-4">Flight Routes</h2>
         <div className="h-64 sm:h-80 lg:h-96 bg-gray-800/50 backdrop-blur rounded-lg sm:rounded-xl flex items-center justify-center border border-green-500/10">
           <p className="text-gray-500 text-sm sm:text-base">Flight map visualization</p>
