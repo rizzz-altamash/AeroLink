@@ -82,7 +82,7 @@ export default function SignInPage() {
         </svg>
 
         {/* Floating Drone Icons */}
-        <div className="absolute top-20 left-20 animate-float">
+        <div className="absolute top-20 left-20 animate-float hidden md:block">
           <svg className="w-24 h-24 text-green-500/10" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
             <path d="M8 12l2-2 2 2 2-2 2 2-4 4z"/>
@@ -108,8 +108,8 @@ export default function SignInPage() {
           {/* Logo/Brand */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-green-600 to-emerald-600 rounded-2xl mb-4 shadow-2xl shadow-green-500/25 relative">
-              <svg className="w-14 h-14 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+              <svg className="w-15 h-15 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" />
               </svg>
               {/* Rotating Ring */}
               <div className="absolute inset-0 rounded-2xl border-2 border-green-400/20 animate-spin-slow"></div>

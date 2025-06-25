@@ -848,7 +848,7 @@ export default function SignUpPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [userType, setUserType] = useState('individual');
+  const [userType, setUserType] = useState('hospital');
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -1117,7 +1117,7 @@ export default function SignUpPage() {
         {/* Animated Elements */}
         <div className="absolute inset-0">
           {/* Floating Drone Models */}
-          <div className="absolute top-10 right-10 animate-float">
+          <div className="absolute top-10 right-10 animate-float hidden md:block">
             <svg className={`w-32 h-32 ${userType === 'individual' ? 'text-blue-500/10' : userType === 'pilot' ? 'text-green-500/10' : 'text-red-500/10'} transition-colors duration-700`} viewBox="0 0 100 100" fill="currentColor">
               <circle cx="50" cy="50" r="45" opacity="0.5"/>
               <path d="M50 20 L30 40 L30 60 L50 80 L70 60 L70 40 Z" />
@@ -1155,8 +1155,8 @@ export default function SignUpPage() {
           {/* Logo/Brand */}
           <div className="text-center mb-8">
             <div className={`inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br ${theme.gradient} rounded-2xl mb-4 shadow-2xl ${theme.shadow} relative transition-all duration-700`}>
-              <svg className="w-14 h-14 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+              <svg className="w-15 h-15 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" />
               </svg>
               <div className="absolute inset-0 rounded-2xl border-2 border-white/20 animate-spin-slow"></div>
             </div>
@@ -1170,7 +1170,7 @@ export default function SignUpPage() {
               <button
                 type="button"
                 onClick={() => setUserType('individual')}
-                className={`px-6 py-3 rounded-xl font-medium transition-all duration-500 ${
+                className={`hidden px-6 py-3 rounded-xl font-medium transition-all duration-500 ${
                   userType === 'individual'
                     ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg shadow-blue-500/25'
                     : 'bg-gray-800/50 backdrop-blur text-gray-400 hover:bg-gray-700/50 border border-gray-700'
@@ -1196,7 +1196,7 @@ export default function SignUpPage() {
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                   </svg>
-                  Hospital/Medical
+                  Hospital
                 </div>
               </button>
               <button
