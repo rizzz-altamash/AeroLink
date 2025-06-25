@@ -25,24 +25,24 @@ async function setupInitialPricing() {
     // Create default pricing configuration
     const defaultConfig = await PricingConfig.create({
       name: 'default',
-      description: 'Default pricing configuration for Vaayu deliveries',
-      basePrice: 10,
-      currency: 'USD',
+      description: 'Default pricing configuration for deliveries',
+      basePrice: 500,
+      currency: 'INR',
       urgencyMultipliers: {
         routine: 1,
         urgent: 1.5,
         emergency: 2
       },
-      distanceRate: 0.002,      // $0.002 per meter
-      weightRate: 0.001,        // $0.001 per gram
-      temperatureControlledCharge: 5,
-      fragileHandlingCharge: 3,
+      distanceRate: 0.15,      // ₹ 0.15 per meter
+      weightRate: 0.05,        // ₹ 0.05 per gram
+      temperatureControlledCharge: 300,
+      fragileHandlingCharge: 200,
       peakHourMultiplier: 1.2,
       peakHours: {
         start: 9,
         end: 18
       },
-      nightDeliveryCharge: 5,
+      nightDeliveryCharge: 150,
       weekendMultiplier: 1.1,
       isActive: true,
       isDefault: true,
@@ -51,9 +51,9 @@ async function setupInitialPricing() {
 
     console.log('Default pricing configuration created successfully');
     console.log('Configuration details:');
-    console.log('- Base Price: $' + defaultConfig.basePrice);
-    console.log('- Distance Rate: $' + defaultConfig.distanceRate + ' per meter');
-    console.log('- Weight Rate: $' + defaultConfig.weightRate + ' per gram');
+    console.log('- Base Price: ₹' + defaultConfig.basePrice);
+    console.log('- Distance Rate: ₹' + defaultConfig.distanceRate + ' per meter');
+    console.log('- Weight Rate: ₹' + defaultConfig.weightRate + ' per gram');
     console.log('- Urgency Multipliers:');
     console.log('  - Routine: ' + defaultConfig.urgencyMultipliers.routine + 'x');
     console.log('  - Urgent: ' + defaultConfig.urgencyMultipliers.urgent + 'x');
@@ -61,25 +61,25 @@ async function setupInitialPricing() {
 
     // Create a sample alternative configuration (inactive)
     const holidayConfig = await PricingConfig.create({
-      name: 'holiday-season-2024',
+      name: 'holiday-season-2025',
       description: 'Special pricing for holiday season with increased rates',
-      basePrice: 12,
-      currency: 'USD',
+      basePrice: 700,
+      currency: 'INR',
       urgencyMultipliers: {
         routine: 1,
         urgent: 1.75,
         emergency: 2.5
       },
-      distanceRate: 0.0025,
-      weightRate: 0.0012,
-      temperatureControlledCharge: 7,
-      fragileHandlingCharge: 5,
+      distanceRate: 0.20,
+      weightRate: 0.05,
+      temperatureControlledCharge: 350,
+      fragileHandlingCharge: 250,
       peakHourMultiplier: 1.5,
       peakHours: {
         start: 8,
         end: 20
       },
-      nightDeliveryCharge: 8,
+      nightDeliveryCharge: 200,
       weekendMultiplier: 1.25,
       isActive: false,
       isDefault: false,
@@ -98,4 +98,4 @@ async function setupInitialPricing() {
 }
 
 // Run the setup
-setupInitialPricing();
+// setupInitialPricing();

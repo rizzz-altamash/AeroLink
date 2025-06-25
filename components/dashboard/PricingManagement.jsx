@@ -620,18 +620,18 @@ export default function PricingManagement() {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    basePrice: 10,
+    basePrice: 500,
     urgencyMultipliers: {
       routine: 1,
       urgent: 1.5,
       emergency: 2
     },
-    distanceRate: 0.002,
-    weightRate: 0.001,
-    temperatureControlledCharge: 5,
-    fragileHandlingCharge: 3,
-    peakHourMultiplier: 1.2, 
-    nightDeliveryCharge: 5,
+    distanceRate: 0.15,
+    weightRate: 0.05,
+    temperatureControlledCharge: 300,
+    fragileHandlingCharge: 200,
+    peakHourMultiplier: 1.2,
+    nightDeliveryCharge: 150,
     weekendMultiplier: 1.1
   });
 
@@ -824,7 +824,7 @@ export default function PricingManagement() {
             </div>
 
             <div>
-              <label className="block text-xs sm:text-sm text-gray-400 mb-1">Base Price ($)</label>
+              <label className="block text-xs sm:text-sm text-gray-400 mb-1">Base Price (₹)</label>
               <input
                 type="number"
                 value={formData.basePrice}
@@ -836,7 +836,7 @@ export default function PricingManagement() {
             </div>
 
             <div>
-              <label className="block text-xs sm:text-sm text-gray-400 mb-1">Distance Rate ($ per meter)</label>
+              <label className="block text-xs sm:text-sm text-gray-400 mb-1">Distance Rate (₹ per meter)</label>
               <input
                 type="number"
                 value={formData.distanceRate}
@@ -848,7 +848,7 @@ export default function PricingManagement() {
             </div>
 
             <div>
-              <label className="block text-xs sm:text-sm text-gray-400 mb-1">Weight Rate ($ per gram)</label>
+              <label className="block text-xs sm:text-sm text-gray-400 mb-1">Weight Rate (₹ per gram)</label>
               <input
                 type="number"
                 value={formData.weightRate}
@@ -906,7 +906,7 @@ export default function PricingManagement() {
             <h3 className="text-base sm:text-lg font-medium text-white mb-2 sm:mb-3">Additional Charges</h3>
             
             <div>
-              <label className="block text-xs sm:text-sm text-gray-400 mb-1">Temperature Control ($)</label>
+              <label className="block text-xs sm:text-sm text-gray-400 mb-1">Temperature Control (₹)</label>
               <input
                 type="number"
                 value={formData.temperatureControlledCharge}
@@ -918,7 +918,7 @@ export default function PricingManagement() {
             </div>
 
             <div>
-              <label className="block text-xs sm:text-sm text-gray-400 mb-1">Fragile Handling ($)</label>
+              <label className="block text-xs sm:text-sm text-gray-400 mb-1">Fragile Handling (₹)</label>
               <input
                 type="number"
                 value={formData.fragileHandlingCharge}
@@ -930,7 +930,7 @@ export default function PricingManagement() {
             </div>
 
             <div>
-              <label className="block text-xs sm:text-sm text-gray-400 mb-1">Night Delivery ($)</label>
+              <label className="block text-xs sm:text-sm text-gray-400 mb-1">Night Delivery (₹)</label>
               <input
                 type="number"
                 value={formData.nightDeliveryCharge}
@@ -1000,7 +1000,7 @@ export default function PricingManagement() {
               <h3 className="text-white font-medium mb-2 text-sm sm:text-base">{estimate.name}</h3>
               <p className="text-gray-400 text-xs sm:text-sm mb-1">Distance: {estimate.distance / 1000}km</p>
               <p className="text-gray-400 text-xs sm:text-sm mb-2">Weight: {estimate.weight}g</p>
-              <p className="text-xl sm:text-2xl font-bold text-purple-400">${estimate.price.toFixed(2)}</p>
+              <p className="text-xl sm:text-2xl font-bold text-purple-400">₹{estimate.price.toFixed(2)}</p>
             </div>
           ))}
         </div>
@@ -1034,9 +1034,9 @@ export default function PricingManagement() {
                         Created by {config.createdBy?.name} on {new Date(config.createdAt).toLocaleDateString()}
                       </p>
                       <div className="mt-2 flex flex-wrap gap-2 sm:gap-4 text-xs sm:text-sm">
-                        <span className="text-gray-300">Base: ${config.basePrice}</span>
-                        <span className="text-gray-300">Distance: ${config.distanceRate}/m</span>
-                        <span className="text-gray-300">Weight: ${config.weightRate}/g</span>
+                        <span className="text-gray-300">Base: ₹{config.basePrice}</span>
+                        <span className="text-gray-300">Distance: ₹{config.distanceRate}/m</span>
+                        <span className="text-gray-300">Weight: ₹{config.weightRate}/g</span>
                       </div>
                     </div>
                     <div className="flex gap-2 w-full sm:w-auto">
@@ -1087,43 +1087,43 @@ export default function PricingManagement() {
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-4 text-xs sm:text-sm">
                     <div>
                       <p className="text-gray-400">Base Price</p>
-                      <p className="text-white font-medium">${preview.pricing.basePrice.toFixed(2)}</p>
+                      <p className="text-white font-medium">₹{preview.pricing.basePrice.toFixed(2)}</p>
                     </div>
                     <div>
                       <p className="text-gray-400">Urgency</p>
-                      <p className="text-white font-medium">${preview.pricing.urgencyCharge.toFixed(2)}</p>
+                      <p className="text-white font-medium">₹{preview.pricing.urgencyCharge.toFixed(2)}</p>
                     </div>
                     <div>
                       <p className="text-gray-400">Distance</p>
-                      <p className="text-white font-medium">${preview.pricing.distanceCharge.toFixed(2)}</p>
+                      <p className="text-white font-medium">₹{preview.pricing.distanceCharge.toFixed(2)}</p>
                     </div>
                     <div>
                       <p className="text-gray-400">Weight</p>
-                      <p className="text-white font-medium">${preview.pricing.weightCharge.toFixed(2)}</p>
+                      <p className="text-white font-medium">₹{preview.pricing.weightCharge.toFixed(2)}</p>
                     </div>
                     {preview.pricing.temperatureCharge > 0 && (
                       <div>
                         <p className="text-gray-400">Temperature</p>
-                        <p className="text-white font-medium">${preview.pricing.temperatureCharge.toFixed(2)}</p>
+                        <p className="text-white font-medium">₹{preview.pricing.temperatureCharge.toFixed(2)}</p>
                       </div>
                     )}
                     {preview.pricing.fragileCharge > 0 && (
                       <div>
                         <p className="text-gray-400">Fragile</p>
-                        <p className="text-white font-medium">${preview.pricing.fragileCharge.toFixed(2)}</p>
+                        <p className="text-white font-medium">₹{preview.pricing.fragileCharge.toFixed(2)}</p>
                       </div>
                     )}
                     {preview.pricing.timeBasedCharge > 0 && (
                       <div>
                         <p className="text-gray-400">Time-based</p>
-                        <p className="text-white font-medium">${preview.pricing.timeBasedCharge.toFixed(2)}</p>
+                        <p className="text-white font-medium">₹{preview.pricing.timeBasedCharge.toFixed(2)}</p>
                       </div>
                     )}
                   </div>
                   <div className="mt-3 pt-3 border-t border-gray-700">
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400 text-xs sm:text-sm">Total Price</span>
-                      <span className="text-xl sm:text-2xl font-bold text-purple-400">${preview.pricing.totalPrice.toFixed(2)}</span>
+                      <span className="text-xl sm:text-2xl font-bold text-purple-400">₹{preview.pricing.totalPrice.toFixed(2)}</span>
                     </div>
                   </div>
                 </div>

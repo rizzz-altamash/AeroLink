@@ -7,19 +7,19 @@ export default function PricingBreakdown({ deliveryData, className = '' }) {
   const [loading, setLoading] = useState(false);
   const [effectiveDeliveryTime, setEffectiveDeliveryTime] = useState(new Date());
   const [config, setConfig] = useState({
-    basePrice: 10,
+    basePrice: 500,
     urgencyMultipliers: {
       routine: 1,
       urgent: 1.5,
       emergency: 2
     },
-    distanceRate: 0.002,
-    weightRate: 0.001,
-    temperatureControlledCharge: 5,
-    fragileHandlingCharge: 3,
+    distanceRate: 0.15,
+    weightRate: 0.05,
+    temperatureControlledCharge: 300,
+    fragileHandlingCharge: 200,
     peakHourMultiplier: 1.2,
     peakHours: { start: 9, end: 18 },
-    nightDeliveryCharge: 5,
+    nightDeliveryCharge: 150,
     weekendMultiplier: 1.1
   });
 
@@ -199,41 +199,41 @@ export default function PricingBreakdown({ deliveryData, className = '' }) {
         {/* Base charges */}
         <div className="flex justify-between">
           <span className="text-gray-400">Base Price</span>
-          <span className="text-white">${pricing.basePrice.toFixed(2)}</span>
+          <span className="text-white">₹{pricing.basePrice.toFixed(2)}</span>
         </div>
         
         {pricing.urgencyCharge > 0 && (
           <div className="flex justify-between">
             <span className="text-gray-400">Urgency Charge ({deliveryData.package.urgency})</span>
-            <span className="text-orange-400">+${pricing.urgencyCharge.toFixed(2)}</span>
+            <span className="text-orange-400">+₹{pricing.urgencyCharge.toFixed(2)}</span>
           </div>
         )}
         
         {pricing.distanceCharge > 0 && (
           <div className="flex justify-between">
             <span className="text-gray-400">Distance Charge</span>
-            <span className="text-blue-400">+${pricing.distanceCharge.toFixed(2)}</span>
+            <span className="text-blue-400">+₹{pricing.distanceCharge.toFixed(2)}</span>
           </div>
         )}
         
         {pricing.weightCharge > 0 && (
           <div className="flex justify-between">
             <span className="text-gray-400">Weight Charge ({deliveryData.package.weight}g)</span>
-            <span className="text-purple-400">+${pricing.weightCharge.toFixed(2)}</span>
+            <span className="text-purple-400">+₹{pricing.weightCharge.toFixed(2)}</span>
           </div>
         )}
         
         {pricing.temperatureCharge > 0 && (
           <div className="flex justify-between">
             <span className="text-gray-400">Temperature Control</span>
-            <span className="text-cyan-400">+${pricing.temperatureCharge.toFixed(2)}</span>
+            <span className="text-cyan-400">+₹{pricing.temperatureCharge.toFixed(2)}</span>
           </div>
         )}
         
         {pricing.fragileCharge > 0 && (
           <div className="flex justify-between">
             <span className="text-gray-400">Fragile Handling</span>
-            <span className="text-yellow-400">+${pricing.fragileCharge.toFixed(2)}</span>
+            <span className="text-yellow-400">+₹{pricing.fragileCharge.toFixed(2)}</span>
           </div>
         )}
 
@@ -251,14 +251,14 @@ export default function PricingBreakdown({ deliveryData, className = '' }) {
               Peak Hour Charge 
               <span className="text-xs"> ({config.peakHourMultiplier}x)</span>
             </span>
-            <span className="text-red-400">+${pricing.peakHourCharge.toFixed(2)}</span>
+            <span className="text-red-400">+₹{pricing.peakHourCharge.toFixed(2)}</span>
           </div>
         )}
         
         {pricing.nightDeliveryCharge > 0 && (
           <div className="flex justify-between">
             <span className="text-gray-400">Night Delivery Charge</span>
-            <span className="text-indigo-400">+${pricing.nightDeliveryCharge.toFixed(2)}</span>
+            <span className="text-indigo-400">+₹{pricing.nightDeliveryCharge.toFixed(2)}</span>
           </div>
         )}
         
@@ -268,7 +268,7 @@ export default function PricingBreakdown({ deliveryData, className = '' }) {
               Weekend Charge
               <span className="text-xs"> ({config.weekendMultiplier}x)</span>
             </span>
-            <span className="text-pink-400">+${pricing.weekendCharge.toFixed(2)}</span>
+            <span className="text-pink-400">+₹{pricing.weekendCharge.toFixed(2)}</span>
           </div>
         )}
         
@@ -277,7 +277,7 @@ export default function PricingBreakdown({ deliveryData, className = '' }) {
           <div className="flex justify-between items-center">
             <span className="text-white font-medium">Total Estimate</span>
             <span className="text-xl font-bold text-green-400">
-              ${pricing.totalPrice.toFixed(2)}
+              ₹{pricing.totalPrice.toFixed(2)}
             </span>
           </div>
         </div>
@@ -308,7 +308,7 @@ export default function PricingBreakdown({ deliveryData, className = '' }) {
           </div>
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-indigo-400"></div>
-            <span className="text-gray-500">Night delivery (10:00 PM - 5:59 AM): +$5</span>
+            <span className="text-gray-500">Night delivery (10:00 PM - 5:59 AM): +₹150</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-pink-400"></div>

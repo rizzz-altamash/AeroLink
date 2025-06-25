@@ -138,7 +138,7 @@ const DeliverySchema = new mongoose.Schema({
     fragileCharge: Number,          // New field
     timeBasedCharge: Number,        // New field
     totalPrice: Number,
-    currency: { type: String, default: 'USD' },
+    currency: { type: String, default: 'INR' },
     breakdown: mongoose.Schema.Types.Mixed  // Store full breakdown
   },
   metadata: {
@@ -225,24 +225,6 @@ DeliverySchema.methods.updateStatus = async function(newStatus, notes = '') {
   });
   return this.save();
 };
-
-// DeliverySchema.methods.calculatePrice = function() {
-//   const basePrice = 10; // $10 base
-//   const urgencyMultiplier = {
-//     routine: 1,
-//     urgent: 1.5,
-//     emergency: 2
-//   };
-//   const distanceRate = 0.002; // $0.002 per meter
-  
-//   this.pricing.basePrice = basePrice;
-//   this.pricing.urgencyCharge = basePrice * (urgencyMultiplier[this.package.urgency] - 1);
-//   this.pricing.distanceCharge = this.flightPath.estimatedDistance * distanceRate;
-//   this.pricing.totalPrice = this.pricing.basePrice + this.pricing.urgencyCharge + this.pricing.distanceCharge;
-  
-//   return this.pricing.totalPrice;
-// };
-
 
 // Update the calculatePrice method to use PricingService:
 DeliverySchema.methods.calculatePrice = async function() {
