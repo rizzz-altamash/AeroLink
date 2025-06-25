@@ -68,13 +68,39 @@
 //         ? `/api/admin/delivery-analytics?timeRange=${timeRange}`
 //         : `/api/hospital/delivery-analytics?timeRange=${timeRange}`;
       
+//       console.log('Fetching analytics from:', endpoint);
+      
 //       const res = await fetch(endpoint);
-//       if (!res.ok) throw new Error('Failed to fetch analytics data');
+      
+//       if (!res.ok) {
+//         const errorText = await res.text();
+//         console.error('API Error:', res.status, errorText);
+//         throw new Error(`Failed to fetch analytics data: ${res.status}`);
+//       }
+      
 //       const data = await res.json();
+//       console.log('Analytics data received:', data);
 //       setAnalyticsData(data);
 //     } catch (error) {
 //       console.error('Error fetching analytics:', error);
-//       toast.error('Failed to load analytics data');
+//       toast.error(`Failed to load analytics data: ${error.message}`);
+      
+//       // Set dummy data for testing
+//       setAnalyticsData({
+//         chartData: [],
+//         metrics: {
+//           total: 0,
+//           incoming: 0,
+//           outgoing: 0,
+//           todayDeliveries: 0,
+//           avgPerDay: 0
+//         },
+//         deliveryTypeBreakdown: [],
+//         urgencyBreakdown: [],
+//         packageTypeBreakdown: [],
+//         peakHours: [],
+//         timeDistribution: []
+//       });
 //     } finally {
 //       setLoading(false);
 //     }
@@ -225,15 +251,19 @@
 //         </div>
 
 //         <div className="flex items-center justify-between">
-//           <ResponsiveContainer width="50%" height={300}>
+//           <ResponsiveContainer width="50%" height={256}>
 //             <PieChart>
 //               <Pie
 //                 data={data}
 //                 cx="50%"
 //                 cy="50%"
 //                 labelLine={false}
-//                 label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-//                 outerRadius={80}
+//                 label={
+//                   isAdmin 
+//                     ? renderAdminCustomLabel  // Custom label for Admin
+//                     : ({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`  // Original for Hospital Admin
+//                 }
+//                 outerRadius={isAdmin ? 90 : 80}
 //                 fill="#8884d8"
 //                 dataKey="value"
 //               >
@@ -241,7 +271,13 @@
 //                   <Cell key={`cell-${index}`} fill={getCategoryColor(entry)} />
 //                 ))}
 //               </Pie>
-//               <Tooltip />
+//               <Tooltip 
+//                 contentStyle={{
+//                   backgroundColor: 'rgba(255, 255, 255, 0.95)',
+//                   borderRadius: '8px',
+//                   padding: '8px 12px'
+//                 }}
+//               />
 //             </PieChart>
 //           </ResponsiveContainer>
           
@@ -285,7 +321,7 @@
 //       {/* Header */}
 //       <div className="flex items-center justify-between mb-6">
 //         <h2 className="text-xl font-semibold text-white">
-//           {isAdmin ? 'Approved Deliveries Analytics' : 'Delivery Analytics'}
+//           {isAdmin ? 'Delivery Trends' : 'Delivery Analytics'}
 //         </h2>
 //         <div className="flex items-center gap-4">
 //           {/* Time Range Selector */}
@@ -392,7 +428,7 @@
 //       </div>
 
 //       {/* Additional Analytics Grid */}
-//       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+//       <div className={`grid grid-cols-2 ${isAdmin ? 'lg:grid-cols-3' : 'lg:grid-cols-4'} gap-4`}>
 //         {/* Peak Hours */}
 //         <div className="bg-gray-800/30 rounded-xl p-4">
 //           <h3 className="text-sm font-medium text-gray-400 mb-3">Peak Hours</h3>
@@ -414,18 +450,20 @@
 //           </div>
 //         </div>
 
-//         {/* Top Package Types */}
-//         <div className="bg-gray-800/30 rounded-xl p-4">
-//           <h3 className="text-sm font-medium text-gray-400 mb-3">Top Package Types</h3>
-//           <div className="space-y-2">
-//             {analyticsData.packageTypeBreakdown.slice(0, 5).map((pkg, index) => (
-//               <div key={index} className="flex items-center justify-between">
-//                 <span className="text-xs text-gray-300 truncate">{pkg.name}</span>
-//                 <span className="text-xs text-white font-medium">{pkg.value}</span>
-//               </div>
-//             ))}
+//         {/* Top Package Types - Only for Hospital Admin */}
+//         {!isAdmin && (
+//           <div className="bg-gray-800/30 rounded-xl p-4">
+//             <h3 className="text-sm font-medium text-gray-400 mb-3">Top Package Types</h3>
+//             <div className="space-y-2">
+//               {analyticsData.packageTypeBreakdown.slice(0, 5).map((pkg, index) => (
+//                 <div key={index} className="flex items-center justify-between">
+//                   <span className="text-xs text-gray-300 truncate">{pkg.name}</span>
+//                   <span className="text-xs text-white font-medium">{pkg.value}</span>
+//                 </div>
+//               ))}
+//             </div>
 //           </div>
-//         </div>
+//         )}
 
 //         {/* Urgency Distribution */}
 //         <div className="bg-gray-800/30 rounded-xl p-4">
@@ -486,6 +524,32 @@
 //   );
 // }
 
+// // Add this custom label function inside your DeliveryAnalytics component
+// const renderAdminCustomLabel = ({
+//   cx, cy, midAngle, innerRadius, outerRadius, percent, index
+// }) => {
+//   const RADIAN = Math.PI / 180;
+//   const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+//   const x = cx + radius * Math.cos(-midAngle * RADIAN);
+//   const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+//   // Only show label if percentage is more than 5%
+//   if (percent < 0.05) return null;
+
+//   return (
+//     <text 
+//       x={x} 
+//       y={y} 
+//       fill="white" 
+//       textAnchor={x > cx ? 'start' : 'end'} 
+//       dominantBaseline="central"
+//       className="text-xs font-semibold"
+//       style={{ textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}
+//     >
+//       {`${(percent * 100).toFixed(0)}%`}
+//     </text>
+//   );
+// };
 
 
 
@@ -503,19 +567,7 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+// Responsive 
 // components/dashboard/DeliveryAnalytics.jsx
 'use client';
 
@@ -667,10 +719,10 @@ export default function DeliveryAnalytics({ dashboardType = 'hospital_admin' }) 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-gray-900/95 backdrop-blur-xl p-3 rounded-lg border border-gray-700">
-          <p className="text-white font-medium">{label}</p>
+        <div className="bg-gray-900/95 backdrop-blur-xl p-2 sm:p-3 rounded-lg border border-gray-700">
+          <p className="text-white font-medium text-xs sm:text-sm">{label}</p>
           {payload.map((entry, index) => (
-            <p key={index} className="text-sm" style={{ color: entry.color }}>
+            <p key={index} className="text-xs sm:text-sm" style={{ color: entry.color }}>
               {entry.name}: {entry.value}
             </p>
           ))}
@@ -682,14 +734,14 @@ export default function DeliveryAnalytics({ dashboardType = 'hospital_admin' }) 
 
   // Mixed Chart Component
   const MixedChartView = () => (
-    <ResponsiveContainer width="100%" height={300}>
+    <ResponsiveContainer width="100%" height={window.innerWidth < 640 ? 250 : 300}>
       <ComposedChart data={analyticsData.chartData}>
         <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-        <XAxis dataKey="date" stroke="#9ca3af" />
-        <YAxis yAxisId="left" stroke="#9ca3af" />
-        <YAxis yAxisId="right" orientation="right" stroke="#9ca3af" />
+        <XAxis dataKey="date" stroke="#9ca3af" tick={{ fontSize: window.innerWidth < 640 ? 10 : 12 }} />
+        <YAxis yAxisId="left" stroke="#9ca3af" tick={{ fontSize: window.innerWidth < 640 ? 10 : 12 }} />
+        <YAxis yAxisId="right" orientation="right" stroke="#9ca3af" tick={{ fontSize: window.innerWidth < 640 ? 10 : 12 }} />
         <Tooltip content={<CustomTooltip />} />
-        <Legend />
+        <Legend wrapperStyle={{ fontSize: window.innerWidth < 640 ? '12px' : '14px' }} />
         
         {/* Stacked bars for urgency */}
         <Bar yAxisId="left" dataKey="emergency" stackId="a" fill={COLORS.emergency} name="Emergency" />
@@ -735,10 +787,10 @@ export default function DeliveryAnalytics({ dashboardType = 'hospital_admin' }) 
     return (
       <div>
         {/* Category Selector */}
-        <div className="flex items-center gap-2 mb-4 justify-center">
+        <div className="flex flex-wrap items-center gap-2 mb-4 justify-center">
           <button
             onClick={() => setSelectedCategory('packageType')}
-            className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${
+            className={`px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm font-medium transition-all ${
               selectedCategory === 'packageType'
                 ? `${themeStyles.bg} text-white`
                 : 'bg-gray-700 text-gray-400 hover:text-white'
@@ -748,7 +800,7 @@ export default function DeliveryAnalytics({ dashboardType = 'hospital_admin' }) 
           </button>
           <button
             onClick={() => setSelectedCategory('urgency')}
-            className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${
+            className={`px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm font-medium transition-all ${
               selectedCategory === 'urgency'
                 ? `${themeStyles.bg} text-white`
                 : 'bg-gray-700 text-gray-400 hover:text-white'
@@ -758,7 +810,7 @@ export default function DeliveryAnalytics({ dashboardType = 'hospital_admin' }) 
           </button>
           <button
             onClick={() => setSelectedCategory('deliveryType')}
-            className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${
+            className={`px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm font-medium transition-all ${
               selectedCategory === 'deliveryType'
                 ? `${themeStyles.bg} text-white`
                 : 'bg-gray-700 text-gray-400 hover:text-white'
@@ -768,8 +820,8 @@ export default function DeliveryAnalytics({ dashboardType = 'hospital_admin' }) 
           </button>
         </div>
 
-        <div className="flex items-center justify-between">
-          <ResponsiveContainer width="50%" height={256}>
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
+          <ResponsiveContainer width={window.innerWidth < 1024 ? "100%" : "50%"} height={window.innerWidth < 640 ? 200 : 256}>
             <PieChart>
               <Pie
                 data={data}
@@ -781,7 +833,7 @@ export default function DeliveryAnalytics({ dashboardType = 'hospital_admin' }) 
                     ? renderAdminCustomLabel  // Custom label for Admin
                     : ({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`  // Original for Hospital Admin
                 }
-                outerRadius={isAdmin ? 90 : 80}
+                outerRadius={window.innerWidth < 640 ? 70 : (isAdmin ? 90 : 80)}
                 fill="#8884d8"
                 dataKey="value"
               >
@@ -793,27 +845,28 @@ export default function DeliveryAnalytics({ dashboardType = 'hospital_admin' }) 
                 contentStyle={{
                   backgroundColor: 'rgba(255, 255, 255, 0.95)',
                   borderRadius: '8px',
-                  padding: '8px 12px'
+                  padding: '8px 12px',
+                  fontSize: window.innerWidth < 640 ? '12px' : '14px'
                 }}
               />
             </PieChart>
           </ResponsiveContainer>
           
           {/* Stats Panel */}
-          <div className="flex-1 space-y-3">
+          <div className="flex-1 w-full lg:w-auto space-y-2 sm:space-y-3">
             <div className="text-center mb-4">
-              <p className="text-gray-400 text-sm">Total Deliveries</p>
-              <p className="text-3xl font-bold text-white">{analyticsData.metrics.total}</p>
+              <p className="text-gray-400 text-xs sm:text-sm">Total Deliveries</p>
+              <p className="text-2xl sm:text-3xl font-bold text-white">{analyticsData.metrics.total}</p>
             </div>
             {data.map((item, index) => (
               <div key={index} className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: getCategoryColor(item) }}></div>
-                  <span className="text-gray-300">{item.name}</span>
+                  <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full" style={{ backgroundColor: getCategoryColor(item) }}></div>
+                  <span className="text-gray-300 text-xs sm:text-sm">{item.name}</span>
                 </div>
                 <div className="text-right">
-                  <span className="text-white font-medium">{item.value}</span>
-                  <span className="text-gray-400 text-sm ml-2">({item.percentage}%)</span>
+                  <span className="text-white font-medium text-xs sm:text-sm">{item.value}</span>
+                  <span className="text-gray-400 text-xs sm:text-sm ml-1 sm:ml-2">({item.percentage}%)</span>
                 </div>
               </div>
             ))}
@@ -825,30 +878,30 @@ export default function DeliveryAnalytics({ dashboardType = 'hospital_admin' }) 
 
   if (loading) {
     return (
-      <div className={`bg-gray-900/50 backdrop-blur-xl rounded-2xl p-6 ${themeStyles.border} h-[600px] flex items-center justify-center`}>
+      <div className={`bg-gray-900/50 backdrop-blur-xl rounded-2xl p-4 sm:p-6 ${themeStyles.border} h-[400px] sm:h-[600px] flex items-center justify-center`}>
         <div className="text-center">
-          <div className={`animate-spin rounded-full h-12 w-12 border-b-2 ${themeStyles.spinner} mx-auto`}></div>
-          <p className="text-gray-400 mt-4">Loading analytics data...</p>
+          <div className={`animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-b-2 ${themeStyles.spinner} mx-auto`}></div>
+          <p className="text-gray-400 mt-4 text-sm sm:text-base">Loading analytics data...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={`bg-gray-900/50 backdrop-blur-xl rounded-2xl p-6 ${themeStyles.border} ${themeStyles.borderHover} transition-all`}>
+    <div className={`bg-gray-900/50 backdrop-blur-xl rounded-2xl p-4 sm:p-6 ${themeStyles.border} ${themeStyles.borderHover} transition-all`}>
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold text-white">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-4">
+        <h2 className="text-lg sm:text-xl font-semibold text-white">
           {isAdmin ? 'Delivery Trends' : 'Delivery Analytics'}
         </h2>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4 w-full sm:w-auto">
           {/* Time Range Selector */}
-          <div className="flex items-center gap-2 bg-gray-800/50 rounded-lg p-1">
+          <div className="flex items-center gap-1 sm:gap-2 bg-gray-800/50 rounded-lg p-1">
             {['today', 'week', 'month'].map((range) => (
               <button
                 key={range}
                 onClick={() => setTimeRange(range)}
-                className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${
+                className={`px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm font-medium transition-all flex-1 sm:flex-initial ${
                   timeRange === range
                     ? `${themeStyles.bg} text-white`
                     : 'text-gray-400 hover:text-white'
@@ -860,20 +913,20 @@ export default function DeliveryAnalytics({ dashboardType = 'hospital_admin' }) 
           </div>
 
           {/* Export Options */}
-          <div className="relative group">
-            <button className="p-2 bg-gray-800/50 rounded-lg hover:bg-gray-700/50 transition-all">
+          <div className="relative group self-center">
+            <button className="p-1.5 sm:p-2 bg-gray-800/50 rounded-lg hover:bg-gray-700/50 transition-all">
               <DownloadIcon className="w-4 h-4 text-gray-400" />
             </button>
-            <div className="absolute right-0 mt-2 w-32 bg-gray-800 rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-all pointer-events-none group-hover:pointer-events-auto">
+            <div className="absolute right-0 mt-2 w-32 bg-gray-800 rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-all pointer-events-none group-hover:pointer-events-auto z-10">
               <button
                 onClick={() => exportData('csv')}
-                className="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-gray-700 rounded-t-lg"
+                className="w-full px-4 py-2 text-left text-xs sm:text-sm text-gray-300 hover:bg-gray-700 rounded-t-lg"
               >
                 Export CSV
               </button>
               <button
                 onClick={() => exportData('pdf')}
-                className="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-gray-700 rounded-b-lg"
+                className="w-full px-4 py-2 text-left text-xs sm:text-sm text-gray-300 hover:bg-gray-700 rounded-b-lg"
               >
                 Export PDF
               </button>
@@ -883,7 +936,7 @@ export default function DeliveryAnalytics({ dashboardType = 'hospital_admin' }) 
       </div>
 
       {/* Metrics Cards */}
-      <div className="grid grid-cols-5 gap-4 mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-4 mb-4 sm:mb-6">
         <MetricCard
           title="Total Deliveries"
           value={analyticsData.metrics.total}
@@ -910,6 +963,7 @@ export default function DeliveryAnalytics({ dashboardType = 'hospital_admin' }) 
           title="Avg/Day"
           value={analyticsData.metrics.avgPerDay.toFixed(1)}
           themeColor={themeColor}
+          className="col-span-2 sm:col-span-1"
         />
       </div>
 
@@ -917,47 +971,49 @@ export default function DeliveryAnalytics({ dashboardType = 'hospital_admin' }) 
       <div className="flex items-center gap-2 mb-4">
         <button
           onClick={() => setChartType('mixed')}
-          className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-all ${
+          className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg flex items-center gap-1 sm:gap-2 transition-all text-xs sm:text-sm ${
             chartType === 'mixed'
               ? `${themeStyles.bg} text-white`
               : 'bg-gray-800/50 text-gray-400 hover:text-white'
           }`}
         >
-          <ChartBarIcon className="w-4 h-4" />
-          Mixed Chart
+          <ChartBarIcon className="w-3 h-3 sm:w-4 sm:h-4" />
+          <span className="hidden sm:inline">Mixed Chart</span>
+          <span className="sm:hidden">Mixed</span>
         </button>
         <button
           onClick={() => setChartType('donut')}
-          className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-all ${
+          className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg flex items-center gap-1 sm:gap-2 transition-all text-xs sm:text-sm ${
             chartType === 'donut'
               ? `${themeStyles.bg} text-white`
               : 'bg-gray-800/50 text-gray-400 hover:text-white'
           }`}
         >
-          <ChartPieIcon className="w-4 h-4" />
-          Donut Chart
+          <ChartPieIcon className="w-3 h-3 sm:w-4 sm:h-4" />
+          <span className="hidden sm:inline">Donut Chart</span>
+          <span className="sm:hidden">Donut</span>
         </button>
       </div>
 
       {/* Chart Display */}
-      <div className="bg-gray-800/30 rounded-xl p-4 mb-6">
+      <div className="bg-gray-800/30 rounded-xl p-2 sm:p-4 mb-4 sm:mb-6">
         {chartType === 'mixed' && <MixedChartView />}
         {chartType === 'donut' && <DonutChartView />}
       </div>
 
       {/* Additional Analytics Grid */}
-      <div className={`grid grid-cols-2 ${isAdmin ? 'lg:grid-cols-3' : 'lg:grid-cols-4'} gap-4`}>
+      <div className={`grid grid-cols-1 sm:grid-cols-2 ${isAdmin ? 'lg:grid-cols-3' : 'lg:grid-cols-4'} gap-2 sm:gap-4`}>
         {/* Peak Hours */}
-        <div className="bg-gray-800/30 rounded-xl p-4">
-          <h3 className="text-sm font-medium text-gray-400 mb-3">Peak Hours</h3>
-          <div className="space-y-2">
+        <div className="bg-gray-800/30 rounded-xl p-3 sm:p-4">
+          <h3 className="text-xs sm:text-sm font-medium text-gray-400 mb-2 sm:mb-3">Peak Hours</h3>
+          <div className="space-y-1.5 sm:space-y-2">
             {analyticsData.peakHours.slice(0, 5).map((hour, index) => (
               <div key={index} className="flex items-center justify-between">
                 <span className="text-xs text-gray-300">{hour.hour}:00</span>
-                <div className="flex items-center gap-2">
-                  <div className="w-24 bg-gray-700 rounded-full h-1.5">
+                <div className="flex items-center gap-1 sm:gap-2">
+                  <div className="w-16 sm:w-24 bg-gray-700 rounded-full h-1 sm:h-1.5">
                     <div 
-                      className={`${themeStyles.barColor} h-1.5 rounded-full`}
+                      className={`${themeStyles.barColor} h-1 sm:h-1.5 rounded-full`}
                       style={{ width: `${(hour.count / Math.max(...analyticsData.peakHours.map(h => h.count))) * 100}%` }}
                     />
                   </div>
@@ -970,12 +1026,12 @@ export default function DeliveryAnalytics({ dashboardType = 'hospital_admin' }) 
 
         {/* Top Package Types - Only for Hospital Admin */}
         {!isAdmin && (
-          <div className="bg-gray-800/30 rounded-xl p-4">
-            <h3 className="text-sm font-medium text-gray-400 mb-3">Top Package Types</h3>
-            <div className="space-y-2">
+          <div className="bg-gray-800/30 rounded-xl p-3 sm:p-4">
+            <h3 className="text-xs sm:text-sm font-medium text-gray-400 mb-2 sm:mb-3">Top Package Types</h3>
+            <div className="space-y-1.5 sm:space-y-2">
               {analyticsData.packageTypeBreakdown.slice(0, 5).map((pkg, index) => (
                 <div key={index} className="flex items-center justify-between">
-                  <span className="text-xs text-gray-300 truncate">{pkg.name}</span>
+                  <span className="text-xs text-gray-300 truncate mr-2">{pkg.name}</span>
                   <span className="text-xs text-white font-medium">{pkg.value}</span>
                 </div>
               ))}
@@ -984,12 +1040,12 @@ export default function DeliveryAnalytics({ dashboardType = 'hospital_admin' }) 
         )}
 
         {/* Urgency Distribution */}
-        <div className="bg-gray-800/30 rounded-xl p-4">
-          <h3 className="text-sm font-medium text-gray-400 mb-3">Urgency Levels</h3>
-          <div className="space-y-2">
+        <div className="bg-gray-800/30 rounded-xl p-3 sm:p-4">
+          <h3 className="text-xs sm:text-sm font-medium text-gray-400 mb-2 sm:mb-3">Urgency Levels</h3>
+          <div className="space-y-1.5 sm:space-y-2">
             {analyticsData.urgencyBreakdown.map((urgency, index) => (
               <div key={index} className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1 sm:gap-2">
                   <div 
                     className="w-2 h-2 rounded-full" 
                     style={{ backgroundColor: COLORS[urgency.type] }}
@@ -1003,9 +1059,9 @@ export default function DeliveryAnalytics({ dashboardType = 'hospital_admin' }) 
         </div>
 
         {/* Time Distribution */}
-        <div className="bg-gray-800/30 rounded-xl p-4">
-          <h3 className="text-sm font-medium text-gray-400 mb-3">Time Distribution</h3>
-          <div className="space-y-2">
+        <div className="bg-gray-800/30 rounded-xl p-3 sm:p-4">
+          <h3 className="text-xs sm:text-sm font-medium text-gray-400 mb-2 sm:mb-3">Time Distribution</h3>
+          <div className="space-y-1.5 sm:space-y-2">
             {analyticsData.timeDistribution.map((time, index) => (
               <div key={index} className="flex items-center justify-between">
                 <span className="text-xs text-gray-300">{time.period}</span>
@@ -1022,7 +1078,7 @@ export default function DeliveryAnalytics({ dashboardType = 'hospital_admin' }) 
 }
 
 // Metric Card Component
-function MetricCard({ title, value, subtitle, themeColor = 'gray' }) {
+function MetricCard({ title, value, subtitle, themeColor = 'gray', className = '' }) {
   const colorMap = {
     purple: 'from-purple-600 to-indigo-600',
     red: 'from-red-600 to-rose-600',
@@ -1032,12 +1088,12 @@ function MetricCard({ title, value, subtitle, themeColor = 'gray' }) {
   };
   
   return (
-    <div className="bg-gray-800/30 rounded-xl p-4">
-      <p className="text-gray-400 text-sm mb-1">{title}</p>
-      <p className={`text-2xl font-bold text-white bg-gradient-to-r ${colorMap[themeColor]} bg-clip-text text-transparent`}>
+    <div className={`bg-gray-800/30 rounded-xl p-3 sm:p-4 ${className}`}>
+      <p className="text-gray-400 text-xs sm:text-sm mb-0.5 sm:mb-1">{title}</p>
+      <p className={`text-lg sm:text-2xl font-bold text-white bg-gradient-to-r ${colorMap[themeColor]} bg-clip-text text-transparent`}>
         {value}
       </p>
-      {subtitle && <p className="text-xs text-gray-500 mt-1">{subtitle}</p>}
+      {subtitle && <p className="text-xs text-gray-500 mt-0.5 sm:mt-1">{subtitle}</p>}
     </div>
   );
 }
