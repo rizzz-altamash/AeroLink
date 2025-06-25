@@ -660,7 +660,6 @@
 
 
 
-
 // Responsive 
 // app/dashboard/track-all/page.jsx
 'use client';
@@ -811,11 +810,11 @@ function TrackAllContent() {
       <DashboardLayout>
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
-            <svg className="animate-spin h-12 w-12 text-red-500 mx-auto mb-4" fill="none" viewBox="0 0 24 24">
+            <svg className="animate-spin h-10 w-10 sm:h-12 sm:w-12 text-red-500 mx-auto mb-4" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            <p className="text-gray-400">Loading active deliveries...</p>
+            <p className="text-gray-400 text-sm sm:text-base">Loading active deliveries...</p>
           </div>
         </div>
       </DashboardLayout>
@@ -843,99 +842,95 @@ function TrackAllContent() {
 
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Track All Deliveries</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1 sm:mb-2">Track All Deliveries</h1>
               <p className="text-sm sm:text-base text-gray-400">
                 Monitoring {filteredDeliveries.length} active deliveries
-                {autoRefresh && <span className="text-green-400 ml-2 block sm:inline">• Live tracking enabled</span>}
+                {autoRefresh && <span className="text-green-400 ml-2">• Live tracking enabled</span>}
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-4">
               {/* Last Updated */}
               <div className="text-xs sm:text-sm text-gray-500">
                 Last updated: {lastUpdated.toLocaleTimeString()}
               </div>
 
-              <div className="flex items-center gap-3">
-                {/* Refresh Button */}
-                <button
-                  onClick={handleRefresh}
-                  className="p-2 bg-gray-800/50 hover:bg-gray-700/50 rounded-lg transition-all"
-                  title="Refresh"
-                >
-                  <RefreshIcon className="w-5 h-5 text-gray-400" />
-                </button>
+              {/* Refresh Button */}
+              <button
+                onClick={handleRefresh}
+                className="p-2 bg-gray-800/50 hover:bg-gray-700/50 rounded-lg transition-all"
+                title="Refresh"
+              >
+                <RefreshIcon className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
+              </button>
 
-                {/* Auto Refresh Toggle */}
-                <div className="flex items-center gap-2">
-                  <span className="text-xs sm:text-sm text-gray-400">Auto-refresh</span>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={autoRefresh}
-                      onChange={(e) => setAutoRefresh(e.target.checked)}
-                      className="sr-only peer"
-                    />
-                    <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
-                  </label>
-                </div>
+              {/* Auto Refresh Toggle */}
+              <div className="flex items-center gap-2">
+                <span className="text-xs sm:text-sm text-gray-400">Auto-refresh</span>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={autoRefresh}
+                    onChange={(e) => setAutoRefresh(e.target.checked)}
+                    className="sr-only peer"
+                  />
+                  <div className="w-9 h-5 sm:w-11 sm:h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 sm:after:h-5 sm:after:w-5 after:transition-all peer-checked:bg-red-600"></div>
+                </label>
               </div>
             </div>
           </div>
         </div>
 
         {/* Controls Bar */}
-        <div className="bg-gray-900/50 backdrop-blur-xl rounded-2xl p-3 sm:p-4 border border-red-500/20 mb-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div className="bg-gray-900/50 backdrop-blur-xl rounded-2xl p-3 sm:p-4 border border-red-500/20 mb-4 sm:mb-6">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
             {/* Filter Buttons */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0">
-              <FilterIcon className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 mr-1 sm:mr-2 flex-shrink-0 hidden md:block" />
-              <div className="flex gap-2 flex-nowrap">
-                <button
-                  onClick={() => setFilter('all')}
-                  className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg transition-all whitespace-nowrap text-xs sm:text-sm ${
-                    filter === 'all' 
-                      ? 'bg-red-600 text-white' 
-                      : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50'
-                  }`}
-                >
-                  All ({activeDeliveries.length})
-                </button>
-                <button
-                  onClick={() => setFilter('routine')}
-                  className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg transition-all whitespace-nowrap text-xs sm:text-sm ${
-                    filter === 'routine' 
-                      ? 'bg-blue-600 text-white' 
-                      : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50'
-                  }`}
-                >
-                  Routine ({activeDeliveries.filter(d => d.package?.urgency === 'routine').length})
-                </button>
-                <button
-                  onClick={() => setFilter('urgent')}
-                  className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg transition-all whitespace-nowrap text-xs sm:text-sm ${
-                    filter === 'urgent' 
-                      ? 'bg-orange-600 text-white' 
-                      : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50'
-                  }`}
-                >
-                  Urgent ({activeDeliveries.filter(d => d.package?.urgency === 'urgent').length})
-                </button>
-                <button
-                  onClick={() => setFilter('emergency')}
-                  className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg transition-all whitespace-nowrap text-xs sm:text-sm ${
-                    filter === 'emergency' 
-                      ? 'bg-red-600 text-white' 
-                      : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50'
-                  }`}
-                >
-                  Emergency ({activeDeliveries.filter(d => d.package?.urgency === 'emergency').length})
-                </button>
-              </div>
+            <div className="flex flex-wrap items-center gap-1 sm:gap-2">
+              <FilterIcon className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 mr-1 sm:mr-2" />
+              <button
+                onClick={() => setFilter('all')}
+                className={`px-2 sm:px-4 py-1 sm:py-2 rounded-lg transition-all text-xs sm:text-sm ${
+                  filter === 'all' 
+                    ? 'bg-red-600 text-white' 
+                    : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50'
+                }`}
+              >
+                All ({activeDeliveries.length})
+              </button>
+              <button
+                onClick={() => setFilter('routine')}
+                className={`px-2 sm:px-4 py-1 sm:py-2 rounded-lg transition-all text-xs sm:text-sm ${
+                  filter === 'routine' 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50'
+                }`}
+              >
+                Routine ({activeDeliveries.filter(d => d.package?.urgency === 'routine').length})
+              </button>
+              <button
+                onClick={() => setFilter('urgent')}
+                className={`px-2 sm:px-4 py-1 sm:py-2 rounded-lg transition-all text-xs sm:text-sm ${
+                  filter === 'urgent' 
+                    ? 'bg-orange-600 text-white' 
+                    : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50'
+                }`}
+              >
+                Urgent ({activeDeliveries.filter(d => d.package?.urgency === 'urgent').length})
+              </button>
+              <button
+                onClick={() => setFilter('emergency')}
+                className={`px-2 sm:px-4 py-1 sm:py-2 rounded-lg transition-all text-xs sm:text-sm ${
+                  filter === 'emergency' 
+                    ? 'bg-red-600 text-white' 
+                    : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50'
+                }`}
+              >
+                Emergency ({activeDeliveries.filter(d => d.package?.urgency === 'emergency').length})
+              </button>
             </div>
 
             {/* View Mode Toggles */}
-            <div className="flex items-center gap-2 justify-end">
+            <div className="flex items-center gap-1 sm:gap-2 self-end lg:self-auto">
               <button
                 onClick={() => setViewMode('grid')}
                 className={`p-1.5 sm:p-2 rounded-lg transition-all ${
@@ -983,7 +978,7 @@ function TrackAllContent() {
                   {filteredDeliveries.map((delivery) => (
                     <div 
                       key={delivery._id}
-                      className={`flex items-center gap-2 p-1.5 sm:p-2 rounded-lg cursor-pointer transition-all ${
+                      className={`flex items-center gap-2 p-1.5 sm:p-2 rounded-lg cursor-pointer transition-all text-xs sm:text-sm ${
                         selectedDelivery?._id === delivery._id 
                           ? 'bg-red-600/20 border border-red-500/30' 
                           : 'hover:bg-gray-800/50'
@@ -992,7 +987,7 @@ function TrackAllContent() {
                     >
                       <DroneIcon className="w-3 h-3 sm:w-4 sm:h-4 text-red-400" />
                       <span className="text-white text-xs sm:text-sm">{delivery.orderId}</span>
-                      <span className={`ml-auto px-1.5 py-0.5 sm:px-2 sm:py-1 rounded text-xs ${statusColors[delivery.status]} text-white`}>
+                      <span className={`ml-auto px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-xs ${statusColors[delivery.status]} text-white`}>
                         {delivery.status}
                       </span>
                     </div>
@@ -1002,7 +997,7 @@ function TrackAllContent() {
               
               {/* Map Placeholder */}
               <div className="h-full bg-gray-800 rounded-xl flex items-center justify-center">
-                <div className="text-center px-4">
+                <div className="text-center">
                   <MapIcon className="w-12 h-12 sm:w-16 sm:h-16 text-gray-600 mx-auto mb-4" />
                   <p className="text-gray-500 text-sm sm:text-base">Live map tracking coming soon</p>
                   <p className="text-gray-600 text-xs sm:text-sm mt-2">
@@ -1013,64 +1008,47 @@ function TrackAllContent() {
             </div>
           </div>
         ) : viewMode === 'list' ? (
-          <div className="bg-gray-900/50 backdrop-blur-xl rounded-2xl p-4 sm:p-6 border border-red-500/20">
-            {/* Mobile List View */}
-            <div className="block sm:hidden">
-              {filteredDeliveries.length === 0 ? (
-                <div className="py-8 text-center text-gray-500">
-                  No active deliveries found
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {filteredDeliveries.map((delivery) => (
-                    <DeliveryMobileCard 
-                      key={delivery._id} 
-                      delivery={delivery}
-                      onTrack={() => router.push(`/dashboard/track/${delivery._id}`)}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Desktop Table View */}
-            <div className="hidden sm:block overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="text-left border-b border-gray-800">
-                    <th className="pb-3 text-sm font-medium text-gray-400">Order ID</th>
-                    <th className="pb-3 text-sm font-medium text-gray-400">Type</th>
-                    <th className="pb-3 text-sm font-medium text-gray-400">Urgency</th>
-                    <th className="pb-3 text-sm font-medium text-gray-400">Status</th>
-                    <th className="pb-3 text-sm font-medium text-gray-400">Destination</th>
-                    <th className="pb-3 text-sm font-medium text-gray-400">ETA</th>
-                    <th className="pb-3 text-sm font-medium text-gray-400">Battery</th>
-                    <th className="pb-3 text-sm font-medium text-gray-400">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-800">
-                  {filteredDeliveries.length === 0 ? (
-                    <tr>
-                      <td colSpan="8" className="py-8 text-center text-gray-500">
-                        No active deliveries found
-                      </td>
+          <div className="bg-gray-900/50 backdrop-blur-xl rounded-2xl p-3 sm:p-6 border border-red-500/20">
+            {/* Table wrapper with horizontal scroll for mobile */}
+            <div className="overflow-x-auto -mx-3 sm:-mx-6">
+              <div className="inline-block min-w-full align-middle px-3 sm:px-6">
+                <table className="min-w-full">
+                  <thead>
+                    <tr className="text-left border-b border-gray-800">
+                      <th className="pb-2 sm:pb-3 pr-3 text-xs sm:text-sm font-medium text-gray-400 whitespace-nowrap">Order ID</th>
+                      <th className="pb-2 sm:pb-3 px-3 text-xs sm:text-sm font-medium text-gray-400 whitespace-nowrap">Type</th>
+                      <th className="pb-2 sm:pb-3 px-3 text-xs sm:text-sm font-medium text-gray-400 whitespace-nowrap">Urgency</th>
+                      <th className="pb-2 sm:pb-3 px-3 text-xs sm:text-sm font-medium text-gray-400 whitespace-nowrap">Status</th>
+                      <th className="pb-2 sm:pb-3 px-3 text-xs sm:text-sm font-medium text-gray-400 whitespace-nowrap">Destination</th>
+                      <th className="pb-2 sm:pb-3 px-3 text-xs sm:text-sm font-medium text-gray-400 whitespace-nowrap">ETA</th>
+                      <th className="pb-2 sm:pb-3 px-3 text-xs sm:text-sm font-medium text-gray-400 whitespace-nowrap">Battery</th>
+                      <th className="pb-2 sm:pb-3 pl-3 text-xs sm:text-sm font-medium text-gray-400 whitespace-nowrap">Actions</th>
                     </tr>
-                  ) : (
-                    filteredDeliveries.map((delivery) => (
-                      <DeliveryListRow 
-                        key={delivery._id} 
-                        delivery={delivery}
-                        onTrack={() => router.push(`/dashboard/track/${delivery._id}`)}
-                      />
-                    ))
-                  )}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-gray-800">
+                    {filteredDeliveries.length === 0 ? (
+                      <tr>
+                        <td colSpan="8" className="py-6 sm:py-8 text-center text-sm sm:text-base text-gray-500">
+                          No active deliveries found
+                        </td>
+                      </tr>
+                    ) : (
+                      filteredDeliveries.map((delivery) => (
+                        <DeliveryListRow 
+                          key={delivery._id} 
+                          delivery={delivery}
+                          onTrack={() => router.push(`/dashboard/track/${delivery._id}`)}
+                        />
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         ) : (
           // Grid View (default)
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
             {filteredDeliveries.length === 0 ? (
               <div className="col-span-full bg-gray-900/50 backdrop-blur-xl rounded-2xl p-8 sm:p-12 border border-red-500/20 text-center">
                 <DroneIcon className="w-12 h-12 sm:w-16 sm:h-16 text-gray-600 mx-auto mb-4" />
@@ -1094,89 +1072,6 @@ function TrackAllContent() {
         )}
       </div>
     </DashboardLayout>
-  );
-}
-
-// Mobile Card Component for List View
-function DeliveryMobileCard({ delivery, onTrack }) {
-  const statusColors = {
-    pending_approval: 'text-yellow-400 bg-yellow-500/20',
-    approved: 'text-blue-400 bg-blue-500/20',
-    assigned: 'text-purple-400 bg-purple-500/20',
-    pickup: 'text-lime-300 bg-lime-400/20',
-    in_transit: 'text-lime-400 bg-lime-500/20',
-    pending_confirmation: 'text-teal-400 bg-teal-500/20',
-    delivered: 'text-green-400 bg-green-500/20',
-    failed: 'text-red-400 bg-red-500/20',
-    cancelled: 'text-rose-400 bg-rose-500/20'
-  };
-
-  const urgencyColors = {
-    routine: 'text-blue-400 bg-blue-500/20',
-    urgent: 'text-orange-400 bg-orange-500/20',
-    emergency: 'text-red-400 bg-red-500/20'
-  };
-
-  const statusStyle = statusColors[delivery.status] || 'text-gray-400 bg-gray-500/20';
-  const urgencyStyle = urgencyColors[delivery.package?.urgency] || urgencyColors.routine;
-
-  return (
-    <div className="bg-gray-800/50 rounded-lg p-4 space-y-3">
-      <div className="flex justify-between items-start">
-        <div>
-          <h4 className="text-white font-medium text-sm">{delivery.orderId}</h4>
-          <p className="text-gray-400 text-xs capitalize">{delivery.package?.type}</p>
-        </div>
-        <div className="flex flex-col items-end gap-1">
-          <span className={`px-2 py-1 rounded-full text-xs font-medium ${urgencyStyle}`}>
-            {delivery.package?.urgency}
-          </span>
-          <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusStyle}`}>
-            {delivery.status.replace('_', ' ')}
-          </span>
-        </div>
-      </div>
-      
-      <div className="flex items-center justify-between text-xs">
-        <div className="flex items-center gap-1">
-          <LocationIcon className="w-3 h-3 text-gray-400" />
-          <span className="text-gray-300 truncate max-w-[150px]">
-            {delivery.displayLocation || delivery.recipient?.name || 'Unknown'}
-          </span>
-        </div>
-        <div className="flex items-center gap-1">
-          <TimeIcon className="w-3 h-3 text-gray-400" />
-          <span className="text-gray-300">
-            {delivery.delivery?.scheduledTime ? 
-              new Date(delivery.delivery.scheduledTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 
-              'N/A'}
-          </span>
-        </div>
-      </div>
-
-      {delivery.tracking?.battery !== undefined && (
-        <div className="flex items-center gap-2">
-          <BatteryIcon className="w-3 h-3 text-gray-400" />
-          <div className="flex-1 bg-gray-700 rounded-full h-1.5">
-            <div 
-              className={`h-1.5 rounded-full ${
-                delivery.tracking.battery > 50 ? 'bg-green-500' : 
-                delivery.tracking.battery > 20 ? 'bg-yellow-500' : 'bg-red-500'
-              }`}
-              style={{ width: `${delivery.tracking.battery}%` }}
-            />
-          </div>
-          <span className="text-xs text-gray-400">{delivery.tracking.battery}%</span>
-        </div>
-      )}
-
-      <button
-        onClick={onTrack}
-        className="w-full py-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 rounded-lg transition-all text-sm font-medium"
-      >
-        Track
-      </button>
-    </div>
   );
 }
 
@@ -1209,28 +1104,28 @@ function DeliveryTrackingCard({ delivery, delay, onTrack }) {
       style={{ animationDelay: `${delay}ms` }}
     >
       {/* Header */}
-      <div className="flex items-start justify-between mb-4">
+      <div className="flex items-start justify-between mb-3 sm:mb-4">
         <div>
           <h3 className="text-lg sm:text-xl font-semibold text-white group-hover:text-red-300 transition-colors">
             {delivery.orderId}
           </h3>
           <p className="text-gray-400 text-xs sm:text-sm mt-1">{delivery.package?.type || 'Package'}</p>
         </div>
-        <div className="flex flex-col items-end gap-2">
-          <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r ${urgencyGradient} text-white`}>
+        <div className="flex flex-col items-end gap-1 sm:gap-2">
+          <span className={`px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs font-medium bg-gradient-to-r ${urgencyGradient} text-white`}>
             {delivery.package?.urgency || 'routine'}
           </span>
-          <div className="flex items-center gap-2">
-            <div className={`w-2 h-2 rounded-full ${statusColor} animate-pulse`}></div>
+          <div className="flex items-center gap-1 sm:gap-2">
+            <div className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${statusColor} animate-pulse`}></div>
             <span className="text-gray-400 text-xs sm:text-sm capitalize">{delivery.status.replace('_', ' ')}</span>
           </div>
         </div>
       </div>
 
       {/* Delivery Info */}
-      <div className="space-y-3 mb-4">
+      <div className="space-y-2 sm:space-y-3 mb-3 sm:mb-4">
         <div className="flex items-center gap-2">
-          <LocationIcon className="w-4 h-4 text-gray-400 flex-shrink-0" />
+          <LocationIcon className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400 flex-shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="text-gray-500 text-xs">Destination</p>
             <p className="text-gray-300 text-xs sm:text-sm truncate">
@@ -1240,7 +1135,7 @@ function DeliveryTrackingCard({ delivery, delay, onTrack }) {
         </div>
 
         <div className="flex items-center gap-2">
-          <TimeIcon className="w-4 h-4 text-gray-400 flex-shrink-0" />
+          <TimeIcon className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400 flex-shrink-0" />
           <div className="flex-1">
             <p className="text-gray-500 text-xs">ETA</p>
             <p className="text-gray-300 text-xs sm:text-sm">
@@ -1254,7 +1149,7 @@ function DeliveryTrackingCard({ delivery, delay, onTrack }) {
         {/* Drone Status */}
         {delivery.droneId && (
           <div className="flex items-center gap-2">
-            <DroneIcon className="w-4 h-4 text-gray-400 flex-shrink-0" />
+            <DroneIcon className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400 flex-shrink-0" />
             <div className="flex-1">
               <p className="text-gray-500 text-xs">Drone</p>
               <p className="text-gray-300 text-xs sm:text-sm">{delivery.droneId.registrationId}</p>
@@ -1265,12 +1160,12 @@ function DeliveryTrackingCard({ delivery, delay, onTrack }) {
         {/* Battery Level */}
         {delivery.tracking?.battery !== undefined && (
           <div className="flex items-center gap-2">
-            <BatteryIcon className="w-4 h-4 text-gray-400 flex-shrink-0" />
+            <BatteryIcon className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400 flex-shrink-0" />
             <div className="flex-1">
               <div className="flex items-center gap-2">
-                <div className="flex-1 bg-gray-700 rounded-full h-2">
+                <div className="flex-1 bg-gray-700 rounded-full h-1.5 sm:h-2">
                   <div 
-                    className={`h-2 rounded-full transition-all ${
+                    className={`h-1.5 sm:h-2 rounded-full transition-all ${
                       delivery.tracking.battery > 50 ? 'bg-green-500' : 
                       delivery.tracking.battery > 20 ? 'bg-yellow-500' : 'bg-red-500'
                     }`}
@@ -1285,14 +1180,14 @@ function DeliveryTrackingCard({ delivery, delay, onTrack }) {
       </div>
 
       {/* Progress Bar */}
-      <div className="mb-4">
+      <div className="mb-3 sm:mb-4">
         <div className="flex justify-between text-xs text-gray-500 mb-1">
           <span>Progress</span>
           <span>{getProgressPercentage(delivery.status)}%</span>
         </div>
-        <div className="w-full bg-gray-700 rounded-full h-1.5">
+        <div className="w-full bg-gray-700 rounded-full h-1 sm:h-1.5">
           <div 
-            className="bg-gradient-to-r from-red-600 to-rose-600 h-1.5 rounded-full transition-all"
+            className="bg-gradient-to-r from-red-600 to-rose-600 h-1 sm:h-1.5 rounded-full transition-all"
             style={{ width: `${getProgressPercentage(delivery.status)}%` }}
           />
         </div>
@@ -1301,10 +1196,10 @@ function DeliveryTrackingCard({ delivery, delay, onTrack }) {
       {/* Action Button */}
       <button
         onClick={onTrack}
-        className="w-full py-2.5 sm:py-3 bg-red-600/20 hover:bg-red-600/30 text-red-400 rounded-xl transition-all font-medium group flex items-center justify-center gap-2 text-sm sm:text-base"
+        className="w-full py-2 sm:py-3 bg-red-600/20 hover:bg-red-600/30 text-red-400 rounded-xl transition-all font-medium group flex items-center justify-center gap-2 text-sm sm:text-base"
       >
         <span>Track Delivery</span>
-        <svg className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg className="w-3 h-3 sm:w-4 sm:h-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
         </svg>
       </button>
@@ -1337,56 +1232,56 @@ function DeliveryListRow({ delivery, onTrack }) {
 
   return (
     <tr className="hover:bg-gray-800/50 transition-colors">
-      <td className="py-3">
-        <span className="text-white font-medium">{delivery.orderId}</span>
+      <td className="py-2 sm:py-3 pr-3">
+        <span className="text-white font-medium text-xs sm:text-sm whitespace-nowrap">{delivery.orderId}</span>
       </td>
-      <td className="py-3">
-        <span className="text-gray-300 capitalize">{delivery.package?.type}</span>
+      <td className="py-2 sm:py-3 px-3">
+        <span className="text-gray-300 capitalize text-xs sm:text-sm whitespace-nowrap">{delivery.package?.type}</span>
       </td>
-      <td className="py-3">
-        <span className={`px-2 py-1 rounded-full text-xs font-medium ${urgencyStyle}`}>
+      <td className="py-2 sm:py-3 px-3">
+        <span className={`px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-xs font-medium whitespace-nowrap ${urgencyStyle}`}>
           {delivery.package?.urgency}
         </span>
       </td>
-      <td className="py-3">
-        <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusStyle}`}>
+      <td className="py-2 sm:py-3 px-3">
+        <span className={`px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-xs font-medium whitespace-nowrap ${statusStyle}`}>
           {delivery.status.replace('_', ' ')}
         </span>
       </td>
-      <td className="py-3">
-        <span className="text-gray-300 text-sm">
+      <td className="py-2 sm:py-3 px-3">
+        <span className="text-gray-300 text-xs sm:text-sm whitespace-nowrap">
           {delivery.displayLocation || delivery.recipient?.name || 'Unknown'}
         </span>
       </td>
-      <td className="py-3">
-        <span className="text-gray-300 text-sm">
+      <td className="py-2 sm:py-3 px-3">
+        <span className="text-gray-300 text-xs sm:text-sm whitespace-nowrap">
           {delivery.delivery?.scheduledTime ? 
             new Date(delivery.delivery.scheduledTime).toLocaleTimeString() : 
             'N/A'}
         </span>
       </td>
-      <td className="py-3">
+      <td className="py-2 sm:py-3 px-3">
         {delivery.tracking?.battery !== undefined ? (
-          <div className="flex items-center gap-2">
-            <div className="w-16 bg-gray-700 rounded-full h-2">
+          <div className="flex items-center gap-1 sm:gap-2">
+            <div className="w-12 sm:w-16 bg-gray-700 rounded-full h-1.5 sm:h-2">
               <div 
-                className={`h-2 rounded-full ${
+                className={`h-1.5 sm:h-2 rounded-full ${
                   delivery.tracking.battery > 50 ? 'bg-green-500' : 
                   delivery.tracking.battery > 20 ? 'bg-yellow-500' : 'bg-red-500'
                 }`}
                 style={{ width: `${delivery.tracking.battery}%` }}
               />
             </div>
-            <span className="text-xs text-gray-400">{delivery.tracking.battery}%</span>
+            <span className="text-xs text-gray-400 whitespace-nowrap">{delivery.tracking.battery}%</span>
           </div>
         ) : (
-          <span className="text-gray-500 text-sm">N/A</span>
+          <span className="text-gray-500 text-xs sm:text-sm">N/A</span>
         )}
       </td>
-      <td className="py-3">
+      <td className="py-2 sm:py-3 pl-3">
         <button
           onClick={onTrack}
-          className="text-red-400 hover:text-red-300 text-sm font-medium"
+          className="text-red-400 hover:text-red-300 text-xs sm:text-sm font-medium whitespace-nowrap"
         >
           Track
         </button>

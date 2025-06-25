@@ -1333,7 +1333,6 @@ export default function MedicalStaffDashboard() {
                 <th className="pb-3 text-xs sm:text-sm font-medium text-gray-400">Delivered</th>
                 <th className="pb-3 text-xs sm:text-sm font-medium text-gray-400 hidden lg:table-cell">Duration</th>
                 <th className="pb-3 text-xs sm:text-sm font-medium text-gray-400">Status</th>
-                <th className="pb-3 text-xs sm:text-sm font-medium text-gray-400">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-800">
@@ -1679,11 +1678,6 @@ function RecentDeliveryRow({ delivery, delay }) {
         <span className={`px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-xs font-medium ${statusStyle}`}>
           {delivery.status}
         </span>
-      </td>
-      <td className="py-2 sm:py-3">
-        <button className="text-red-400 hover:text-red-300 text-xs sm:text-sm">
-          View Details
-        </button>
       </td>
     </tr>
   );
