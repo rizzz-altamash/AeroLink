@@ -1754,7 +1754,7 @@ function TrackingModal({ delivery, onClose }) {
         ) : trackingData ? (
           <div className="space-y-4 sm:space-y-6">
             {/* Map placeholder */}
-            <div className="bg-gray-800 rounded-lg sm:rounded-xl h-48 sm:h-64 flex items-center justify-center">
+            <div className="bg-gray-800 rounded-lg sm:rounded-xl h-48 sm:h-64 items-center justify-center hidden">
               <p className="text-gray-500 text-sm sm:text-base">Live map tracking coming soon</p>
             </div>
 
