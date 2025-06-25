@@ -5,7 +5,7 @@ import User from '../models/User.js';
 import dotenv from 'dotenv';
 
 // Load environment variables
-dotenv.config();
+dotenv.config({ path: '.env.local' });
 
 async function connectDB() {
   try {
@@ -71,4 +71,4 @@ async function createAdmin() {
 }
 
 // Run the script
-createAdmin();
+// createAdmin();
