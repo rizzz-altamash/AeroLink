@@ -1127,7 +1127,7 @@ function NewDeliveryContent() {
 
 export default function NewDeliveryPage() {
   return (
-    <RoleGuard allowedRoles={['medical_staff']}>
+    <RoleGuard allowedRoles={['medical_staff', 'hospital_admin']}>
       <NewDeliveryContent />
     </RoleGuard>
   );
