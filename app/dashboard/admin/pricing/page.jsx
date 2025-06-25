@@ -16,7 +16,3 @@ export default function PricingPage() {
     </RoleGuard>
   );
 }
-
-// Don't forget to add this to your admin navigation in DashboardLayout.jsx:
-// In the navigationItems.admin array, add:
-// { href: '/dashboard/admin/pricing', label: 'Pricing Config', icon: DollarIcon }

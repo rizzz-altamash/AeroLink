@@ -1153,21 +1153,21 @@ function AssignmentModal({
   const canAssign = selectedPilot;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-gray-900 rounded-xl sm:rounded-2xl p-4 sm:p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-        <h2 className="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4">Assign Pilot to Delivery</h2>
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-2 xs:p-3 sm:p-4 z-50">
+      <div className="bg-gray-900 rounded-xl sm:rounded-2xl p-3 xs:p-4 sm:p-6 w-full max-w-[calc(100vw-1rem)] xs:max-w-[calc(100vw-1.5rem)] sm:max-w-2xl md:max-w-3xl lg:max-w-4xl max-h-[calc(100vh-1rem)] xs:max-h-[calc(100vh-1.5rem)] sm:max-h-[90vh] overflow-y-auto">
+        <h2 className="text-lg xs:text-xl sm:text-2xl font-bold text-white mb-2 xs:mb-3 sm:mb-4">Assign Pilot to Delivery</h2>
         
         {/* Delivery Details */}
-        <div className="bg-gray-800/50 rounded-lg sm:rounded-xl p-3 sm:p-4 mb-4 sm:mb-6">
-          <h3 className="text-base sm:text-lg font-semibold text-white mb-2 sm:mb-3">Delivery Details</h3>
-          <div className="grid grid-cols-2 gap-3 sm:gap-4">
+        <div className="bg-gray-800/50 rounded-lg sm:rounded-xl p-2.5 xs:p-3 sm:p-4 mb-3 xs:mb-4 sm:mb-6">
+          <h3 className="text-sm xs:text-base sm:text-lg font-semibold text-white mb-1.5 xs:mb-2 sm:mb-3">Delivery Details</h3>
+          <div className="grid grid-cols-2 gap-2 xs:gap-3 sm:gap-4">
             <div>
-              <p className="text-gray-400 text-xs sm:text-sm">Order ID</p>
-              <p className="text-white font-semibold text-sm sm:text-base">{delivery.orderId}</p>
+              <p className="text-gray-400 text-[10px] xs:text-xs sm:text-sm">Order ID</p>
+              <p className="text-white font-semibold text-xs xs:text-sm sm:text-base">{delivery.orderId}</p>
             </div>
             <div>
-              <p className="text-gray-400 text-xs sm:text-sm">Urgency</p>
-              <p className={`font-semibold text-sm sm:text-base ${
+              <p className="text-gray-400 text-[10px] xs:text-xs sm:text-sm">Urgency</p>
+              <p className={`font-semibold text-xs xs:text-sm sm:text-base ${
                 delivery.package?.urgency === 'emergency' ? 'text-red-400' :
                 delivery.package?.urgency === 'urgent' ? 'text-orange-400' :
                 'text-gray-300'
@@ -1176,33 +1176,33 @@ function AssignmentModal({
               </p>
             </div>
             <div>
-              <p className="text-gray-400 text-xs sm:text-sm">Package Type</p>
-              <p className="text-white text-sm sm:text-base">{delivery.package?.type}</p>
+              <p className="text-gray-400 text-[10px] xs:text-xs sm:text-sm">Package Type</p>
+              <p className="text-white text-xs xs:text-sm sm:text-base">{delivery.package?.type}</p>
             </div>
             <div>
-              <p className="text-gray-400 text-xs sm:text-sm">Weight</p>
-              <p className="text-white text-sm sm:text-base">{delivery.package?.weight}g</p>
+              <p className="text-gray-400 text-[10px] xs:text-xs sm:text-sm">Weight</p>
+              <p className="text-white text-xs xs:text-sm sm:text-base">{delivery.package?.weight}g</p>
             </div>
             <div className="col-span-2">
-              <p className="text-gray-400 text-xs sm:text-sm">From Hospital</p>
-              <p className="text-white font-medium text-sm sm:text-base">{hospitalDetails?.name || 'Unknown Hospital'}</p>
-              <p className="text-gray-300 text-xs sm:text-sm mt-0.5 sm:mt-1">
-                <LocationIcon className="w-3 h-3 sm:w-4 sm:h-4 inline-block mr-1 text-gray-400" />
+              <p className="text-gray-400 text-[10px] xs:text-xs sm:text-sm">From Hospital</p>
+              <p className="text-white font-medium text-xs xs:text-sm sm:text-base">{hospitalDetails?.name || 'Unknown Hospital'}</p>
+              <p className="text-gray-300 text-[10px] xs:text-xs sm:text-sm mt-0.5 sm:mt-1">
+                <LocationIcon className="w-2.5 xs:w-3 sm:w-4 h-2.5 xs:h-3 sm:h-4 inline-block mr-0.5 xs:mr-1 text-gray-400" />
                 {hospitalDetails?.address || 'Address not available'}
               </p>
             </div>
             <div className="col-span-2">
-              <p className="text-gray-400 text-xs sm:text-sm">To</p>
-              <p className="text-white text-sm sm:text-base">{delivery.recipient?.hospitalId?.name || delivery.recipient?.name || 'Unknown'}</p>
+              <p className="text-gray-400 text-[10px] xs:text-xs sm:text-sm">To</p>
+              <p className="text-white text-xs xs:text-sm sm:text-base">{delivery.recipient?.hospitalId?.name || delivery.recipient?.name || 'Unknown'}</p>
             </div>
           </div>
         </div>
 
         {/* Filter Info */}
         {filterInfo && (
-          <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg sm:rounded-xl p-3 sm:p-4 mb-4 sm:mb-6">
-            <p className="text-purple-400 text-xs sm:text-sm flex items-center gap-1 sm:gap-2">
-              <InfoIcon className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+          <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg sm:rounded-xl p-2.5 xs:p-3 sm:p-4 mb-3 xs:mb-4 sm:mb-6">
+            <p className="text-purple-400 text-[10px] xs:text-xs sm:text-sm flex items-center gap-1 sm:gap-2">
+              <InfoIcon className="w-2.5 xs:w-3 sm:w-4 h-2.5 xs:h-3 sm:h-4 flex-shrink-0" />
               <span>Showing pilots only from <span className="font-semibold">{filterInfo.state}</span> state
               ({filterInfo.totalPilotsInState} pilot{filterInfo.totalPilotsInState !== 1 ? 's' : ''} available)</span>
             </p>
@@ -1210,21 +1210,21 @@ function AssignmentModal({
         )}
 
         {/* Pilot Selection */}
-        <div className="mb-4 sm:mb-6">
-          <h3 className="text-base sm:text-lg font-semibold text-white mb-2 sm:mb-3">Select Pilot</h3>
+        <div className="mb-3 xs:mb-4 sm:mb-6">
+          <h3 className="text-sm xs:text-base sm:text-lg font-semibold text-white mb-1.5 xs:mb-2 sm:mb-3">Select Pilot</h3>
           {pilots.length === 0 ? (
-            <div className="text-center py-6 sm:py-8 bg-gray-800/30 rounded-lg sm:rounded-xl">
-              <NoDataIcon className="w-10 h-10 sm:w-12 sm:h-12 text-gray-600 mx-auto mb-2 sm:mb-3" />
-              <p className="text-gray-500 text-sm sm:text-base">No pilots available in {filterInfo?.state || 'this'} state</p>
-              <p className="text-gray-600 text-xs sm:text-sm mt-0.5 sm:mt-1">Pilots must be from the same state as the hospital</p>
+            <div className="text-center py-4 xs:py-6 sm:py-8 bg-gray-800/30 rounded-lg sm:rounded-xl">
+              <NoDataIcon className="w-8 xs:w-10 sm:w-12 h-8 xs:h-10 sm:h-12 text-gray-600 mx-auto mb-1.5 xs:mb-2 sm:mb-3" />
+              <p className="text-gray-500 text-xs xs:text-sm sm:text-base">No pilots available in {filterInfo?.state || 'this'} state</p>
+              <p className="text-gray-600 text-[10px] xs:text-xs sm:text-sm mt-0.5 sm:mt-1">Pilots must be from the same state as the hospital</p>
             </div>
           ) : (
-            <div className="space-y-3 sm:space-y-0 sm:grid sm:grid-cols-2 lg:grid-cols-3 sm:gap-3 lg:gap-4 max-h-96 overflow-y-auto pr-2">
+            <div className="space-y-2 xs:space-y-3 sm:space-y-0 sm:grid sm:grid-cols-2 lg:grid-cols-3 sm:gap-3 lg:gap-4 max-h-64 xs:max-h-80 sm:max-h-96 overflow-y-auto pr-1 xs:pr-2">
               {pilots.map((pilot) => (
                 <div
                   key={pilot._id}
                   onClick={() => setSelectedPilot(pilot._id)}
-                  className={`p-3 sm:p-4 rounded-lg sm:rounded-xl border-2 cursor-pointer transition-all ${
+                  className={`p-2.5 xs:p-3 sm:p-4 rounded-lg sm:rounded-xl border-2 cursor-pointer transition-all ${
                     selectedPilot === pilot._id
                       ? 'border-purple-500 bg-purple-500/10'
                       : 'border-gray-700 hover:border-gray-600 hover:bg-gray-800/50'
@@ -1232,32 +1232,32 @@ function AssignmentModal({
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
-                        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-700 rounded-full flex items-center justify-center flex-shrink-0">
-                          <PilotIcon className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400" />
+                      <div className="flex items-center gap-1.5 xs:gap-2 sm:gap-3 mb-1.5 xs:mb-2 sm:mb-3">
+                        <div className="w-6 xs:w-8 sm:w-10 h-6 xs:h-8 sm:h-10 bg-gray-700 rounded-full flex items-center justify-center flex-shrink-0">
+                          <PilotIcon className="w-3.5 xs:w-5 sm:w-6 h-3.5 xs:h-5 sm:h-6 text-gray-400" />
                         </div>
                         <div className="min-w-0">
-                          <p className="text-white font-medium text-sm sm:text-base truncate">{pilot.name}</p>
-                          <p className="text-gray-400 text-xs sm:text-sm truncate">{pilot.email}</p>
+                          <p className="text-white font-medium text-xs xs:text-sm sm:text-base truncate">{pilot.name}</p>
+                          <p className="text-gray-400 text-[10px] xs:text-xs sm:text-sm truncate">{pilot.email}</p>
                         </div>
                       </div>
                       <div className="space-y-0.5 sm:space-y-1">
-                        <p className="text-gray-300 text-xs sm:text-sm flex items-center gap-1 sm:gap-2">
-                          <LocationIcon className="w-3 h-3 sm:w-4 sm:h-4 text-gray-500 flex-shrink-0" />
+                        <p className="text-gray-300 text-[10px] xs:text-xs sm:text-sm flex items-center gap-1 sm:gap-2">
+                          <LocationIcon className="w-2.5 xs:w-3 sm:w-4 h-2.5 xs:h-3 sm:h-4 text-gray-500 flex-shrink-0" />
                           <span className="truncate">{pilot.displayAddress}</span>
                         </p>
-                        <p className="text-gray-400 text-xs sm:text-sm flex items-center gap-1 sm:gap-2">
-                          <PhoneIcon className="w-3 h-3 sm:w-4 sm:h-4 text-gray-500 flex-shrink-0" />
+                        <p className="text-gray-400 text-[10px] xs:text-xs sm:text-sm flex items-center gap-1 sm:gap-2">
+                          <PhoneIcon className="w-2.5 xs:w-3 sm:w-4 h-2.5 xs:h-3 sm:h-4 text-gray-500 flex-shrink-0" />
                           {pilot.phoneNumber}
                         </p>
-                        <p className="text-gray-500 text-xs flex items-center gap-1 sm:gap-2">
-                          <AssignmentIcon className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                        <p className="text-gray-500 text-[10px] xs:text-xs flex items-center gap-1 sm:gap-2">
+                          <AssignmentIcon className="w-2.5 xs:w-3 sm:w-4 h-2.5 xs:h-3 sm:h-4 flex-shrink-0" />
                           Current assignments: {pilot.currentAssignments}
                         </p>
                       </div>
                     </div>
                     {selectedPilot === pilot._id && (
-                      <CheckIcon className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400 flex-shrink-0 ml-2" />
+                      <CheckIcon className="w-3.5 xs:w-4 sm:w-5 h-3.5 xs:h-4 sm:h-5 text-purple-400 flex-shrink-0 ml-1.5 xs:ml-2" />
                     )}
                   </div>
                 </div>
@@ -1271,9 +1271,9 @@ function AssignmentModal({
           <button
             onClick={onAssign}
             disabled={!canAssign}
-            className={`flex-1 py-2 sm:py-3 rounded-lg font-semibold transition-all text-sm sm:text-base ${
+            className={`flex-1 py-2.5 xs:py-2 sm:py-3 rounded-lg font-semibold transition-all text-xs xs:text-sm sm:text-base min-h-[2.5rem] xs:min-h-[2.75rem] sm:min-h-[3rem] ${
               canAssign
-                ? 'bg-purple-600 hover:bg-purple-700 text-white'
+                ? 'bg-purple-600 hover:bg-purple-700 text-white active:bg-purple-800'
                 : 'bg-gray-700 text-gray-400 cursor-not-allowed'
             }`}
           >
@@ -1281,7 +1281,7 @@ function AssignmentModal({
           </button>
           <button
             onClick={onClose}
-            className="px-4 sm:px-6 py-2 sm:py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-semibold transition-all text-sm sm:text-base"
+            className="px-3 xs:px-4 sm:px-6 py-2.5 xs:py-2 sm:py-3 bg-gray-700 hover:bg-gray-600 active:bg-gray-800 text-white rounded-lg font-semibold transition-all text-xs xs:text-sm sm:text-base min-h-[2.5rem] xs:min-h-[2.75rem] sm:min-h-[3rem]"
           >
             Cancel
           </button>
@@ -1291,7 +1291,6 @@ function AssignmentModal({
   );
 }
 
-// Stat Card Component
 function StatCard({ title, value, subtitle, icon: Icon, gradient }) {
   return (
     <div className="bg-gray-900/50 backdrop-blur-xl rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 border border-purple-500/20 hover:border-purple-500/30 transition-all group">
