@@ -6,7 +6,6 @@ import { connectDB } from '@/lib/mongodb';
 import Delivery from '@/models/Delivery';
 import User from '@/models/User';
 import Hospital from '@/models/Hospital';
-import Drone from '@/models/Drone';
 import Notification from '@/models/Notification';
 import { checkRole } from '@/lib/auth-helpers';
 import { PricingService } from '@/lib/pricing-service';
@@ -45,26 +44,26 @@ export async function POST(req) {
         return NextResponse.json({ error: 'Hospital not found' }, { status: 404 });
       }
       
-      // Create a system user ID for warehouse/supplier if it doesn't exist
-      let warehouseUser = await User.findOne({ email: 'warehouse@system.local' });
-      if (!warehouseUser) {
-        warehouseUser = await User.create({
-          email: 'warehouse@system.local',
-          password: 'system-generated-' + Math.random().toString(36),
-          name: 'Central Warehouse',
-          role: 'admin',
-          userType: 'business',
-          phoneNumber: '+1234567890',
-          isActive: true
-        });
-      }
+      // // Create a system user ID for warehouse/supplier if it doesn't exist
+      // let warehouseUser = await User.findOne({ email: 'warehouse@system.local' });
+      // if (!warehouseUser) {
+      //   warehouseUser = await User.create({
+      //     email: 'warehouse@system.local',
+      //     password: 'system-generated-' + Math.random().toString(36),
+      //     name: 'Central Warehouse',
+      //     role: 'admin',
+      //     userType: 'business',
+      //     phoneNumber: '+1234567890',
+      //     isActive: true
+      //   });
+      // }
       
       deliveryData = {
         orderId: generateOrderId(),
         
         // For incoming orders, sender is warehouse/supplier
         sender: {
-          userId: warehouseUser._id, // Use system warehouse user
+          userId: null, // Use system warehouse user
           hospitalId: null,
           location: {
             type: 'Point',
@@ -78,6 +77,7 @@ export async function POST(req) {
           hospitalId: hospital._id,
           name: hospital.name,
           phone: hospital.contactInfo.primaryPhone,
+          address: hospital.address.street + ', ' + hospital.address.city,
           location: {
             type: 'Point',
             coordinates: hospital.address.coordinates.coordinates
@@ -98,11 +98,12 @@ export async function POST(req) {
         
         // Initial pricing (will be updated when admin assigns actual source)
         pricing: {
-          basePrice: 10,
+          basePrice: 500,
           urgencyCharge: 0,
           distanceCharge: 0,
-          totalPrice: 10,
-          currency: 'USD'
+          weightCharge: 0,
+          totalPrice: 500,
+          currency: 'INR'
         },
         
         // Flight path placeholder
@@ -117,6 +118,7 @@ export async function POST(req) {
           deliveryType: 'incoming',
           orderedBy: sender._id,
           orderingHospital: hospital._id,
+          senderType: 'aerolink', // Mark as AeroLink delivery
           specialInstructions: data.specialInstructions || '',
           requiresApproval: data.urgency !== 'emergency', // Emergency bypasses approval
           // approvalDeadline: data.urgency === 'urgent' ? new Date(Date.now() + 2 * 60 * 60 * 1000) : null // 2 hours for urgent
@@ -213,39 +215,6 @@ export async function POST(req) {
       };
     }
 
-    // // Calculate distance and update pricing only if we have valid coordinates
-    // if (deliveryData.sender.location.coordinates[0] !== 0 && 
-    //     deliveryData.recipient.location.coordinates[0] !== 0) {
-    //   try {
-    //     const distance = calculateDistance(
-    //       deliveryData.sender.location.coordinates,
-    //       deliveryData.recipient.location.coordinates
-    //     );
-        
-    //     deliveryData.flightPath.estimatedDistance = distance;
-    //     deliveryData.flightPath.estimatedDuration = Math.ceil(distance / 500); // 500m/min
-        
-    //     // Calculate pricing with urgency multiplier
-    //     const urgencyMultiplier = {
-    //       routine: 1,
-    //       urgent: 1.5,
-    //       emergency: 2
-    //     };
-        
-    //     const basePrice = 10;
-    //     const distanceRate = 0.002; // $0.002 per meter
-        
-    //     deliveryData.pricing.basePrice = basePrice;
-    //     deliveryData.pricing.urgencyCharge = basePrice * (urgencyMultiplier[data.urgency] - 1);
-    //     deliveryData.pricing.distanceCharge = Math.round(distance * distanceRate * 100) / 100;
-    //     deliveryData.pricing.totalPrice = deliveryData.pricing.basePrice + 
-    //                                     deliveryData.pricing.urgencyCharge + 
-    //                                     deliveryData.pricing.distanceCharge;
-    //   } catch (error) {
-    //     console.log('Distance calculation skipped:', error);
-    //   }
-    // }
-
     // Calculate distance if we have valid coordinates
     if (deliveryData.sender.location.coordinates[0] !== 0 && 
         deliveryData.recipient.location.coordinates[0] !== 0) {
@@ -265,24 +234,24 @@ export async function POST(req) {
           basePrice: pricingBreakdown.basePrice,
           urgencyCharge: pricingBreakdown.urgencyCharge,
           distanceCharge: pricingBreakdown.distanceCharge,
-          weightCharge: pricingBreakdown.weightCharge, // Now included!
+          weightCharge: pricingBreakdown.weightCharge,
           temperatureCharge: pricingBreakdown.temperatureCharge,
           fragileCharge: pricingBreakdown.fragileCharge,
           timeBasedCharge: pricingBreakdown.timeBasedCharge,
           totalPrice: pricingBreakdown.totalPrice,
-          currency: 'USD',
+          currency: 'INR',
           breakdown: pricingBreakdown // Store full breakdown for reference
         };
       } catch (error) {
         console.log('Distance/Price calculation error:', error);
         // Fallback to minimum pricing
         deliveryData.pricing = {
-          basePrice: 10,
+          basePrice: 500,
           urgencyCharge: 0,
           distanceCharge: 0,
           weightCharge: 0,
-          totalPrice: 10,
-          currency: 'USD'
+          totalPrice: 500,
+          currency: 'INR'
         };
       }
     } else {
@@ -299,18 +268,18 @@ export async function POST(req) {
           fragileCharge: pricingBreakdown.fragileCharge,
           timeBasedCharge: pricingBreakdown.timeBasedCharge,
           totalPrice: pricingBreakdown.totalPrice,
-          currency: 'USD',
+          currency: 'INR',
           breakdown: pricingBreakdown
         };
       } catch (error) {
         console.log('Pricing calculation error:', error);
         deliveryData.pricing = {
-          basePrice: 10,
+          basePrice: 500,
           urgencyCharge: 0,
           distanceCharge: 0,
           weightCharge: 0,
-          totalPrice: 10,
-          currency: 'USD'
+          totalPrice: 500,
+          currency: 'INR'
         };
       }
     }

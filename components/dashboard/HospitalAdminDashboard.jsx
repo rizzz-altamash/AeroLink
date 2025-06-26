@@ -1256,6 +1256,7 @@ import { useRouter } from 'next/navigation';
 import NotificationBell from '@/components/NotificationBell';
 import toast from 'react-hot-toast';
 import DeliveryAnalytics from '@/components/dashboard/DeliveryAnalytics';
+import PaymentSetupModal from '@/components/PaymentSetupModal';
 
 export default function HospitalAdminDashboard() {
   const router = useRouter();
@@ -1287,6 +1288,13 @@ export default function HospitalAdminDashboard() {
   const [loadingOrderStats, setLoadingOrderStats] = useState(true);
   const [showOrderStatus, setShowOrderStatus] = useState(false);
 
+  const [showPaymentSetup, setShowPaymentSetup] = useState(false);
+  const [paymentSetupRequired, setPaymentSetupRequired] = useState(false);
+
+  useEffect(() => {
+    checkPaymentSetup();
+  }, []);
+
   useEffect(() => {
     fetchHospitalStats();
     fetchRecentDeliveries();
@@ -1305,6 +1313,36 @@ export default function HospitalAdminDashboard() {
 
     return () => clearInterval(interval);
   }, []);
+
+  const checkPaymentSetup = async () => {
+    try {
+      const res = await fetch('/api/hospital/payment-status');
+      const data = await res.json();
+      
+      // Only show payment setup if BOTH conditions are false
+      if (!data.isSetup || !data.isVerified) {
+        setPaymentSetupRequired(true);
+        setShowPaymentSetup(true);
+      } else {
+        // Payment is already setup, don't show modal
+        setPaymentSetupRequired(false);
+        setShowPaymentSetup(false);
+      }
+    } catch (error) {
+      console.error('Failed to check payment setup:', error);
+    }
+  };
+
+  const handlePaymentSetupComplete = async () => {
+    setShowPaymentSetup(false);
+    setPaymentSetupRequired(false);
+
+    // Refresh the page to update the dashboard
+    toast.success('Payment setup completed!');
+    setTimeout(() => {
+      window.location.reload();
+    }, 1000);
+  };
 
   const fetchHospitalStats = async () => {
     try {
@@ -1419,6 +1457,13 @@ export default function HospitalAdminDashboard() {
         </h1>
         <p className="text-gray-400 text-sm sm:text-base">Manage deliveries and staff for your hospital</p>
       </div>
+
+      {showPaymentSetup && (
+        <PaymentSetupModal
+          onClose={() => !paymentSetupRequired && setShowPaymentSetup(false)}
+          onComplete={handlePaymentSetupComplete}
+        />
+      )}
 
       {/* Pending Approvals Alert */}
       {pendingApprovals.length > 0 && (

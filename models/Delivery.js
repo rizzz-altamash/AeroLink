@@ -11,11 +11,19 @@ const DeliverySchema = new mongoose.Schema({
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      required: true
+      // required: true,
+      required: function() {
+        // Not required for incoming orders
+        return this.metadata?.deliveryType !== 'incoming';
+      }
     },
     hospitalId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Hospital'
+      ref: 'Hospital',
+      required: function() {
+        // Not required for incoming orders
+        return this.metadata?.deliveryType !== 'incoming';
+      }
     },
     location: {
       type: {

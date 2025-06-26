@@ -1071,6 +1071,12 @@ export default function MedicalStaffDashboard() {
   const [selectedDelivery, setSelectedDelivery] = useState(null);
   const [showTrackingModal, setShowTrackingModal] = useState(false);
 
+  const [hospitalVerified, setHospitalVerified] = useState(null);
+
+  useEffect(() => {
+    checkHospitalStatus();
+  }, []);
+
   useEffect(() => {
     fetchDashboardData();
     // Set up auto-refresh for active deliveries
@@ -1080,6 +1086,20 @@ export default function MedicalStaffDashboard() {
 
     return () => clearInterval(interval);
   }, []);
+
+  const checkHospitalStatus = async () => {
+    try {
+      const res = await fetch('/api/hospital/verification-status');
+      const data = await res.json();
+      setHospitalVerified(data.isVerified);
+      
+      if (!data.isVerified) {
+        toast.error('Your hospital setup is incomplete. Please contact your hospital administrator.');
+      }
+    } catch (error) {
+      console.error('Failed to check hospital status:', error);
+    }
+  };
 
   const fetchDashboardData = async () => {
     setLoading(true);
@@ -1130,6 +1150,11 @@ export default function MedicalStaffDashboard() {
   };
 
   const handleNewDelivery = (urgency) => {
+    if (!hospitalVerified) {
+      toast.error('Hospital verification pending. Cannot create deliveries. Please contact your hospital administrator.');
+      return;
+    }
+
     router.push(`/dashboard/new-delivery?urgency=${urgency}`);
   };
 
@@ -1180,6 +1205,21 @@ export default function MedicalStaffDashboard() {
         </h1>
         <p className="text-gray-400 text-sm sm:text-base">Welcome back, {session?.user?.name}</p>
       </div>
+
+      {/* Show warning banner if not verified */}
+      {hospitalVerified === false && (
+        <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4 mb-6">
+          <div className="flex items-center gap-3">
+            <svg className="w-6 h-6 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <div>
+              <p className="text-white font-semibold">Hospital Setup Incomplete</p>
+              <p className="text-gray-400 text-sm">Your hospital administrator needs to complete the payment setup process.</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Quick Actions with animations */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">

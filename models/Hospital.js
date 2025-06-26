@@ -70,6 +70,29 @@ const HospitalSchema = new mongoose.Schema({
     uploadedAt: Date,
     verifiedAt: Date
   }],
+  payment: {
+    isSetup: { type: Boolean, default: false },
+    razorpayCustomerId: String,
+    paymentMethods: [{
+      id: String,
+      type: { type: String, enum: ['card', 'upi'] },
+      last4: String, // For cards
+      upiId: String, // For UPI
+      isDefault: { type: Boolean, default: false },
+      addedAt: { type: Date, default: Date.now }
+    }],
+    setupCompletedAt: Date,
+    setupCompletedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    }
+  },
+  billing: {
+    autoDeduct: { type: Boolean, default: true },
+    currency: { type: String, default: 'INR' },
+    totalSpent: { type: Number, default: 0 },
+    pendingAmount: { type: Number, default: 0 }
+  },
   subscription: {
     plan: {
       type: String,
