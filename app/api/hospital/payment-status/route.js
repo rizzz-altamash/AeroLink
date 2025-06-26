@@ -34,10 +34,15 @@ export async function GET(req) {
       hospitalId: hospital._id,
       status: { $in: ['pending', 'processing'] }
     });
+
+    // IMPORTANT: Check both isSetup flag AND actual payment methods existence
+    const hasPaymentMethods = hospital.payment?.paymentMethods?.length > 0;
+    const isSetup = (hospital.payment?.isSetup || false) && hasPaymentMethods;
     
     return NextResponse.json({
-      isSetup: hospital.payment?.isSetup || false,
+      isSetup: isSetup,
       isVerified: hospital.verificationStatus === 'verified',
+      hasPaymentMethods: hasPaymentMethods,
       paymentMethods: hospital.payment?.paymentMethods?.map(method => ({
         id: method.id,
         type: method.type,

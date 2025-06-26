@@ -1319,8 +1319,8 @@ export default function HospitalAdminDashboard() {
       const res = await fetch('/api/hospital/payment-status');
       const data = await res.json();
       
-      // Only show payment setup if BOTH conditions are false
-      if (!data.isSetup || !data.isVerified) {
+      // Only show payment setup if Hospital is not verified & Payment is not setup (no payment methods) 
+      if (!data.isSetup || !data.isVerified || !data.hasPaymentMethods) {
         setPaymentSetupRequired(true);
         setShowPaymentSetup(true);
       } else {

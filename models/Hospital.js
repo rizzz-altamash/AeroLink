@@ -59,10 +59,15 @@ const HospitalSchema = new mongoose.Schema({
       end: String
     }
   }],
+  // verificationStatus: {
+  //   type: String,
+  //   enum: ['pending', 'verified', 'suspended'],
+  //   default: 'pending'
+  // },
   verificationStatus: {
     type: String,
-    enum: ['pending', 'verified', 'suspended'],
-    default: 'pending'
+    enum: ['unverified', 'verified', 'suspended'],
+    default: 'unverified'
   },
   verificationDocuments: [{
     type: String,
@@ -74,9 +79,9 @@ const HospitalSchema = new mongoose.Schema({
     isSetup: { type: Boolean, default: false },
     razorpayCustomerId: String,
     paymentMethods: [{
-      id: String,
-      type: { type: String, enum: ['card', 'upi'] },
-      last4: String, // For cards
+      id: String, // Razorpay payment ID
+      type: { type: String, enum: ['card', 'upi', 'netbanking', 'wallet'] },
+      last4: String, // Last 4 digits For cards
       upiId: String, // For UPI
       isDefault: { type: Boolean, default: false },
       addedAt: { type: Date, default: Date.now }
