@@ -521,7 +521,7 @@ export default function DashboardLayout({ children }) {
     ],
     hospital_admin: [
       { href: '/dashboard', label: 'Overview', icon: ChartIcon },
-      { href: '/dashboard/new-delivery', label: 'New Delivery', icon: PlusIcon },
+      { href: '/dashboard/hospital-admin/payments', label: 'Payments', icon: BillingIcon },
       { href: '/dashboard/hospital-admin/pending-approvals', label: 'Pending Approvals', icon: PackageIcon },
       { href: '/dashboard/hospital-admin/staff-activity', label: 'Staff Activity', icon: UsersIcon },
       { href: '/dashboard/hospital-admin/deliveries', label: 'Delivery History', icon: HistoryIcon },

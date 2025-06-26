@@ -242,7 +242,7 @@ DeliverySchema.methods.calculatePrice = async function() {
       fragileCharge: breakdown.fragileCharge,
       timeBasedCharge: breakdown.timeBasedCharge,
       totalPrice: breakdown.totalPrice,
-      currency: 'USD',
+      currency: 'INR',
       breakdown: breakdown
     };
     
@@ -250,14 +250,14 @@ DeliverySchema.methods.calculatePrice = async function() {
   } catch (error) {
     console.error('Error calculating price:', error);
     // Fallback to simple calculation
-    const basePrice = 10;
+    const basePrice = 500;
     const urgencyMultiplier = {
       routine: 1,
       urgent: 1.5,
       emergency: 2
     };
-    const distanceRate = 0.002;
-    const weightRate = 0.001;
+    const distanceRate = 0.15;
+    const weightRate = 0.05;
     
     this.pricing.basePrice = basePrice;
     this.pricing.urgencyCharge = basePrice * (urgencyMultiplier[this.package.urgency] - 1);
