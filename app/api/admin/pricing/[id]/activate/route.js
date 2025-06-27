@@ -1,7 +1,7 @@
 // app/api/admin/pricing/[id]/activate/route.js
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/lib/authOptions';
 import { PricingService } from '@/lib/pricing-service';
 
 export async function POST(req, { params }) {

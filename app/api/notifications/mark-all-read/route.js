@@ -1,7 +1,7 @@
 // app/api/notifications/mark-all-read/route.js
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/lib/authOptions';
 import { connectDB } from '@/lib/mongodb';
 import Notification from '@/models/Notification';
 import Delivery from '@/models/Delivery';
