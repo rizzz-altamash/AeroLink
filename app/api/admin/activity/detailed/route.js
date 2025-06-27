@@ -287,7 +287,10 @@ export async function GET(req) {
           }
 
           // Add time ago
-          activity.timeAgo = getTimeAgo(activity.timestamp);
+          // activity.timeAgo = getTimeAgo(activity.timestamp);
+          if (activity && activity.timestamp) {
+            activity.timeAgo = getTimeAgo(activity.timestamp);
+          }
           activities.push(activity);
         }
       }
