@@ -2,7 +2,7 @@
 
 import dotenv from 'dotenv';
 // import { authOptions } from './lib/authOptions.cjs'; // Use .js extension if "type": "module" is set
-import pkg from './lib/authOptions.cjs'; // Correct import for CommonJS module
+import pkg from './lib/authOptions.js'; // Correct import for CommonJS module
 const { authOptions } = pkg;
 
 // ✅ Load env variables from local file
