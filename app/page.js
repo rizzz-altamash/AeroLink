@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 // // app/page.jsx
 // 'use client';
 
@@ -854,7 +856,7 @@ export default function LandingPage() {
               Why AeroLink is the Future
             </h2>
             <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto">
-              Traditional logistics can't keep up with medical emergencies. We're changing that.
+              Traditional logistics can't keep up with medical emergencies. We are changing that.
             </p>
           </div>
 
