@@ -7,6 +7,31 @@ import Delivery from '@/models/Delivery';
 import User from '@/models/User';
 import Hospital from '@/models/Hospital';
 
+function isDateInRange(date, filter) {
+  const dateObj = new Date(date);
+  if (filter.$gte) {
+    return dateObj >= filter.$gte;
+  }
+  return true;
+}
+
+function getTimeAgo(date) {
+  const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+  
+  if (seconds < 60) return 'Just now';
+  
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  
+  const days = Math.floor(hours / 24);
+  if (days < 7) return `${days}d ago`;
+  
+  return new Date(date).toLocaleDateString();
+}
+
 export async function GET(req) {
   try {
     const session = await getServerSession(authOptions);
@@ -288,29 +313,4 @@ export async function GET(req) {
       { status: 500 }
     );
   }
-}
-
-function isDateInRange(date, filter) {
-  const dateObj = new Date(date);
-  if (filter.$gte) {
-    return dateObj >= filter.$gte;
-  }
-  return true;
-}
-
-function getTimeAgo(date) {
-  const seconds = Math.floor((new Date() - new Date(date)) / 1000);
-  
-  if (seconds < 60) return 'Just now';
-  
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
-  
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  
-  const days = Math.floor(hours / 24);
-  if (days < 7) return `${days}d ago`;
-  
-  return new Date(date).toLocaleDateString();
 }
