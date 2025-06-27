@@ -1125,15 +1125,15 @@ export default function LandingPage() {
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link href="/auth/signup" className="px-8 py-4 bg-gradient-to-r from-lime-600 to-emerald-600 text-white rounded-xl hover:from-lime-700 hover:to-emerald-700 transition-all shadow-lg shadow-lime-500/25 font-semibold text-lg">
-                  Start Free Trial
+                  Fly High
                 </Link>
                 <Link href="/contact" className="px-8 py-4 bg-gray-800/50 backdrop-blur border border-lime-500/20 text-white rounded-xl hover:bg-gray-700/50 transition-all font-semibold text-lg">
-                  Schedule Demo
+                  Demo
                 </Link>
               </div>
               
               <p className="mt-6 text-sm text-gray-400">
-                No credit card required • 30-day free trial • Cancel anytime
+                No registration charge • Cancel anytime
               </p>
             </div>
             
