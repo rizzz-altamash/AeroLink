@@ -322,24 +322,14 @@
 
 
 
-
-
 // app/api/admin/activity/detailed/route.js
 import { NextResponse } from 'next/server';
-
-// Add error handling for imports
-let getServerSession, authOptions, connectDB, Delivery, User, Hospital;
-
-try {
-  ({ getServerSession } = await import('next-auth/next'));
-  ({ authOptions } = await import('@/lib/authOptions'));
-  ({ connectDB } = await import('@/lib/mongodb'));
-  Delivery = (await import('@/models/Delivery')).default;
-  User = (await import('@/models/User')).default;
-  Hospital = (await import('@/models/Hospital')).default;
-} catch (importError) {
-  console.error('Import error:', importError);
-}
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/authOptions';
+import { connectDB } from '@/lib/mongodb';
+import Delivery from '@/models/Delivery';
+import User from '@/models/User';
+import Hospital from '@/models/Hospital';
 
 function isDateInRange(date, filter) {
   try {
@@ -378,12 +368,6 @@ function getTimeAgo(date) {
 
 export async function GET(req) {
   try {
-    // Check if all imports are available
-    if (!getServerSession || !authOptions) {
-      console.error('Auth imports not available');
-      return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
-    }
-
     const session = await getServerSession(authOptions);
     if (!session || session.user.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -397,11 +381,6 @@ export async function GET(req) {
     const urgency = searchParams.get('urgency');
     const dateRange = searchParams.get('dateRange');
     const search = searchParams.get('search');
-
-    if (!connectDB || !Delivery) {
-      console.error('Database imports not available');
-      return NextResponse.json({ error: 'Database configuration error' }, { status: 500 });
-    }
 
     await connectDB();
 
