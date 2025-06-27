@@ -14,8 +14,7 @@ export async function POST(req, { params }) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // const { id } = await params;
-    const { id } = params;
+    const { id } = await params;
     const { pilotId } = await req.json();
 
     await connectDB();
@@ -100,8 +99,7 @@ export async function GET(req, { params }) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // const { id } = await params;
-    const { id } = params;
+    const { id } = await params;
 
     await connectDB();
 
