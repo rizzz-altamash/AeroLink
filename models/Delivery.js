@@ -1,5 +1,6 @@
 // models/Delivery.js
 import mongoose from 'mongoose';
+import { PricingService } from '@/lib/pricing-service';
 
 const DeliverySchema = new mongoose.Schema({
   orderId: {
@@ -236,7 +237,7 @@ DeliverySchema.methods.updateStatus = async function(newStatus, notes = '') {
 
 // Update the calculatePrice method to use PricingService:
 DeliverySchema.methods.calculatePrice = async function() {
-  const { PricingService } = require('@/lib/pricing-service');
+  // const { PricingService } = require('@/lib/pricing-service');
   
   try {
     const breakdown = await PricingService.calculateDeliveryPrice(this);
