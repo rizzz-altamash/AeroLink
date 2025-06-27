@@ -8,7 +8,7 @@ import User from '@/models/User';
 import Hospital from '@/models/Hospital';
 import Notification from '@/models/Notification';
 import { checkRole } from '@/lib/auth-helpers';
-import { PricingService } from '@/lib/pricing-service';
+import PricingService from '@/lib/pricing-service';
 
 export async function POST(req) {
   try {
