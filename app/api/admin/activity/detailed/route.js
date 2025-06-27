@@ -1,6 +1,6 @@
 // app/api/admin/activity/detailed/route.js
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/authOptions';
 import { connectDB } from '@/lib/mongodb';
 import Delivery from '@/models/Delivery';
