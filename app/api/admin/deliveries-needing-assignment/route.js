@@ -4,8 +4,6 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authOptions';
 import { connectDB } from '@/lib/mongodb';
 import Delivery from '@/models/Delivery';
-import User from '@/models/User';
-import Hospital from '@/models/Hospital';
 
 export async function GET(req) {
   try {
