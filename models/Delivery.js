@@ -1,6 +1,6 @@
 // models/Delivery.js
 import mongoose from 'mongoose';
-import { PricingService } from '@/lib/pricing-service';
+import PricingService from '@/lib/pricing-service';
 
 const DeliverySchema = new mongoose.Schema({
   orderId: {
