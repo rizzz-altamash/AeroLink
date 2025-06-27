@@ -240,6 +240,10 @@ DeliverySchema.methods.calculatePrice = async function() {
   // const { PricingService } = require('@/lib/pricing-service');
   
   try {
+    if (typeof PricingService?.calculateDeliveryPrice !== 'function') {
+      throw new Error('❌ calculateDeliveryPrice is NOT a function — pricing-service issue');
+    }
+
     const breakdown = await PricingService.calculateDeliveryPrice(this);
     
     this.pricing = {

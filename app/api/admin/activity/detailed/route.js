@@ -4,6 +4,9 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/authOptions';
 import { connectDB } from '@/lib/mongodb';
 import Delivery from '@/models/Delivery';
+import PricingService from '@/lib/pricing-service';
+console.log('🧪 PricingService keys:', Object.keys(PricingService));
+console.log('🧪 typeof PricingService.calculateDeliveryPrice:', typeof PricingService?.calculateDeliveryPrice);
 
 function isDateInRange(date, filter) {
   const dateObj = new Date(date);
