@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authOptions';
-import { PricingService } from '@/lib/pricing-service';
+import PricingService from '@/lib/pricing-service';
 
 export async function POST(req) {
   try {
