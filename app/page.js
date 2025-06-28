@@ -605,15 +605,90 @@
 // app/page.jsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
+import ScrollTrigger from 'gsap/ScrollTrigger';
 
 export default function LandingPage() {
   const router = useRouter();
   const [activeFeature, setActiveFeature] = useState(0);
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useGSAP(() => {
+    gsap.registerPlugin(ScrollTrigger);
+    const tl = gsap.timeline();
+
+    tl.from(".gsapNavOptions", {
+      y: -70,
+      opacity: 0,
+      duration: 0.7,
+      ease: "power2.out",
+    })
+    .from(".gsapAuth", {
+      opacity: 0,
+      duration: 0.7,
+      ease: "power2.out",
+    }, "-=0.3")
+    .from(".gsapLogoBox", {
+      opacity: 0,
+      duration: 0.7,
+      ease: "power2.out",
+    }, "-=0.3")
+    .from(".gsapLogo", {
+      y: 900,
+      scale: 7,
+      opacity: 0,
+      duration: 5,
+      ease: "power2.out",
+    }, "-=0.3")
+    .from(".gsapAerolink", {
+      opacity: 0,
+      duration: 0.7,
+      ease: "power2.out",
+    }, "-=0.3")
+    .from(".gsapBgBlurs", {
+      opacity: 0,
+      duration: 0.7,
+      ease: "power2.out",
+    }, "-=0.3")
+    .from(".gsapHeading", {
+      opacity: 0,
+      duration: 0.7,
+      ease: "power2.out",
+    }, "-=0.7")
+    .from(".gsapSubHeading", {
+      opacity: 0,
+      duration: 0.7,
+      ease: "power2.out",
+    }, "-=0.3")
+    .from(".gsapQuickStats", {
+      y: 70,
+      opacity: 0,
+      duration: 0.7,
+      stagger: 0.2,
+      ease: "power2.out",
+    }, "-=0.3")
+    .from(".gsapSubHeadingBtn", {
+      opacity: 0,
+      duration: 0.7,
+      ease: "power2.out",
+    }, "-=0.3")
+    .from(".gsapMiniHeading", {
+      opacity: 0,
+      duration: 0.7,
+      ease: "power2.out",
+    }, "-=0.3")
+    .from(".gsapScrollIndicator", {
+      y: -150,
+      opacity: 0,
+      duration: 0.7,
+      ease: "power2.out",
+    }, "-=0.1")
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -693,23 +768,23 @@ export default function LandingPage() {
           <div className="flex items-center justify-between h-16 sm:h-20">
             {/* Logo */}
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-lime-600 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-green-500/25 relative">
-                <svg className="w-6 h-6 sm:w-7 sm:h-7 text-white" fill="currentColor" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="gsapLogoBox w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-lime-600 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-green-500/25 relative">
+                <svg className="gsapLogo w-6 h-6 sm:w-7 sm:h-7 text-white" fill="currentColor" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={0.5} d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" />
                 </svg>
                 <div className="absolute inset-0 rounded-xl border-2 border-white/20 animate-spin-slow"></div>
               </div>
-              <h1 className="text-xl sm:text-2xl font-bold text-white">AeroLink</h1>
+              <h1 className="gsapAerolink text-xl sm:text-2xl font-bold text-white">AeroLink</h1>
             </div>
 
             {/* Desktop Menu */}
-            <div className="hidden md:flex items-center gap-8">
+            <div className="gsapNavOptions hidden md:flex items-center gap-8">
               <a href="#features" className="text-gray-300 hover:text-white transition-colors">Features</a>
               <a href="#how-it-works" className="text-gray-300 hover:text-white transition-colors">How it Works</a>
               <a href="#for-you" className="text-gray-300 hover:text-white transition-colors">Solutions</a>
               <a href="#stats" className="text-gray-300 hover:text-white transition-colors">Impact</a>
             </div>
-            <div className="hidden md:flex">
+            <div className="gsapAuth hidden md:flex">
               <Link href="/auth/signin" className="px-6 py-2 mr-3 text-lime-500 font-bold rounded-lg transition-all hover:shadow-lg shadow-lime-500/25">
                 Sign In
               </Link>
@@ -777,17 +852,17 @@ export default function LandingPage() {
           </svg>
 
           {/* Floating Elements */}
-          <div className="absolute top-1/4 right-1/4 animate-float hidden lg:block">
+          <div className="gsapBgBlurs absolute top-1/4 right-1/4 animate-float hidden lg:block">
             <div className="w-32 h-32 rounded-full bg-gradient-to-br from-lime-600/20 to-emerald-600/20 blur-3xl"></div>
           </div>
-          <div className="absolute bottom-1/4 left-1/4 animate-float-delayed hidden lg:block">
+          <div className="gsapBgBlurs absolute bottom-1/4 left-1/4 animate-float-delayed hidden lg:block">
             <div className="w-48 h-48 rounded-full bg-gradient-to-br from-emerald-600/20 to-lime-600/20 blur-3xl"></div>
           </div>
         </div>
 
         {/* Hero Content */}
         <div className="relative z-10 max-w-6xl mx-auto text-center">
-          <div className="mb-8 inline-flex items-center gap-2 px-4 py-2 bg-lime-500/10 backdrop-blur border border-lime-500/20 rounded-full text-lime-400 text-sm">
+          <div className="gsapMiniHeading mb-8 inline-flex items-center gap-2 px-4 py-2 bg-lime-500/10 backdrop-blur border border-lime-500/20 rounded-full text-lime-400 text-sm">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
@@ -795,7 +870,7 @@ export default function LandingPage() {
             Revolutionizing Medical Logistics
           </div>
 
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
+          <h1 className="gsapHeading text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
             The
             <span className="bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text text-transparent"> Future </span>
             of<br />
@@ -804,12 +879,12 @@ export default function LandingPage() {
             <span className="bg-gradient-to-r from-amber-400 to-lime-400 bg-clip-text text-transparent"> Here </span>
           </h1>
 
-          <p className="text-lg sm:text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
+          <p className="gsapSubHeading text-lg sm:text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
             Fixed-Wing V-TOL UAVs delivering critical medical supplies in minutes. 
             When every second counts, we fly above the rest.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+          <div className="gsapSubHeadingBtn flex flex-col sm:flex-row gap-4 justify-center mb-12">
             <Link href="/auth/signup" className="px-8 py-4 bg-gradient-to-r from-lime-600 to-emerald-600 text-white rounded-xl hover:from-lime-700 hover:to-emerald-700 transition-all shadow-lg shadow-lime-500/25 font-semibold text-lg group relative overflow-hidden">
               <span className="relative z-10 flex items-center justify-center gap-2">
                 Start Flying Today
@@ -819,7 +894,7 @@ export default function LandingPage() {
               </span>
               <div className="absolute inset-0 bg-gradient-to-r from-lime-600/20 to-emerald-600/20 translate-y-full group-hover:translate-y-0 transition-transform"></div>
             </Link>
-            <Link href="#demo" className="px-8 py-4 bg-gray-800/50 backdrop-blur border border-lime-500/20 text-white rounded-xl hover:bg-gray-700/50 transition-all font-semibold text-lg">
+            <Link href="" className="px-8 py-4 bg-gray-800/50 backdrop-blur border border-lime-500/20 text-white rounded-xl hover:bg-gray-700/50 transition-all font-semibold text-lg">
               Watch Demo
             </Link>
           </div>
@@ -832,7 +907,7 @@ export default function LandingPage() {
               { value: "99.7%", label: "Success Rate" },
               { value: "15 min", label: "Avg. Delivery Time" }
             ].map((stat, index) => (
-              <div key={index} className="text-center">
+              <div key={index} className="gsapQuickStats text-center">
                 <div className="text-2xl md:text-4xl font-bold text-lime-400 mb-1">{stat.value}</div>
                 <div className="text-sm md:text-base text-gray-400">{stat.label}</div>
               </div>
@@ -842,7 +917,7 @@ export default function LandingPage() {
 
         {/* Scroll Indicator */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-          <svg className="w-6 h-6 text-lime-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="gsapScrollIndicator w-6 h-6 text-lime-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 13l-7 7-7-7m14-8l-7 7-7-7" />
           </svg>
         </div>
