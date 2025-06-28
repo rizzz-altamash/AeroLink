@@ -13,7 +13,7 @@ export default function EmailTest() {
     setResult(null);
 
     try {
-      const response = await fetch('/api/test-email', {
+      const response = await fetch('/api/test-email.js', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
