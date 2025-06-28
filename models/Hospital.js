@@ -66,7 +66,7 @@ const HospitalSchema = new mongoose.Schema({
   // },
   verificationStatus: {
     type: String,
-    enum: ['unverified', 'verified', 'suspended'],
+    enum: ['unverified', 'pending', 'verified', 'suspended'],
     default: 'unverified'
   },
   verificationDocuments: [{

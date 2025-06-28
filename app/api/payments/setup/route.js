@@ -22,7 +22,7 @@ export async function POST(req) {
     await connectDB();
 
     // IMPORTANT: session.user.hospitalId is just an ID, not the hospital object
-    // You need to fetch the hospital using this ID
+    // We need to fetch the hospital using this ID
     const hospital = await Hospital.findById(session.user.hospitalId);
     
     if (!hospital) {
