@@ -628,7 +628,7 @@ export default function LandingPage() {
       title: "Lightning-Fast Delivery",
       description: "Emergency medical supplies delivered in minutes, not hours. Our V-TOL UAVs bypass traffic completely.",
       icon: "⚡",
-      stats: "75% faster than ground transport"
+      stats: "75% faster than others"
     },
     {
       title: "24/7 Operations",
@@ -639,13 +639,13 @@ export default function LandingPage() {
     {
       title: "Real-Time Tracking",
       description: "Monitor your delivery from dispatch to destination with live GPS tracking and ETA updates.",
-      icon: "📍",
+      icon: "🌐",
       stats: "Sub-meter accuracy"
     },
     {
       title: "Smart Prioritization",
       description: "AI-powered system prioritizes emergency deliveries, ensuring life-saving supplies arrive first.",
-      icon: "🧠",
+      icon: "⚖",
       stats: "3-tier urgency system"
     }
   ];
@@ -888,7 +888,7 @@ export default function LandingPage() {
             {/* Visual Display */}
             <div className="relative h-[400px] md:h-full min-h-[400px] rounded-2xl overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-lime-950/50 to-emerald-950/50"></div>
-              <div className="absolute inset-0 bg-[linear-gradient(to_right,#10b98115_1px,transparent_1px),linear-gradient(to_bottom,#10b98115_1px,transparent_1px)] bg-[size:2rem_2rem]"></div>
+              <div className="animate-grid-scroll absolute inset-0 bg-[linear-gradient(to_right,#10b98115_1px,transparent_1px),linear-gradient(to_bottom,#10b98115_1px,transparent_1px)] bg-[size:2rem_2rem]"></div>
               
               {/* Animated Drone Visual */}
               <div className="absolute inset-0 flex items-center justify-center">
@@ -901,8 +901,8 @@ export default function LandingPage() {
                   </div>
                   
                   {/* Rotating Rings */}
-                  <div className="absolute inset-0 rounded-full border-2 border-lime-500/20 animate-spin-slow"></div>
-                  <div className="absolute inset-[-20px] rounded-full border border-lime-500/10 animate-spin-slow" style={{ animationDirection: 'reverse', animationDuration: '30s' }}></div>
+                  <div className="absolute inset-0 rounded-full border-2 border-lime-500/20"></div>
+                  <div className="absolute inset-[-20px] rounded-full border border-lime-500/10"></div>
                   
                   {/* Pulsing Circles */}
                   <div className="absolute inset-0 rounded-full bg-lime-500/10 animate-ping"></div>
@@ -964,8 +964,69 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Stating Technology */}
+      <section id="features" className="relative z-10 py-20 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16 animate-fade-in-up">
+            <h2 className="text-4xl font-bold text-white mb-4">
+              Our Fixed Wing 
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-emerald-400"> V-TOL UAV </span>
+              Technology
+            </h2>
+            <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+              Ensures the fastest, safest, and most reliable medical deliveries
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            <FeatureCard
+              icon={LightningIcon}
+              title="Ultra-Fast Delivery"
+              description="Average delivery time of 15 minutes within 50km radius. No traffic, no delays."
+              gradient="from-yellow-600 to-orange-600"
+              delay="0"
+            />
+            <FeatureCard
+              icon={ShieldIcon}
+              title="Secure & Reliable"
+              description="Temperature-controlled cargo bay, real-time tracking, and 99.7% delivery success rate."
+              gradient="from-blue-600 to-cyan-600"
+              delay="100"
+            />
+            <FeatureCard
+              icon={ClockIcon}
+              title="24/7 Operations"
+              description="Round-the-clock availability for emergency medical supplies and critical deliveries."
+              gradient="from-purple-600 to-pink-600"
+              delay="200"
+            />
+            <FeatureCard
+              icon={RouteIcon}
+              title="Optimized Routes"
+              description="AI-powered route optimization avoiding obstacles and weather conditions."
+              gradient="from-green-600 to-emerald-600"
+              delay="300"
+            />
+            <FeatureCard
+              icon={EcoIcon}
+              title="Eco-Friendly"
+              description="Zero-emission electric drones reducing carbon footprint by 83% compared to traditional delivery."
+              gradient="from-teal-600 to-green-600"
+              delay="400"
+            />
+            <FeatureCard
+              icon={ScaleIcon}
+              title="Scalable Solution"
+              description="From single urgent deliveries to bulk medical supply distribution across multiple facilities."
+              gradient="from-red-600 to-rose-600"
+              delay="500"
+            />
+          </div>
+        </div>
+      </section>
+
       {/* How It Works */}
-      <section id="how-it-works" className="relative py-20 px-4 ">
+      <section id="how-it-works" className="relative py-20 px-4 bg-gradient-to-br from-lime-950/20 to-emerald-950/20">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
@@ -1092,7 +1153,7 @@ export default function LandingPage() {
               { number: "10K+", label: "Deliveries Completed", trend: "+23%" },
               { number: "500+", label: "Partner Hospitals", trend: "+45%" },
               { number: "50K", label: "Lives Impacted", trend: "+67%" },
-              { number: "99.9%", label: "Success Rate", trend: "+2%" }
+              { number: "99.7%", label: "Success Rate", trend: "+3%" }
             ].map((stat, index) => (
               <div key={index} className="text-center group">
                 <div className="relative inline-block mb-2">
@@ -1235,13 +1296,14 @@ export default function LandingPage() {
           0%, 100% { transform: translateY(0px); }
           50% { transform: translateY(-30px); }
         }
-        @keyframes spin-slow {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
         .animate-float { animation: float 6s ease-in-out infinite; }
         .animate-float-delayed { animation: float-delayed 8s ease-in-out infinite; }
-        .animate-spin-slow { animation: spin-slow 20s linear infinite; }
+        
+        @keyframes grid-scroll {
+            0% { transform: translateY(-2rem); }
+            100% { transform: translateY(0); }
+        }
+        .animate-grid-scroll { animation: grid-scroll 0.7s linear infinite; }
       `}</style>
     </div>
   );
@@ -1263,6 +1325,21 @@ function StepCard({ number, title, description, icon: Icon, delay }) {
       </div>
       <h3 className="text-lg font-semibold text-white mb-2">{title}</h3>
       <p className="text-gray-400 text-sm">{description}</p>
+    </div>
+  );
+}
+
+function FeatureCard({ icon: Icon, title, description, gradient, delay }) {
+  return (
+    <div 
+      className="bg-gray-900/50 backdrop-blur-xl rounded-2xl p-8 border border-green-500/20 hover:border-green-500/30 transition-all group hover:shadow-xl hover:shadow-green-500/10 hover:-translate-y-1 animate-fade-in-up"
+      style={{ animationDelay: `${delay}ms` }}
+    >
+      <div className={`w-16 h-16 bg-gradient-to-br ${gradient} rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg`}>
+        <Icon className="w-8 h-8 text-white" />
+      </div>
+      <h3 className="text-xl font-semibold text-white mb-3">{title}</h3>
+      <p className="text-gray-400 leading-relaxed">{description}</p>
     </div>
   );
 }
