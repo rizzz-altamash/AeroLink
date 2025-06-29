@@ -194,11 +194,18 @@ AeroLink is a **full-stack medical delivery platform** built from scratch, lever
    Configure your environment variables:
    ```env
    MONGODB_URI=your_mongodb_connection_string
+   NEXTAUTH_SECRET=your_nextauth_secret
+   NEXTAUTH_URL=http://localhost:3000
+   EMAIL_SERVICE=brevo
+   BREVO_SMTP_KEY=your_smtp_key
+   EMAIL_FROM=DroneDelivery <noreply@your_domain.com>
+   OPENWEATHER_API_KEY==your_weather_api_key
    RAZORPAY_KEY_ID=your_razorpay_key
+   NEXT_PUBLIC_RAZORPAY_KEY_ID=your_razorpay_key
    RAZORPAY_KEY_SECRET=your_razorpay_secret
-   WEATHER_API_KEY=your_weather_api_key
-   JWT_SECRET=your_jwt_secret
-   EMAIL_SERVICE_API=your_email_service
+   RAZORPAY_WEBHOOK_SECRET=your_razorpay_webhook
+   USE_PAYMENT_LINKS=true
+   NEXT_PUBLIC_APP_URL=http://localhost:3000
    ```
 
 4. **Run the application**
@@ -212,7 +219,7 @@ AeroLink is a **full-stack medical delivery platform** built from scratch, lever
 
 ## 📊 System Metrics
 
-- **🔗 66+ API Endpoints** - Comprehensive backend coverage
+- **🔗 70+ API Endpoints** - Comprehensive backend coverage
 - **📋 11-Stage Pipeline** - Complete delivery lifecycle
 - **👥 4 User Roles** - Multi-tier access control
 - **📊 7-Factor Pricing** - Dynamic cost calculation
@@ -272,8 +279,8 @@ Licensed under MIT License - see [LICENSE](LICENSE) for details.
 
 - 🐛 **Issues**: Open a GitHub issue
 - 💬 **Discussions**: GitHub Discussions
-- 📧 **Email**: [altamash@aerolink.healthcare]
-- 🌐 **Website**: [www.aerolink.healthcare]
+- 📧 **Email**: [rizzzaltamash@gmail.com]
+- 🌐 **Website**: [aerolink-riz.vercel.app]
 
 ---
 
