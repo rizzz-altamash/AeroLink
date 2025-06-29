@@ -776,6 +776,165 @@ export default function LandingPage() {
         scrub:2,
       }
     }, "-=0.1")
+    .from(".gsapAeroWorksHeading", {
+      opacity: 0,
+      scale: 2,
+      duration: 0.7,
+      ease: "power2.out",
+      scrollTrigger:{
+        trigger: ".gsapAeroWorksHeading",
+        markers: false,
+        start: "top 85%",
+        end: "top 70%",
+        scrub:2,
+      }
+    }, "-=0.1")
+    .from(".gsapStepCard", {
+      y: 100,
+      opacity: 0,
+      duration: 0.7,
+      ease: "power2.out",
+      scrollTrigger:{
+        trigger: ".gsapStepCard",
+        markers: false,
+        start: "top 85%",
+        end: "top 70%",
+        scrub:2,
+      }
+    }, "-=0.1")
+    .from(".gsapTechHeading", {
+      opacity: 0,
+      scale: 2,
+      duration: 0.7,
+      ease: "power2.out",
+      scrollTrigger:{
+        trigger: ".gsapTechHeading",
+        markers: false,
+        start: "top 85%",
+        end: "top 70%",
+        scrub:2,
+      }
+    }, "-=0.1")
+    .from(".gsapTechFeatureCard", {
+      y: 100,
+      opacity: 0,
+      scale: 0.5,
+      duration: 0.7,
+      ease: "power2.out",
+      scrollTrigger:{
+        trigger: ".gsapTechFeatureCard",
+        markers: false,
+        start: "top 90%",
+        end: "top 75%",
+        scrub:2,
+      }
+    }, "-=0.1")
+    .from(".gsapTransformingHeading", {
+      opacity: 0,
+      scale: 2,
+      duration: 0.7,
+      ease: "power2.out",
+      scrollTrigger:{
+        trigger: ".gsapTransformingHeading",
+        markers: false,
+        start: "top 85%",
+        end: "top 70%",
+        scrub:2,
+      }
+    }, "-=0.1")
+    .from(".gsapTransformingHeadingCard", {
+      y: 100,
+      opacity: 0,
+      duration: 0.7,
+      ease: "power2.out",
+      scrollTrigger:{
+        trigger: ".gsapTransformingHeadingCard",
+        markers: false,
+        start: "top 85%",
+        end: "top 70%",
+        scrub:2,
+      }
+    }, "-=0.1")
+    .from(".gsapBuiltHeading", {
+      opacity: 0,
+      scale: 2,
+      duration: 0.7,
+      ease: "power2.out",
+      scrollTrigger:{
+        trigger: ".gsapBuiltHeading",
+        markers: false,
+        start: "top 85%",
+        end: "top 70%",
+        scrub:2,
+      }
+    }, "-=0.1")
+    .from(".gsapBuiltCard", {
+      y: 100,
+      opacity: 0,
+      scale: 0.5,
+      duration: 0.7,
+      ease: "power2.out",
+      scrollTrigger:{
+        trigger: ".gsapBuiltCard",
+        markers: false,
+        start: "top 90%",
+        end: "top 75%",
+        scrub:2,
+      }
+    }, "-=0.1")
+    .from(".gsapImpactHeading", {
+      opacity: 0,
+      scale: 2,
+      duration: 0.7,
+      ease: "power2.out",
+      scrollTrigger:{
+        trigger: ".gsapImpactHeading",
+        markers: false,
+        start: "top 85%",
+        end: "top 70%",
+        scrub:2,
+      }
+    }, "-=0.1")
+    .from(".gsapImpactStats", {
+      y: 100,
+      opacity: 0,
+      duration: 0.7,
+      ease: "power2.out",
+      scrollTrigger:{
+        trigger: ".gsapImpactStats",
+        markers: false,
+        start: "top 90%",
+        end: "top 75%",
+        scrub:2,
+      }
+    }, "-=0.1")
+    .from(".gsapReady2Transform", {
+      y: 100,
+      opacity: 0,
+      scale: 0.5,
+      duration: 0.7,
+      ease: "power2.out",
+      scrollTrigger:{
+        trigger: ".gsapReady2Transform",
+        markers: false,
+        start: "top 90%",
+        end: "top 80%",
+        scrub:2,
+      }
+    }, "-=0.1")
+    .from(".gsapFooter", {
+      y: 100,
+      opacity: 0,
+      duration: 0.7,
+      ease: "power2.out",
+      scrollTrigger:{
+        trigger: ".gsapFooter",
+        markers: false,
+        start: "top 90%",
+        end: "top 80%",
+        scrub:2,
+      }
+    }, "-=0.1")
   }, []);
 
   useEffect(() => {
@@ -1092,11 +1251,11 @@ export default function LandingPage() {
       <section id="how-it-works" className="relative z-10 py-20 px-4 bg-gradient-to-br from-lime-950/20 to-emerald-950/20">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 animate-fade-in-up">
-            <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">How AeroLink Works</h2>
-            <p className="text-xl text-gray-400">Simple, efficient, and automated delivery process</p>
+            <h2 className="gsapAeroWorksHeading text-3xl md:text-5xl font-bold text-white mb-4">How AeroLink Works</h2>
+            <p className="gsapAeroWorksHeading text-xl text-gray-400">Simple, efficient, and automated delivery process</p>
           </div>
           
-          <div className="grid md:grid-cols-4 gap-8">
+          <div className="gsapStepCard grid md:grid-cols-4 gap-8">
             <StepCard
               number="1"
               title="Place Order"
@@ -1133,17 +1292,17 @@ export default function LandingPage() {
       <section id="features" className="relative z-10 py-20 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 animate-fade-in-up">
-            <h2 className="text-4xl font-bold text-white mb-4">
+            <h2 className="gsapTechHeading text-4xl font-bold text-white mb-4">
               Our Fixed Wing 
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-emerald-400"> V-TOL UAV </span>
+              <span className="gsapTechHeading text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-emerald-400"> V-TOL UAV </span>
               Technology
             </h2>
-            <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+            <p className="gsapTechHeading text-xl text-gray-400 max-w-3xl mx-auto">
               Ensures the fastest, safest, and most reliable medical deliveries
             </p>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="gsapTechFeatureCard grid md:grid-cols-3 gap-8">
             <FeatureCard
               icon={LightningIcon}
               title="Ultra-Fast Delivery"
@@ -1193,7 +1352,7 @@ export default function LandingPage() {
       {/* How It Works */}
       <section id="how-it-works" className="relative py-20 px-4 bg-gradient-to-br from-lime-950/20 to-emerald-950/20">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
+          <div className="gsapTransformingHeading text-center mb-16">
             <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
               Transforming Future
             </h2>
@@ -1202,7 +1361,7 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-4 gap-8">
+          <div className="gsapTransformingHeadingCard grid md:grid-cols-4 gap-8">
             {[
               {
                 step: "01",
@@ -1230,11 +1389,6 @@ export default function LandingPage() {
               }
             ].map((item, index) => (
               <div key={index} className="relative">
-                {/* Connection Line */}
-                {index < 3 && (
-                  <div className="hidden md:block absolute top-12 left-1/2 w-full h-0.5 bg-gradient-to-r from-lime-500/50 to-transparent"></div>
-                )}
-                
                 <div className="relative bg-gray-800/50 backdrop-blur rounded-2xl p-6 border border-lime-500/10 hover:border-lime-500/30 transition-all group">
                   {/* <div className="absolute -top-4 -left-4 w-12 h-12 bg-gradient-to-br from-lime-600 to-emerald-600 rounded-xl flex items-center justify-center text-white font-bold shadow-lg shadow-lime-500/25">
                     {item.step}
@@ -1255,7 +1409,7 @@ export default function LandingPage() {
       {/* For Different Users */}
       <section id="for-you" className="relative py-20 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
+          <div className="gsapBuiltHeading text-center mb-16">
             <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
               Built for Everyone in Healthcare
             </h2>
@@ -1264,7 +1418,7 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="gsapBuiltCard grid md:grid-cols-3 gap-8">
             {userTypes.map((user, index) => (
               <div key={index} className="group relative">
                 <div className="absolute inset-0 bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl transform transition-transform group-hover:scale-105"></div>
@@ -1304,7 +1458,7 @@ export default function LandingPage() {
       {/* Stats Section */}
       <section id="stats" className="relative py-20 px-4 bg-gradient-to-br from-lime-950/20 to-emerald-950/20">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
+          <div className="gsapImpactHeading text-center mb-16">
             <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
               Making Real Impact
             </h2>
@@ -1313,7 +1467,7 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="gsapImpactStats grid grid-cols-2 md:grid-cols-4 gap-8">
             {[
               { number: "10K+", label: "Deliveries Completed", trend: "+23%" },
               { number: "500+", label: "Partner Hospitals", trend: "+45%" },
@@ -1338,7 +1492,7 @@ export default function LandingPage() {
 
       {/* CTA Section */}
       <section className="relative py-20 px-4">
-        <div className="max-w-4xl mx-auto text-center">
+        <div className="gsapReady2Transform max-w-4xl mx-auto text-center">
           <div className="bg-gradient-to-br from-lime-950/50 to-emerald-950/50 rounded-3xl p-8 md:p-16 border border-lime-500/20 relative overflow-hidden">
             {/* Background Pattern */}
             <div className="absolute inset-0 bg-[linear-gradient(to_right,#10b98120_1px,transparent_1px),linear-gradient(to_bottom,#10b98120_1px,transparent_1px)] bg-[size:2rem_2rem]"></div>
@@ -1373,7 +1527,7 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="relative py-12 px-4 border-t border-gray-800">
+      <footer className="gsapFooter relative py-12 px-4 border-t border-gray-800">
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             {/* Logo & Description */}
