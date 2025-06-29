@@ -800,7 +800,6 @@ export default function AdminDashboard() {
   const [selectedDelivery, setSelectedDelivery] = useState(null);
   const [availablePilots, setAvailablePilots] = useState([]);
   const [selectedPilot, setSelectedPilot] = useState('');
-
   const [hospitalDetails, setHospitalDetails] = useState(null);
   const [filterInfo, setFilterInfo] = useState(null);
 
@@ -1320,7 +1319,7 @@ function ActivityItem({ activity }) {
   );
 }
 
-// New Enhanced Activity Row Component
+// Enhanced Activity Row Component
 function EnhancedActivityRow({ activity, index }) {
   const roleIcons = {
     'medical_staff': MedicalStaffIcon,

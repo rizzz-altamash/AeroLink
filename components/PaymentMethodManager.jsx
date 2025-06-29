@@ -244,7 +244,7 @@ export default function PaymentMethodManager({ onClose }) {
                 key={method.id}
                 className={`p-4 rounded-lg border ${
                   method.isDefault 
-                    ? 'border-red-500/30 bg-red-500/10' 
+                    ? 'border-blue-500/30 bg-blue-500/10' 
                     : 'border-gray-700 bg-gray-800/50'
                 }`}
               >
@@ -261,7 +261,7 @@ export default function PaymentMethodManager({ onClose }) {
                         Added on {new Date(method.addedAt).toLocaleDateString()}
                       </p>
                       {method.isDefault && (
-                        <span className="text-xs text-red-400 font-medium">Default</span>
+                        <span className="text-xs text-blue-400 font-medium">Default</span>
                       )}
                     </div>
                   </div>

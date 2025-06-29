@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-// app/page.jsx
+// app/page.jsx 
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -571,7 +571,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* Future Section */}
       <section id="features" className="relative py-20 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="gsapAeroFutureHeading text-center mb-16">

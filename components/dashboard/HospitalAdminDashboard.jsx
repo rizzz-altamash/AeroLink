@@ -1278,16 +1278,12 @@ export default function HospitalAdminDashboard() {
   const [showApprovalModal, setShowApprovalModal] = useState(false);
   const [selectedDelivery, setSelectedDelivery] = useState(null);
   const [rejectionReason, setRejectionReason] = useState('');
-
   const [deliveryTypeStats, setDeliveryTypeStats] = useState([]);
   const [loadingDeliveryTypes, setLoadingDeliveryTypes] = useState(true);
-
   const [viewMode, setViewMode] = useState('chart'); // 'bars' or 'chart'
-
   const [orderStats, setOrderStats] = useState(null);
   const [loadingOrderStats, setLoadingOrderStats] = useState(true);
   const [showOrderStatus, setShowOrderStatus] = useState(false);
-
   const [showPaymentSetup, setShowPaymentSetup] = useState(false);
   const [paymentSetupRequired, setPaymentSetupRequired] = useState(false);
 
@@ -1740,18 +1736,19 @@ export default function HospitalAdminDashboard() {
                   <div>
                     <h3 className="text-xs sm:text-sm font-medium text-gray-400 mb-2 sm:mb-3">Order Direction</h3>
                     <div className="grid grid-cols-2 gap-2 sm:gap-3">
-                      <OrderStatCard
-                        label="Outgoing Orders"
-                        value={orderStats.direction.outgoing}
-                        icon={OutgoingIcon}
-                        color="text-orange-400"
-                        bgColor="bg-orange-500/20"
-                        total={orderStats.total}
-                      />
+                      
                       <OrderStatCard
                         label="Incoming Orders"
                         value={orderStats.direction.incoming}
                         icon={IncomingIcon}
+                        color="text-emerald-400"
+                        bgColor="bg-emerald-500/20"
+                        total={orderStats.total}
+                      />
+                      <OrderStatCard
+                        label="Outgoing Orders"
+                        value={orderStats.direction.outgoing}
+                        icon={OutgoingIcon}
                         color="text-blue-400"
                         bgColor="bg-blue-500/20"
                         total={orderStats.total}
@@ -2220,7 +2217,7 @@ function StaffActivityItem({ activity }) {
   );
 }
 
-// Update the DeliveryTypeBar component to include count and animation
+// Updated the DeliveryTypeBar component to include count and animation
 function DeliveryTypeBar({ type, count, percentage, color, delay }) {
   return (
     <div 
@@ -2363,7 +2360,7 @@ function DeliveryTypeTooltip({ children, stat }) {
   );
 }
 
-// Add this new component for Order Stat Cards:
+// Order Stat Cards 
 function OrderStatCard({ label, value, icon: Icon, color, bgColor, small = false, total = 0 }) {
   return (
     <div className={`${bgColor} backdrop-blur rounded-lg sm:rounded-xl ${small ? 'p-2 sm:p-3' : 'p-3 sm:p-4'} group hover:scale-105 transition-transform`}>

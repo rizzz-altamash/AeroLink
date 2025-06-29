@@ -827,7 +827,7 @@ export default function RevenueOverview() {
   }
 
   return (
-    <div className="bg-gray-900/50 backdrop-blur-xl rounded-2xl p-4 sm:p-6 border border-purple-500/20 hover:border-purple-500/30 transition-all">
+    <div className="bg-gray-900/50 backdrop-blur-xl max-h-200 overflow-y-auto rounded-2xl p-4 sm:p-6 border border-purple-500/20 hover:border-purple-500/30 transition-all">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-4">
         <h2 className="text-lg sm:text-xl font-semibold text-white">Revenue Overview</h2>
