@@ -688,6 +688,94 @@ export default function LandingPage() {
       duration: 0.7,
       ease: "power2.out",
     }, "-=0.1")
+    .to(".gsapScrollIndicatorDiv", {
+      opacity: 0,
+      duration: 0.7,
+      ease: "power2.out",
+      scrollTrigger:{
+        trigger: ".gsapScrollIndicatorDiv",
+        markers: false,
+        start: "top 70%",
+        end: "top 30%",
+        scrub:2,
+      }
+    }, "-=0.1")
+    .from(".gsapAeroFutureHeading", {
+      opacity: 0,
+      scale: 2,
+      duration: 0.7,
+      ease: "power2.out",
+      scrollTrigger:{
+        trigger: ".gsapAeroFutureHeading",
+        markers: false,
+        start: "top 85%",
+        end: "top 70%",
+        scrub:2,
+      }
+    }, "-=0.1")
+    .from(".gsapFeatureCardsDiv", {
+      x: -150,
+      opacity: 0,
+      duration: 0.7,
+      stagger: 0.3,
+      ease: "power2.out",
+      scrollTrigger:{
+        trigger: ".gsapFeatureCards2ndPage",
+        markers: false,
+        start: "top 75%",
+        end: "top 30%",
+        scrub:2,
+      }
+    }, "-=0.1")
+    .from(".gsap2ndPagePlaneDiv", {
+      y: 100,
+      opacity: 0,
+      duration: 0.7,
+      ease: "power2.out",
+      scrollTrigger:{
+        trigger: ".gsap2ndPagePlane",
+        markers: false,
+        start: "top 90%",
+        end: "top 65%",
+        scrub:2,
+      }
+    }, "-=0.1")
+    .from(".gsapRings", {
+      opacity: 0,
+      duration: 0.7,
+      ease: "power2.out",
+      scrollTrigger:{
+        trigger: ".gsapRings",
+        markers: false,
+        start: "top 65%",
+        end: "top 55%",
+        scrub:2,
+      }
+    }, "-=0.1")
+    .from(".gsapAeroGrid", {
+      opacity: 0,
+      duration: 0.7,
+      ease: "power2.out",
+      scrollTrigger:{
+        trigger: ".gsapAeroGrid",
+        markers: false,
+        start: "top 40%",
+        end: "top 35%",
+        scrub:2,
+      }
+    }, "-=0.1")
+    .from(".gsapAeroGridStats", {
+      opacity: 0,
+      duration: 0.7,
+      ease: "power2.out",
+      scrollTrigger:{
+        trigger: ".gsapAeroGridStats",
+        markers: false,
+        start: "top 55%",
+        end: "top 45%",
+        scrub:2,
+      }
+    }, "-=0.1")
   }, []);
 
   useEffect(() => {
@@ -916,7 +1004,7 @@ export default function LandingPage() {
         </div>
 
         {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+        <div className="gsapScrollIndicatorDiv absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
           <svg className="gsapScrollIndicator w-6 h-6 text-lime-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 13l-7 7-7-7m14-8l-7 7-7-7" />
           </svg>
@@ -926,7 +1014,7 @@ export default function LandingPage() {
       {/* Features Section */}
       <section id="features" className="relative py-20 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
+          <div className="gsapAeroFutureHeading text-center mb-16">
             <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
               Why AeroLink is the Future
             </h2>
@@ -937,8 +1025,9 @@ export default function LandingPage() {
 
           <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
             {/* Feature Cards */}
-            <div className="space-y-4">
+            <div className="gsapFeatureCards2ndPage space-y-4">
               {features.map((feature, index) => (
+                <div className="gsapFeatureCardsDiv">
                 <div
                   key={index}
                   onMouseEnter={() => setActiveFeature(index)}
@@ -957,33 +1046,34 @@ export default function LandingPage() {
                     </div>
                   </div>
                 </div>
+                </div>
               ))}
             </div>
 
             {/* Visual Display */}
             <div className="relative h-[400px] md:h-full min-h-[400px] rounded-2xl overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-lime-950/50 to-emerald-950/50"></div>
-              <div className="animate-grid-scroll absolute inset-0 bg-[linear-gradient(to_right,#10b98115_1px,transparent_1px),linear-gradient(to_bottom,#10b98115_1px,transparent_1px)] bg-[size:2rem_2rem]"></div>
+              <div className="gsapAeroGrid absolute inset-0 bg-gradient-to-br from-lime-950/50 to-emerald-950/50"></div>
+              <div className="gsapAeroGrid animate-grid-scroll absolute inset-0 bg-[linear-gradient(to_right,#10b98115_1px,transparent_1px),linear-gradient(to_bottom,#10b98115_1px,transparent_1px)] bg-[size:2rem_2rem]"></div>
               
               {/* Animated Drone Visual */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="relative w-64 h-64">
                   {/* Central Drone */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <svg className="w-32 h-32 text-lime-400 animate-float" viewBox="0 0 24 24" fill="currentColor">
+                  <div className="gsap2ndPagePlaneDiv absolute inset-0 flex items-center justify-center">
+                    <svg className="gsap2ndPagePlane w-32 h-32 text-lime-400 animate-float" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>
                     </svg>
                   </div>
                   
                   {/* Rotating Rings */}
-                  <div className="absolute inset-0 rounded-full border-2 border-lime-500/20"></div>
-                  <div className="absolute inset-[-20px] rounded-full border border-lime-500/10"></div>
+                  <div className="gsapRings absolute inset-0 rounded-full border-2 border-lime-500/20"></div>
+                  <div className="gsapRings absolute inset-[-20px] rounded-full border border-lime-500/10"></div>
                   
                   {/* Pulsing Circles */}
-                  <div className="absolute inset-0 rounded-full bg-lime-500/10 animate-ping"></div>
+                  <div className="gsapRings absolute inset-0 rounded-full bg-lime-500/10 animate-ping"></div>
                   
                   {/* Stats Around Drone */}
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-3 py-1 bg-lime-500/20 backdrop-blur rounded-full text-lime-400 text-sm font-medium">
+                  <div className="gsapAeroGridStats absolute -top-4 left-1/2 -translate-x-1/2 px-3 py-1 bg-lime-500/20 backdrop-blur rounded-full text-lime-400 text-sm font-medium">
                     {features[activeFeature].stats}
                   </div>
                 </div>
