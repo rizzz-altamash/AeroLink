@@ -1057,7 +1057,7 @@ export default function LandingPage() {
       `}</style>
     </div>
   );
-}
+} 
 
 function StepCard({ number, title, description, icon: Icon, delay }) {
   return (
