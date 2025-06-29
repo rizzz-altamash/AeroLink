@@ -805,7 +805,6 @@ export default function AdminDashboard() {
   const [filterInfo, setFilterInfo] = useState(null);
 
   useEffect(() => {
-    // Fetch dashboard data
     fetchDashboardStats();
     fetchRecentActivity();
     fetchDroneStatus();

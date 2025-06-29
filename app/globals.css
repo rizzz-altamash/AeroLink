@@ -1,6 +1,12 @@
 @import "tailwindcss";
 
+/* My reusable tailwind class */
 .scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+::-webkit-scrollbar {
   display: none;
 }
 
