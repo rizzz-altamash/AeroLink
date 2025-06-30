@@ -427,7 +427,7 @@ export default function SignInPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     className="w-full px-3 sm:px-4 py-2.5 sm:py-3 pl-10 sm:pl-12 bg-gray-800/50 backdrop-blur border border-green-500/20 rounded-lg sm:rounded-xl text-white focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all text-sm sm:text-base"
-                    placeholder="pilot@dronestartup.com"
+                    placeholder="Enter Email"
                   />
                   <svg className="w-4 sm:w-5 h-4 sm:h-5 text-green-500/50 absolute left-3 sm:left-4 top-2.5 sm:top-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
