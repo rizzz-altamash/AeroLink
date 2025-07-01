@@ -32,7 +32,7 @@ AeroLink is a **full-stack medical delivery platform** built from scratch, lever
 - **🧠 Intelligent Hospital Detection** - First registrant automatically becomes admin
 - **🗺️ Address-to-Coordinates Magic** - Automatic geocoding for precise delivery locations
 - **📧 Email Verification** - Custom SHA-256 token generation system
-- **🔑 OAuth Integration** - Google sign-in alongside traditional credentials
+- **🔑 NextAuth Integration** - Register and sign-in with traditional credentials
 - **🔒 Bcrypt Security** - 12-round password salting for maximum protection
 
 ## 💰 Hospital Management & Payments
