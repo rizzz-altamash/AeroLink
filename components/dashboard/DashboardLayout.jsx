@@ -620,7 +620,7 @@ export default function DashboardLayout({ children }) {
               </svg>
             </div>
             <div>
-              <h1 className="text-white font-bold text-sm">Vaayu</h1>
+              <h1 className="text-white font-bold text-sm">AeroLink</h1>
               <p className={`text-xs ${theme.text} opacity-60`}>{session?.user?.role?.replace('_', ' ')}</p>
             </div>
           </div>
@@ -698,7 +698,7 @@ export default function DashboardLayout({ children }) {
                   </div>
                   {sidebarOpen && (
                     <div>
-                      <h1 className="text-white font-bold text-sm lg:text-base">Vaayu</h1>
+                      <h1 className="text-white font-bold text-sm lg:text-base">AeroLink</h1>
                       <p className={`text-xs ${theme.text} opacity-60`}>{session?.user?.role?.replace('_', ' ')}</p>
                     </div>
                   )}
