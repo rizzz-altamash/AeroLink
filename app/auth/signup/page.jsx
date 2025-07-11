@@ -218,6 +218,7 @@ export default function SignUpPage() {
           setLoading(false);
           return;
         }
+        
         payload.hospitalData = {
           ...formData.hospitalData,
           address: {

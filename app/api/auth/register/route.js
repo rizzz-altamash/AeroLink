@@ -5,7 +5,7 @@ import { connectDB } from '@/lib/mongodb';
 import User from '@/models/User';
 import Hospital from '@/models/Hospital';
 import crypto from 'crypto';
-import { sendVerificationEmail } from '@/lib/email'; // You'll need to implement this
+import { sendVerificationEmail } from '@/lib/email';
 
 export async function POST(req) {
   try {
